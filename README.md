@@ -35,7 +35,6 @@ Did you run into another error or a bug? Please let me know via the
 "_Issues_" page.
 
 ### Changelog
-##### Version 0.1
 * [0.0.1] Basic Editor (with Syntax Highlighting)
 * [0.0.1] Line Highlighting + Line Numbers
 * [0.0.1] Create a New File
@@ -48,25 +47,24 @@ Did you run into another error or a bug? Please let me know via the
 Below, I've listed all features I'd like to see in future versions. Feel
 free to suggest new ideas and features via the "_Issues_" page.
 
-##### Version 0.1
 * [0.0.2] Solidly working Editor
 * [0.0.2] Custom Icons + App Icon
 * [0.0.3] Flexible Shortcut System
 * [0.0.3] Recent files menu
 * [0.0.4] Syntax error highlighting
   * _Maybe via parsing in ANTLR?_
-
-##### Version 0.2
+* [0.0.5] Add tests!!
+* [0.1.0] Make app available via PyPI or as a downloadable app
+  * I.e. standalone
 * [0.1.1] Custom user-options / preferences
   * Themes
   * Custom Shortcuts
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
 * [0.1.3] Opening from as many file types as possible
-
-##### Version 0.3
-* Interactive view of DOT files
+* [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
+* [0.2.1] Multiple Languages
