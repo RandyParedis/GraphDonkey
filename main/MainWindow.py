@@ -3,6 +3,7 @@ from main.extra.IOHandler import IOHandler
 from main.Highlighter import CodeEditor
 from main.extra import Constants, Config
 from graphviz import Source
+import graphviz
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -33,6 +34,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRender.triggered.connect(self.displayGraph)
         self.action_Render.triggered.connect(self.displayGraph)
 
+        self.actionAboutGraphviz.triggered.connect(self.aboutGraphviz)
+        self.actionAboutQt.triggered.connect(self.aboutQt)
+
     def updateTitle(self):
         rest = "undefined"
         if self.filename != "":
@@ -55,6 +59,21 @@ class MainWindow(QtWidgets.QMainWindow):
             self.editor.clear()
 
         self.displayGraph()
+
+    def aboutGraphviz(self):
+        QtWidgets\
+            .QMessageBox\
+            .about(self,
+                   "About Graphviz",
+                   "Graphviz is open source graph visualization software. Graph visualization is a way of representing "
+                   "structural information as diagrams of abstract graphs and networks. It has important applications "
+                   "in networking, bioinformatics,  software engineering, database and web design, machine learning, "
+                   "and in visual interfaces for other technical domains.\n\n"
+                   "Current installed version is %s.\n\n"
+                   "More information on www.graphviz.org" % graphviz.__version__)
+
+    def aboutQt(self):
+        QtWidgets.QMessageBox.aboutQt(self)
 
     def new(self):
         # TODO: confirmation if not saved

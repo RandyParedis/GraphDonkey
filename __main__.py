@@ -7,8 +7,10 @@ MainWindow in maximized modus.
 from PyQt5 import QtWidgets
 from main.extra import Constants
 from main.MainWindow import MainWindow
-import sys
+import sys, graphviz
 
+print("LAUNCING APP...")
+print("GraphViz Version:", graphviz.__version__)
 app = QtWidgets.QApplication(sys.argv)
 app.setApplicationName(Constants.APP_NAME + " " + Constants.APP_VERSION)
 mainwindow = MainWindow()
