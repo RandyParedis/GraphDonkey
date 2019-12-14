@@ -1,4 +1,4 @@
-"""This file contains a set of functions and variables used in the DotGaper configuration.
+"""This file contains a set of functions and variables used in the GraphDonkey configuration.
 
 There are two sections: file type config and keyword config.
 

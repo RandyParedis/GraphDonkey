@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor
 
-APP_NAME = "DotGaper"
+APP_NAME = "GraphDonkey"
 APP_VERSION = "0.0.1"
 
 STX_KEYWORD_COLOR = QColor(128, 0, 0)

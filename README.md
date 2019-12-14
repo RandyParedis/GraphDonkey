@@ -1,4 +1,4 @@
-# DotGaper
+# GraphDonkey
 A simple and easy-to-use application for visualizing and editing Graphviz
 Dot files, running on `Python 3`. Behind the screens, it binds `PyQt5` and
 `graphviz` together.
@@ -11,16 +11,16 @@ Build Type: `beta`
 * `graphviz`
 
 ### Installation
-Installing `DotGaper` is quite easy. All you have to do is clone this
+Installing `GraphDonkey` is quite easy. All you have to do is clone this
 repository. Also make sure you have installed the `PyQt5` and `graphviz`
 modules for `pip3`, which will allow this application to work.
 
 _For future work, the goal is to make this available as an application on
 either PyPI or as a bundled resource._
 
-### Running `DotGaper`
-When you've installed `DotGaper` as described above, you can just run the
-`__main__.py` file or the root folder with `Python 3`.
+### Running `GraphDonkey`
+When you've installed `GraphDonkey` as described above, you can just run
+the `__main__.py` file or the root folder with `Python 3`.
 
 ### Known Bugs
 * The _Graphviz Data Editor_ gets closed when the application is hidden
@@ -55,13 +55,16 @@ free to suggest new ideas and features via the "_Issues_" page.
   * _Maybe via parsing in ANTLR?_
 * [0.0.5] Add tests!!
 * [0.1.0] Make app available via PyPI or as a downloadable app
-  * I.e. standalone
+  * i.e. standalone
+* [0.1.0] Enable Github Pages
+  * Add tags to the repo
 * [0.1.1] Custom user-options / preferences
   * Themes
   * Custom Shortcuts
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
 * [0.1.3] Opening from as many file types as possible
+- [0.1.4] Additional configuration possibilities for graphviz
 * [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
