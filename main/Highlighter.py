@@ -2,7 +2,7 @@
 Implementation based on https://stackoverflow.com/questions/2443358/how-to-add-lines-numbers-to-qtextedit
 """
 from PyQt5 import QtGui, QtWidgets, QtCore
-from main.extra import Constants
+from main.extra import Constants, Config
 
 class CodeEditor(QtWidgets.QTextEdit):
     def __init__(self, parent):
@@ -10,7 +10,7 @@ class CodeEditor(QtWidgets.QTextEdit):
         self.lineNumberArea = LineNumberArea(self)
 
         fontWidth = QtGui.QFontMetrics(self.currentCharFormat().font()).averageCharWidth()
-        self.setTabStopWidth(3 * fontWidth)
+        self.setTabStopWidth(4 * fontWidth)
 
         self.document().blockCountChanged.connect(self.updateLineNumberAreaWidth)
         self.verticalScrollBar().valueChanged.connect(self.updateLineNumberAreaScroll)
@@ -151,13 +151,15 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         keywordFormat.setForeground(Constants.STX_KEYWORD_COLOR)
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
 
-        keywordPatterns = [
-            "\\bstrict\\b", "\\bgraph\\b", "\\bdigraph\\b", "\\bnode\\b", "\\bedge\\b", "\\bsubgraph\\b",
-            "\\brankdir\\b",
-            "\\bn\\b", "\\bne\\b", "\\be\\b", "\\bse\\b", "\\bs\\b", "\\bsw\\b", "\\bw\\b", "\\bnw\\b", "\\bc\\b",
-            "\\b_\\b"
-        ]
+        keywordPatterns = ["\\b%s\\b" % x for x in Config.STRICT_KEYWORDS ]
         self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat) for pattern in keywordPatterns]
+
+        attributeFormat = QtGui.QTextCharFormat()
+        attributeFormat.setForeground(Constants.STX_ATTRIBUTE_COLOR)
+        attributeFormat.setFontWeight(QtGui.QFont.Bold)
+        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Config.ATTRIBUTES)), attributeFormat))
+        for a in Config.SPECIAL_ATTRIBUTES:
+            self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), attributeFormat))
 
         hashCommentFormat = QtGui.QTextCharFormat()
         hashCommentFormat.setForeground(Constants.STX_COMMENT_COLOR)

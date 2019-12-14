@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
 from main.extra.IOHandler import IOHandler
 from main.Highlighter import CodeEditor
-from main.Setup import Setup
+from main.extra import Constants, Config
 from graphviz import Source
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -15,20 +15,108 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.restore()
 
+        self.filename = ""
+        self.saved = False
+        self.updateTitle()
+
         self.editor = None
         self.setupEditor()
-        self.pb_render.clicked.connect(self.displayGraph)
+
+        # Set actions
+        self.actionNew.triggered.connect(self.new)
+        self.action_New.triggered.connect(self.new)
+        self.actionOpen.triggered.connect(self.open)
+        self.action_Open.triggered.connect(self.open)
+        self.actionSave.triggered.connect(self.save)
+        self.action_Save.triggered.connect(self.save)
+        self.actionSave_As.triggered.connect(self.saveAs)
+        self.actionRender.triggered.connect(self.displayGraph)
+        self.action_Render.triggered.connect(self.displayGraph)
+
+    def updateTitle(self):
+        rest = "undefined"
+        if self.filename != "":
+            rest = self.filename
+        if not self.saved:
+            rest += " *"
+        self.setWindowTitle(Constants.APP_NAME + " v" + Constants.APP_VERSION + " - " + rest)
 
     def setupEditor(self):
-        font = QtGui.QFont()
-        font.setFamily('Ubuntu Monospace')
-        font.setFixedPitch(True)
-        font.setPointSize(12)
+        if self.editor is None:
+            font = QtGui.QFont()
+            font.setFamily('Ubuntu Monospace')
+            font.setFixedPitch(True)
+            font.setPointSize(12)
 
-        self.editor = CodeEditor(self)
-        self.editor.setFont(font)
+            self.editor = CodeEditor(self)
+            self.editor.setFont(font)
+            self.graphvizData.layout().addWidget(self.editor)
+        else:
+            self.editor.clear()
 
-        self.graphvizData.layout().addWidget(self.editor)
+        self.displayGraph()
+
+    def new(self):
+        # TODO: confirmation if not saved
+        self.setupEditor()
+        self.filename = ""
+        self.saved = False
+        self.updateTitle()
+
+    def open(self):
+        # TODO: confirmation if not saved
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog\
+            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Config.file_list_open(),
+                             options=options)
+        if fileName:
+            self.setupEditor()
+            self.filename = fileName
+            self.saved = True
+            self.updateTitle()
+
+            ext = fileName.split(".")[-1]
+            if Config.valid_ext(ext, Config.FILE_TYPES_OPEN):
+                with open(fileName, "r") as myfile:
+                    data = "".join(myfile.readlines())
+                    dot = Source(data, format=ext)
+                    self.editor.setText(dot.source)
+
+            self.displayGraph()
+
+    def save(self):
+        if self.filename == "":
+            self.saveAs()
+        else:
+            ext = self.filename.split(".")[-1]
+            dot = Source(self.editor.toPlainText())
+            contents = dot.pipe(ext)
+            with open(self.filename, 'bw') as myfile:
+                myfile.write(contents)
+            self.saved = True
+            self.updateTitle()
+
+    def saveAs(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, t = QtWidgets.QFileDialog\
+            .getSaveFileName(self, "Save a Graphviz File", "", "All Files (*);;" + Config.file_list_save(),
+                             options=options)
+        if fileName:
+            # TODO: confirmation box
+            ext = fileName.split(".")[-1]
+            rext = Config.obtain_ext(t)
+            if len(fileName.split(".")) == 1:
+                ext = "plain"
+            if rext == "":
+                rext = ext
+            if ext is not rext:
+                fileName += "." + rext
+            if Config.valid_ext(rext, Config.FILE_TYPES_SAVE):
+                self.filename = fileName
+                self.save()
+
 
     def displayGraph(self):
         self.scene.clear()

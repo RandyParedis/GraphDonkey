@@ -5,6 +5,7 @@ APP_VERSION = "0.0.1"
 
 STX_KEYWORD_COLOR = QColor(128, 0, 0)
 STX_COMMENT_COLOR = QColor("blue")
+STX_ATTRIBUTE_COLOR = QColor("darkBlue")
 STX_NUMBER_COLOR = QColor(255, 0, 255)
 STX_STRING_COLOR = QColor("green")
 
