@@ -11,8 +11,9 @@ import sys, graphviz
 
 print("LAUNCING APP...")
 print("GraphViz Version:", graphviz.__version__)
+print("GraphDonkey Version:", Constants.APP_VERSION)
 app = QtWidgets.QApplication(sys.argv)
-app.setApplicationName(Constants.APP_NAME + " " + Constants.APP_VERSION)
+app.setApplicationName(Constants.APP_NAME + " v" + Constants.APP_VERSION)
 mainwindow = MainWindow()
 mainwindow.showMaximized()
 code = app.exec_()

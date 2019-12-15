@@ -21,12 +21,20 @@ class CodeEditor(QtWidgets.QTextEdit):
         self.highlightCurrentLine()
         self.highlighter = Highlighter(self.document())
 
+    def event(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.ShortcutOverride:
+            return False
+        return QtWidgets.QTextEdit.event(self, event)
+
+    def insertFromMimeData(self, QMimeData):
+        self.insertPlainText(QMimeData.text())
+
     def highlightCurrentLine(self):
         selections = []
 
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(Constants.STX_CLINE_COLOR)
+            selection.format.setBackground(Config.STX_CLINE_COLOR)
             selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -69,16 +77,16 @@ class CodeEditor(QtWidgets.QTextEdit):
 
         bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
 
-        col_1 = Constants.STX_CLNUM_COLOR
-        col_0 = Constants.STX_OLNUM_COLOR
+        col_1 = Config.STX_CLNUM_COLOR
+        col_0 = Config.STX_OLNUM_COLOR
 
         old = block, top, bottom, blockNumber
 
-        painter.fillRect(event.rect(), Constants.STX_OLNUM_BCOLOR)
+        painter.fillRect(event.rect(), Config.STX_OLNUM_BCOLOR)
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top() and self.textCursor().blockNumber() == blockNumber:
                 painter.fillRect(QtCore.QRect(event.rect().x(), top, event.rect().width(), self.fontMetrics().height()),
-                                 Constants.STX_CLNUM_BCOLOR)
+                                 Config.STX_CLNUM_BCOLOR)
             block = block.next()
             top = bottom
             bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
@@ -148,42 +156,42 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
     def setPatterns(self):
         keywordFormat = QtGui.QTextCharFormat()
-        keywordFormat.setForeground(Constants.STX_KEYWORD_COLOR)
+        keywordFormat.setForeground(Config.STX_KEYWORD_COLOR)
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
 
-        keywordPatterns = ["\\b%s\\b" % x for x in Config.STRICT_KEYWORDS ]
+        keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS ]
         self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat) for pattern in keywordPatterns]
 
         attributeFormat = QtGui.QTextCharFormat()
-        attributeFormat.setForeground(Constants.STX_ATTRIBUTE_COLOR)
+        attributeFormat.setForeground(Config.STX_ATTRIBUTE_COLOR)
         attributeFormat.setFontWeight(QtGui.QFont.Bold)
-        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Config.ATTRIBUTES)), attributeFormat))
-        for a in Config.SPECIAL_ATTRIBUTES:
+        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Constants.ATTRIBUTES)), attributeFormat))
+        for a in Constants.SPECIAL_ATTRIBUTES:
             self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), attributeFormat))
 
         hashCommentFormat = QtGui.QTextCharFormat()
-        hashCommentFormat.setForeground(Constants.STX_COMMENT_COLOR)
+        hashCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
         self.highlightingRules.append((QtCore.QRegExp("^#[^\n]*$"), hashCommentFormat))
 
         singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(Constants.STX_COMMENT_COLOR)
+        singleLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
         self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"), singleLineCommentFormat))
 
         self.multiLineCommentFormat = QtGui.QTextCharFormat()
-        self.multiLineCommentFormat.setForeground(Constants.STX_COMMENT_COLOR)
+        self.multiLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")
 
         numberFormat = QtGui.QTextCharFormat()
-        numberFormat.setForeground(Constants.STX_NUMBER_COLOR)
+        numberFormat.setForeground(Config.STX_NUMBER_COLOR)
         self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), numberFormat))
 
         quotedStringFormat = QtGui.QTextCharFormat()
-        quotedStringFormat.setForeground(Constants.STX_STRING_COLOR)
+        quotedStringFormat.setForeground(Config.STX_STRING_COLOR)
         self.highlightingRules.append((QtCore.QRegExp("\".*\""), quotedStringFormat))
 
         htmlStringFormat = QtGui.QTextCharFormat()
-        htmlStringFormat.setForeground(Constants.STX_STRING_COLOR)
+        htmlStringFormat.setForeground(Config.STX_STRING_COLOR)
         self.highlightingRules.append((QtCore.QRegExp("<.*>"), htmlStringFormat))
 
     def highlightBlock(self, text):
