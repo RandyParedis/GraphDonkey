@@ -22,6 +22,7 @@ SHORTCUTS = {
     "Open": ["Ctrl+O"],
     "Save": ["Ctrl+S"],
     "Save As": ["Ctrl+Shift+S"],
+    "Exit": ["Ctrl+Q"],
 
     "Undo": ["Ctrl+Z"],
     "Redo": ["Ctrl+Shift+Z"],

@@ -28,6 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Open.triggered.connect(self.open)
         self.action_Save.triggered.connect(self.save)
         self.action_Save_As.triggered.connect(self.saveAs)
+        self.action_Exit.triggered.connect(self.close) # TODO: Check for saved
         self.action_Undo.triggered.connect(self.editor.undo)
         self.action_Redo.triggered.connect(self.editor.redo)
         self.action_Select_All.triggered.connect(self.editor.selectAll)
