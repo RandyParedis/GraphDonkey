@@ -38,12 +38,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Render.triggered.connect(self.displayGraph)
         self.actionAboutGraphviz.triggered.connect(self.aboutGraphviz)
         self.actionAboutQt.triggered.connect(self.aboutQt)
+        self.actionAboutGraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
         # Set Toolbar
+        self.actionUndo.triggered.connect(self.editor.undo)
+        self.actionUndo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_UNDO)))
+        self.actionRedo.triggered.connect(self.editor.redo)
+        self.actionRedo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_REDO)))
         self.actionNew.triggered.connect(self.new)
+        self.actionNew.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_NEW)))
         self.actionOpen.triggered.connect(self.open)
+        self.actionOpen.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_OPEN)))
         self.actionSave.triggered.connect(self.save)
+        self.actionSave.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_SAVE)))
         self.actionRender.triggered.connect(self.displayGraph)
+        self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
 
         # Shortcuts
         for s in Config.SHORTCUTS:
@@ -55,8 +64,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.filename != "":
             rest = self.filename
         if not self.saved:
-            rest += " *"
-        self.setWindowTitle(Constants.APP_NAME + " v" + Constants.APP_VERSION + " - " + rest)
+            rest += "*"
+        self.setWindowTitle(" " + rest)
 
     def setupEditor(self):
         if self.editor is None:
@@ -170,16 +179,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scene.addPixmap(pixmap)
 
     def aboutGraphviz(self):
+        par = QtWidgets.QWidget(self)
+        par.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_GRAPHVIZ)))
+        QtWidgets\
+            .QMessageBox\
+            .about(par,
+                   "About Graphviz",
+                   "<p>Graphviz is open source graph visualization software. Graph visualization is a way of "
+                   "representing structural information as diagrams of abstract graphs and networks. It has important "
+                   "applications in networking, bioinformatics,  software engineering, database and web design, machine"
+                   " learning, and in visual interfaces for other technical domains.</p>"
+                   "<p>Current installed version is <b>%s</b>.</p>"
+                   "<p>More information on "
+                   "<a href='https://www.graphviz.org/'>www.graphviz.org</a>.</p>" % graphviz.__version__)
+
+    def aboutGraphDonkey(self):
         QtWidgets\
             .QMessageBox\
             .about(self,
-                   "About Graphviz",
-                   "Graphviz is open source graph visualization software. Graph visualization is a way of representing "
-                   "structural information as diagrams of abstract graphs and networks. It has important applications "
-                   "in networking, bioinformatics,  software engineering, database and web design, machine learning, "
-                   "and in visual interfaces for other technical domains.\n\n"
-                   "Current installed version is %s.\n\n"
-                   "More information on www.graphviz.org" % graphviz.__version__)
+                   "About GraphDonkey",
+                   "<p>A simple and easy-to-use application for visualizing and editing Graphviz Dot files. It is "
+                   "based on the idea of xdot, combined with a texteditor that can live-update the images.</p>"
+                   "<p>Current version is <b>%s</b>.</p>"
+                   "<p>Created by <b>Randy Paredis</b>." % Constants.APP_VERSION)
 
     def aboutQt(self):
         QtWidgets.QMessageBox.aboutQt(self)

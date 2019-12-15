@@ -50,6 +50,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionAboutGraphDonkey"/>
     <addaction name="actionAboutGraphviz"/>
     <addaction name="actionAboutQt"/>
    </widget>
@@ -94,6 +95,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
@@ -211,6 +215,21 @@
   <action name="action_Redo">
    <property name="text">
     <string>&amp;Redo</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionAboutGraphDonkey">
+   <property name="text">
+    <string>About Graph&amp;Donkey</string>
    </property>
   </action>
  </widget>

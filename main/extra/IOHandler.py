@@ -4,7 +4,6 @@ a Singleton class that handles all
 input/output functionality.
 """
 from PyQt5 import QtCore
-from main.extra import Constants
 import xml.etree.ElementTree as ET
 import os
 
@@ -19,27 +18,27 @@ class IOHandler:
 
     @staticmethod
     def dir_main():
-        return os.path.dirname(os.path.realpath(__file__))
+        return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
     @staticmethod
     def dir_root(*paths):
-        return os.path.realpath(IOHandler.join(__file__, "..", "..", "..", "..", *paths))
+        return os.path.realpath(IOHandler.join(IOHandler.dir_main(), "..", *paths))
 
     @staticmethod
     def dir_ui(*paths):
-        return os.path.realpath(IOHandler.join(__file__, "..", "..", "..", "ui", *paths))
+        return os.path.realpath(IOHandler.join(IOHandler.dir_root(), "ui", *paths))
 
     @staticmethod
     def dir_vendor(*path):
-        return os.path.realpath(IOHandler.join(__file__, "..", "..", "..", "..", "vendor", *path))
+        return os.path.realpath(IOHandler.join(IOHandler.dir_root(), "vendor", *path))
 
     @staticmethod
     def dir_styles(*styles):
         return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "styles", *styles))
 
     @staticmethod
-    def dir_gen(*styles):
-        return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "generate", *styles))
+    def dir_icons(*icons):
+        return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "icons", *icons))
 
     @staticmethod
     def dir_lang(*lang):
@@ -60,20 +59,12 @@ class IOHandler:
         return res
 
     @staticmethod
-    def dir_workspace():
-        return os.path.realpath(IOHandler.join(__file__, "..", "..", "..", "..", "files"))
-
-    @staticmethod
     def dir_config():
         return os.path.dirname(IOHandler.get_settings().fileName())
 
     @staticmethod
     def file_preferences():
         return os.path.realpath(IOHandler.join(IOHandler.dir_config(), "preferences.conf"))
-
-    @staticmethod
-    def file_sim():
-        return os.path.realpath(IOHandler.join(IOHandler.dir_config(), "siminit"))
 
     @staticmethod
     def get_settings():
@@ -83,3 +74,5 @@ class IOHandler:
     def delete(*files):
         for file in files:
             os.remove(file)
+
+from main.extra import Constants

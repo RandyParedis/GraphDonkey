@@ -3,9 +3,20 @@
 Author: Randy Paredis
 Date:   12/15/2019
 """
+from PyQt5.QtGui import QIcon, QImage
+from main.extra.IOHandler import IOHandler
 
 APP_NAME = "GraphDonkey"
 APP_VERSION = "0.0.2"
+APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
+
+ICON_GRAPHVIZ = QImage(IOHandler.dir_icons("graphviz.png"))
+ICON_UNDO = QImage(IOHandler.dir_icons("undo.png"))
+ICON_REDO = QImage(IOHandler.dir_icons("redo.png"))
+ICON_NEW = QImage(IOHandler.dir_icons("new.png"))
+ICON_OPEN = QImage(IOHandler.dir_icons("open.png"))
+ICON_SAVE = QImage(IOHandler.dir_icons("save.png"))
+ICON_RENDER = QImage(IOHandler.dir_icons("render.png"))
 
 
 ################################
