@@ -33,8 +33,14 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuOpen_Recent">
+     <property name="title">
+      <string>Open &amp;Recent</string>
+     </property>
+    </widget>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>
+    <addaction name="menuOpen_Recent"/>
     <addaction name="action_Save"/>
     <addaction name="action_Save_As"/>
     <addaction name="separator"/>
@@ -237,6 +243,11 @@
   <action name="action_Exit">
    <property name="text">
     <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_Clear_Recents">
+   <property name="text">
+    <string>Clear Recents</string>
    </property>
   </action>
  </widget>

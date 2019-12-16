@@ -17,6 +17,8 @@ STX_OLNUM_COLOR = QColor("black")
 STX_OLNUM_BCOLOR = QColor(120, 120, 120)
 STX_CLINE_COLOR = QColor("yellow").lighter(160)
 
+RECENTS_LIMIT = 3
+
 SHORTCUTS = {
     "New": ["Ctrl+N"],
     "Open": ["Ctrl+O"],

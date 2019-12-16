@@ -19,6 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
 
+        self.recents = []
         self.restore()
 
         self.filename = ""
@@ -101,16 +102,42 @@ class MainWindow(QtWidgets.QMainWindow):
             self.restoreGeometry(settings.value("geometry"))
         if settings.contains("windowState"):
             self.restoreState(settings.value("windowState"))
+        if settings.contains("recents") and settings.value("recents") is not None:
+            self.recents = settings.value("recents")
+        self.updateRecents()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         settings = IOHandler.get_settings()
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())
+        settings.setValue("recents", self.recents)
         QtWidgets.QMainWindow.closeEvent(self, event)
 
     def textChangedEvent(self):
         self.saved = False
         self.updateTitle()
+
+    def updateRecents(self, file=None):
+        if file is not None:
+            while file in self.recents:
+                self.recents.remove(file)
+            self.recents.insert(0, file)
+            self.recents = self.recents[:Config.RECENTS_LIMIT]
+        self.menuOpen_Recent.clear()
+
+        for file in self.recents:
+            self.menuOpen_Recent.addAction(file, lambda: self.openFile(file))
+        if len(self.recents) > 0:
+            self.menuOpen_Recent.addSeparator()
+        clr = "Clear Recents"
+        clear = self.menuOpen_Recent.addAction(clr)
+        if clr in Config.SHORTCUTS:
+            clear.setShortcuts([QtGui.QKeySequence(x) for x in Config.SHORTCUTS[clr]])
+        clear.triggered.connect(lambda x: self.clearRecents())
+
+    def clearRecents(self):
+        self.recents.clear()
+        self.updateRecents()
 
     def new(self):
         # TODO: confirmation if not saved
@@ -119,22 +146,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.saved = False
         self.updateTitle()
 
-    def open(self):
-        # TODO: confirmation if not saved
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog\
-            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
-                             options=options)
+    def openFile(self, fileName):
         if fileName:
             ext = fileName.split(".")[-1]
             if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
                 self.setupEditor()
                 with open(fileName, "r") as myfile:
-                    data = "".join(myfile.readlines())
+                    data = myfile.read()
                     dot = Source(data, format=ext)
                     self.editor.setText(dot.source)
 
+                self.updateRecents(fileName)
                 self.filename = fileName
                 self.saved = True
                 self.updateTitle()
@@ -142,6 +164,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.displayGraph()
             else:
                 QtWidgets.QMessageBox.critical(self, "Invalid File", "It looks like this file cannot be opened.")
+
+    def open(self):
+        # TODO: confirmation if not saved
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog\
+            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
+                             options=options)
+        self.openFile(fileName)
 
     def save(self):
         if self.filename == "":

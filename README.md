@@ -45,6 +45,7 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.0.2] Added "Recent Files" menu
 * [0.0.2] Added testing framework
   * Run `pytest` in the root folder to test
 * [0.0.2] Added Custom Icons + App Icon
@@ -64,10 +65,9 @@ Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
 
-* [0.0.3] Recent files menu
+* [0.1.0] Automatic check for updates
 * [0.1.0] Syntax error highlighting
   * _Maybe via parsing in ANTLR?_
-* [0.1.0] Automatic check for updates
 * [0.1.0] Use PyInstaller to turn this into a packaged app
 * [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
@@ -75,6 +75,8 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Custom Shortcuts
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
+* [0.1.2] Find and Replace functionality
+* [0.1.2] Autocompletion
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Efficient Auto-Render
 * [0.1.3] Additional configuration possibilities for graphviz
