@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui, uic
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
 from main.extra import Constants, Config
+from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz
 
@@ -43,9 +44,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Paste.triggered.connect(self.editor.paste)
         self.action_Cut.triggered.connect(self.editor.cut)
         self.action_Render.triggered.connect(self.displayGraph)
-        self.actionAboutGraphviz.triggered.connect(self.aboutGraphviz)
-        self.actionAboutQt.triggered.connect(self.aboutQt)
-        self.actionAboutGraphDonkey.triggered.connect(self.aboutGraphDonkey)
+        self.action_CheckUpdates.triggered.connect(self.checkUpdates)
+        self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)
+        self.action_AboutQt.triggered.connect(self.aboutQt)
+        self.action_AboutGraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
         # Set Toolbar
         self.actionUndo.triggered.connect(self.editor.undo)
@@ -214,6 +216,10 @@ class MainWindow(QtWidgets.QMainWindow):
         image.loadFromData(bdata)
         pixmap = QtGui.QPixmap.fromImage(image)
         self.scene.addPixmap(pixmap)
+
+    def checkUpdates(self):
+        checker = UpdateChecker(self)
+        checker.exec_()
 
     def aboutGraphviz(self):
         par = QtWidgets.QWidget(self)

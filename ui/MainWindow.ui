@@ -58,9 +58,11 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionAboutGraphDonkey"/>
-    <addaction name="actionAboutGraphviz"/>
-    <addaction name="actionAboutQt"/>
+    <addaction name="action_CheckUpdates"/>
+    <addaction name="separator"/>
+    <addaction name="action_AboutGraphDonkey"/>
+    <addaction name="action_AboutGraphviz"/>
+    <addaction name="action_AboutQt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -180,12 +182,12 @@
     <string>Save &amp;As</string>
    </property>
   </action>
-  <action name="actionAboutGraphviz">
+  <action name="action_AboutGraphviz">
    <property name="text">
     <string>About &amp;Graphviz</string>
    </property>
   </action>
-  <action name="actionAboutQt">
+  <action name="action_AboutQt">
    <property name="text">
     <string>About &amp;Qt</string>
    </property>
@@ -235,7 +237,7 @@
     <string>Redo</string>
    </property>
   </action>
-  <action name="actionAboutGraphDonkey">
+  <action name="action_AboutGraphDonkey">
    <property name="text">
     <string>About Graph&amp;Donkey</string>
    </property>
@@ -248,6 +250,11 @@
   <action name="action_Clear_Recents">
    <property name="text">
     <string>Clear Recents</string>
+   </property>
+  </action>
+  <action name="action_CheckUpdates">
+   <property name="text">
+    <string>Check for &amp;Updates</string>
    </property>
   </action>
  </widget>
