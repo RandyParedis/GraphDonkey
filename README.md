@@ -64,12 +64,11 @@ Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
 
-* [0.0.2] Make app available via PyPI or as a downloadable app
-  * i.e. standalone
 * [0.0.3] Recent files menu
 * [0.1.0] Syntax error highlighting
   * _Maybe via parsing in ANTLR?_
 * [0.1.0] Automatic check for updates
+* [0.1.0] Use PyInstaller to turn this into a packaged app
 * [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
   * Themes
