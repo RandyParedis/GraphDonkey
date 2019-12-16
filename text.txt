@@ -1,2 +1,4 @@
 https://graphviz.readthedocs.io/en/stable/manual.html#using-raw-dot
 https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-within-a-qtextedit
+
+graph { t -> d }

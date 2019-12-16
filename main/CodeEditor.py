@@ -8,7 +8,10 @@ Author: Randy Paredis
 Date:   12/14/2019
 """
 from PyQt5 import QtGui, QtWidgets, QtCore
+from lark import UnexpectedToken, Token, UnexpectedCharacters
+
 from main.extra import Constants, Config
+from main.extra.Parser import Parser
 
 class CodeEditor(QtWidgets.QTextEdit):
     def __init__(self, parent):
@@ -32,12 +35,32 @@ class CodeEditor(QtWidgets.QTextEdit):
             return False
         return QtWidgets.QTextEdit.event(self, event)
 
+    def indicateError(self, line, pos):
+        selections = self.extraSelections()
+        if not self.isReadOnly():
+            cursor = QtGui.QTextCursor(self.document())
+            cursor.movePosition(QtGui.QTextCursor.Start)
+            cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line -1)
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos-1)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, 2)
+            cursor.select(QtGui.QTextCursor.WordUnderCursor)
+
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, False)
+            Highlighter.format_error(selection.format)
+            selection.cursor = cursor
+            selection.cursor.clearSelection()
+            selections.append(selection)
+
+        self.setExtraSelections(selections)
+
+
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
 
     def highlightCurrentLine(self):
-        selections = []
-
+        selections = self.extraSelections()
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
             selection.format.setBackground(Config.STX_CLINE_COLOR)
@@ -150,6 +173,18 @@ class CodeEditor(QtWidgets.QTextEdit):
         if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
 
+    def analyze(self):
+        txt = self.toPlainText()
+        T = self.parser.parse(txt)
+        if T is None:
+            for line, col, msg, exp in self.parser.errors:
+                # print(msg, file=sys.stderr)
+                # print("\t" + txt.split("\n")[line - 1], file=sys.stderr)
+                # print("\t" + ("~" * (col - 1)) + "^", file=sys.stderr)
+                # print("suggested:", file=sys.stderr)
+                # print("\t" + ", ".join([x.name for x in exp]), file=sys.stderr)
+                self.indicateError(line, col)
+
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None):
@@ -159,56 +194,28 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.commentStartExpression = None
         self.commentEndExpression = None
         self.setPatterns()
+        self.parser = Parser()
 
     def setPatterns(self):
-        keywordFormat = QtGui.QTextCharFormat()
-        keywordFormat.setForeground(Config.STX_KEYWORD_COLOR)
-        keywordFormat.setFontWeight(QtGui.QFont.Bold)
-
         keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS ]
-        self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat) for pattern in keywordPatterns]
+        self.highlightingRules = [(QtCore.QRegExp(pattern), self.format_keyword()) for pattern in keywordPatterns]
 
-        attributeFormat = QtGui.QTextCharFormat()
-        attributeFormat.setForeground(Config.STX_ATTRIBUTE_COLOR)
-        attributeFormat.setFontWeight(QtGui.QFont.Bold)
-        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Constants.ATTRIBUTES)), attributeFormat))
+        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Constants.ATTRIBUTES)),
+                                       self.format_attribute()))
         for a in Constants.SPECIAL_ATTRIBUTES:
-            self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), attributeFormat))
+            self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), self.format_attribute()))
 
-        hashCommentFormat = QtGui.QTextCharFormat()
-        hashCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
-        self.highlightingRules.append((QtCore.QRegExp("^#[^\n]*$"), hashCommentFormat))
+        self.highlightingRules.append((QtCore.QRegExp("^#[^\n]*$"), self.format_comment_hash()))
+        self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"), self.format_comment_single()))
 
-        singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
-        self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"), singleLineCommentFormat))
-
-        self.multiLineCommentFormat = QtGui.QTextCharFormat()
-        self.multiLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")
 
-        numberFormat = QtGui.QTextCharFormat()
-        numberFormat.setForeground(Config.STX_NUMBER_COLOR)
-        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), numberFormat))
+        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number()))
+        self.highlightingRules.append((QtCore.QRegExp("\".*\""), self.format_string()))
+        self.highlightingRules.append((QtCore.QRegExp("<.*>"), self.format_html()))
 
-        quotedStringFormat = QtGui.QTextCharFormat()
-        quotedStringFormat.setForeground(Config.STX_STRING_COLOR)
-        self.highlightingRules.append((QtCore.QRegExp("\".*\""), quotedStringFormat))
-
-        htmlStringFormat = QtGui.QTextCharFormat()
-        htmlStringFormat.setForeground(Config.STX_STRING_COLOR)
-        self.highlightingRules.append((QtCore.QRegExp("<.*>"), htmlStringFormat))
-
-    def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
-            expression = QtCore.QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
+    def highlightMultilineComments(self, text):
         self.setCurrentBlockState(0)
 
         startIndex = 0
@@ -224,10 +231,98 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             else:
                 commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
 
-            self.setFormat(startIndex, commentLength,
-                    self.multiLineCommentFormat)
-            startIndex = self.commentStartExpression.indexIn(text,
-                    startIndex + commentLength)
+            self.setFormat(startIndex, commentLength, self.format_comment_multi())
+            startIndex = self.commentStartExpression.indexIn(text, startIndex + commentLength)
+
+    def highlightErrors(self, text):
+        T = self.parser.parse(text)
+        if T is None:
+            for token, msg, exp in self.parser.errors:
+                self.setCurrentBlockState(0)
+                startIndex = token.pos_in_stream
+                size = 1
+                if isinstance(token, UnexpectedToken):
+                    size = len(token.token)
+                elif isinstance(token, UnexpectedCharacters):
+                    regex = QtCore.QRegExp(r"\s")
+                    endIndex = regex.indexIn(text, startIndex)
+                    if endIndex == -1:
+                        self.setCurrentBlockState(1)
+                        endIndex = len(text) - startIndex
+                    size = endIndex - startIndex
+                elif isinstance(token, Token):
+                    size = len(token)
+                self.setFormat(startIndex, size, self.format_error(self.format(startIndex), msg))
+
+
+    def highlightBlock(self, text):
+        for pattern, format in self.highlightingRules:
+            expression = QtCore.QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+        self.highlightMultilineComments(text)
+        self.highlightErrors(text)
+
+    @staticmethod
+    def format_keyword():
+        keywordFormat = QtGui.QTextCharFormat()
+        keywordFormat.setForeground(Config.STX_KEYWORD_COLOR)
+        keywordFormat.setFontWeight(QtGui.QFont.Bold)
+        return keywordFormat
+
+    @staticmethod
+    def format_attribute():
+        attributeFormat = QtGui.QTextCharFormat()
+        attributeFormat.setForeground(Config.STX_ATTRIBUTE_COLOR)
+        attributeFormat.setFontWeight(QtGui.QFont.Bold)
+        return attributeFormat
+
+    @staticmethod
+    def format_comment_hash():
+        hashCommentFormat = QtGui.QTextCharFormat()
+        hashCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        return hashCommentFormat
+
+    @staticmethod
+    def format_comment_single():
+        singleLineCommentFormat = QtGui.QTextCharFormat()
+        singleLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        return singleLineCommentFormat
+
+    @staticmethod
+    def format_comment_multi():
+        multiLineCommentFormat = QtGui.QTextCharFormat()
+        multiLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        return multiLineCommentFormat
+
+    @staticmethod
+    def format_number():
+        numberFormat = QtGui.QTextCharFormat()
+        numberFormat.setForeground(Config.STX_NUMBER_COLOR)
+        return numberFormat
+
+    @staticmethod
+    def format_string():
+        quotedStringFormat = QtGui.QTextCharFormat()
+        quotedStringFormat.setForeground(Config.STX_STRING_COLOR)
+        return quotedStringFormat
+
+    @staticmethod
+    def format_html():
+        htmlStringFormat = QtGui.QTextCharFormat()
+        htmlStringFormat.setForeground(Config.STX_STRING_COLOR)
+        return htmlStringFormat
+
+    @staticmethod
+    def format_error(current, tooltip=""):
+        errorFormat = current
+        errorFormat.setFontUnderline(True)
+        errorFormat.setUnderlineColor(Config.STX_ERROR_COLOR)
+        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
+        return errorFormat
 
 
 class LineNumberArea(QtWidgets.QWidget):

@@ -45,6 +45,9 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.0] Syntax error highlighting
+  * Squiggly underline (default in red)
+  * Full token highlights
 * [0.1.0] Added automatic check for updates
 * [0.0.2] Added "Recent Files" menu
 * [0.0.2] Added testing framework
@@ -66,8 +69,12 @@ Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
 
-* [0.1.0] Syntax error highlighting
-  * _Maybe via parsing in ANTLR?_
+* [0.1.0] Syntax error tooltip on hover
+  * _Maybe a workaround on the whole, seeing as this is a [bug in Qt](
+  https://bugreports.qt.io/browse/QTBUG-21553)_.
+* [0.1.0] Auto-render the ui if bug-free
+  * Allow for disabling of this feature as it can be costly and maybe not what
+  people would prefer.
 * [0.1.0] Use PyInstaller to turn this into a packaged app
 * [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
@@ -78,19 +85,17 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Find and Replace functionality
 * [0.1.2] Autocompletion
 * [0.1.3] Opening from as many file types as possible
-* [0.1.3] Efficient Auto-Render
 * [0.1.3] Additional configuration possibilities for graphviz
-* [0.2.0] Automatic install of updates
 * [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
-* [0.2.1] Multiple Languages
 * [0.2.1] Add all different node and edge types in interactive mode
 * [0.2.1] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?
   * Toggling of modes
-  * How? Run python script and use all captured output as input for
-graphviz.
+  * How? Run python script and use all captured output as input for graphviz.
+* [0.2.1] Multiple Languages
+* [0.2.1] Automatic install of updates

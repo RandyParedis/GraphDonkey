@@ -10,6 +10,7 @@ STX_COMMENT_COLOR = QColor("blue")
 STX_ATTRIBUTE_COLOR = QColor("darkBlue")
 STX_NUMBER_COLOR = QColor(255, 0, 255)
 STX_STRING_COLOR = QColor("green")
+STX_ERROR_COLOR = QColor("red")
 
 STX_CLNUM_COLOR = QColor("yellow").lighter(160)
 STX_CLNUM_BCOLOR = QColor("120, 120, 120").darker(160)
