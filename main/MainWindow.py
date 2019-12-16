@@ -1,3 +1,8 @@
+"""Mainwindow for the GraphDonkey application.
+
+Author: Randy Paredis
+Date:   14/12/2019
+"""
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor

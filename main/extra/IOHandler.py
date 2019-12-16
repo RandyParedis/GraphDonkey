@@ -1,9 +1,12 @@
 """
-This file contains the IOHandler class,
-a Singleton class that handles all
+This file contains the IOHandler class, a static class that handles all
 input/output functionality.
+
+Author: Randy Paredis
+Date:   12/14/2019
 """
 from PyQt5 import QtCore
+
 import xml.etree.ElementTree as ET
 import os
 

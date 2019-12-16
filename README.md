@@ -20,6 +20,9 @@ _See also `requirements.txt`._
 * `PyQt5` (including `uic`)
 * `graphviz`
 
+For testing:
+* `pytest`
+
 ### Installation
 Installing `GraphDonkey` is quite easy. All you have to do is clone this
 repository. Also make sure you have installed the `PyQt5` and `graphviz`
@@ -42,6 +45,8 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.0.2] Added testing framework
+  * Run `pytest` in the root folder to test
 * [0.0.2] Added Custom Icons + App Icon
 * [0.0.2] Added flexible shortcut system
 * [0.0.2] Editor now works solidly
@@ -59,13 +64,12 @@ Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
 
-* [0.0.2] Add tests
 * [0.0.2] Make app available via PyPI or as a downloadable app
   * i.e. standalone
 * [0.0.3] Recent files menu
-* [0.0.3] Syntax error highlighting
+* [0.1.0] Syntax error highlighting
   * _Maybe via parsing in ANTLR?_
-* [0.0.3] Automatic check for updates
+* [0.1.0] Automatic check for updates
 * [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
   * Themes
@@ -81,6 +85,7 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Quick connections
   * Should make Editor only useful for advanced features
 * [0.2.1] Multiple Languages
+* [0.2.1] Add all different node and edge types in interactive mode
 * [0.2.1] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?

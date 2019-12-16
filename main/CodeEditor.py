@@ -1,5 +1,11 @@
-"""
-Implementation based on https://stackoverflow.com/questions/2443358/how-to-add-lines-numbers-to-qtextedit
+"""The code editor of GraphDonkey, with a few features:
+
+- Syntax Highlighting
+- Line Numbers
+    Based on https://stackoverflow.com/questions/2443358/how-to-add-lines-numbers-to-qtextedit
+
+Author: Randy Paredis
+Date:   12/14/2019
 """
 from PyQt5 import QtGui, QtWidgets, QtCore
 from main.extra import Constants, Config
