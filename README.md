@@ -71,7 +71,6 @@ elsewhere, you **must** reference this project.
 Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
-* [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
   * Themes
   * Custom Shortcuts 
