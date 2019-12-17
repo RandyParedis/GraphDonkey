@@ -1,6 +1,6 @@
 # GraphDonkey
 
-<img align="left" width="200" height="200" src="vendor/icons/graphdonkey.svg">
+<img align="left" width="180" height="180" src="vendor/icons/graphdonkey.svg">
 
 A simple and easy-to-use application for visualizing and editing Graphviz
 Dot files, running on `Python 3`. It is based on the idea of `xdot`, combined 
@@ -14,7 +14,7 @@ texteditor, Graphviz-viewer and a terminal open at all times. Not anymore!
 `GraphDonkey`, originally called `DotGaper`, solves this issue by combining these
 applications into one.
 
-**Current Version:** `0.0.2`<br/>
+**Current Version:** `0.1.0`<br/>
 **Build Type:** `beta` (_unstable_)<br/>
 **Author:** Randy Paredis
 
