@@ -74,6 +74,10 @@ class IOHandler:
         return QtCore.QSettings(Constants.APP_NAME, "MainWindow")
 
     @staticmethod
+    def get_preferences():
+        return QtCore.QSettings(Constants.APP_NAME, "Preferences")
+
+    @staticmethod
     def delete(*files):
         for file in files:
             os.remove(file)

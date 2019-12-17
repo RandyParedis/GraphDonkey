@@ -10,8 +10,11 @@ Date:   12/14/2019
 from PyQt5 import QtGui, QtWidgets, QtCore
 from lark import UnexpectedToken, Token, UnexpectedCharacters
 
-from main.extra import Constants, Config
+from main.extra import Constants
 from main.extra.Parser import Parser
+from main.extra.IOHandler import IOHandler
+
+Config = IOHandler.get_preferences()
 
 class CodeEditor(QtWidgets.QTextEdit):
     def __init__(self, parent):
@@ -64,7 +67,7 @@ class CodeEditor(QtWidgets.QTextEdit):
         selections = self.extraSelections()
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(Config.STX_CLINE_COLOR)
+            selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
             selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -107,16 +110,16 @@ class CodeEditor(QtWidgets.QTextEdit):
 
         bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
 
-        col_1 = Config.STX_CLNUM_COLOR
-        col_0 = Config.STX_OLNUM_COLOR
+        col_1 = QtGui.QColor(Config.value("col.clnf"))
+        col_0 = QtGui.QColor(Config.value("col.lnf"))
 
         old = block, top, bottom, blockNumber
 
-        painter.fillRect(event.rect(), Config.STX_OLNUM_BCOLOR)
+        painter.fillRect(event.rect(), QtGui.QColor(Config.value("col.lnb")))
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top() and self.textCursor().blockNumber() == blockNumber:
                 painter.fillRect(QtCore.QRect(event.rect().x(), top, event.rect().width(), self.fontMetrics().height()),
-                                 Config.STX_CLNUM_BCOLOR)
+                                 QtGui.QColor(Config.value("col.clnb")))
             block = block.next()
             top = bottom
             bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
@@ -246,7 +249,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
-            if Config.AUTO_RENDER:
+            if Config.value("autorender"):
                 self.editor.mainwindow.displayGraph()
 
 
@@ -264,58 +267,58 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     @staticmethod
     def format_keyword():
         keywordFormat = QtGui.QTextCharFormat()
-        keywordFormat.setForeground(Config.STX_KEYWORD_COLOR)
+        keywordFormat.setForeground(QtGui.QColor(Config.value("col.keyword")))
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
         return keywordFormat
 
     @staticmethod
     def format_attribute():
         attributeFormat = QtGui.QTextCharFormat()
-        attributeFormat.setForeground(Config.STX_ATTRIBUTE_COLOR)
+        attributeFormat.setForeground(QtGui.QColor(Config.value("col.attribute")))
         attributeFormat.setFontWeight(QtGui.QFont.Bold)
         return attributeFormat
 
     @staticmethod
     def format_comment_hash():
         hashCommentFormat = QtGui.QTextCharFormat()
-        hashCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        hashCommentFormat.setForeground(QtGui.QColor(Config.value("col.hash")))
         return hashCommentFormat
 
     @staticmethod
     def format_comment_single():
         singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
         return singleLineCommentFormat
 
     @staticmethod
     def format_comment_multi():
         multiLineCommentFormat = QtGui.QTextCharFormat()
-        multiLineCommentFormat.setForeground(Config.STX_COMMENT_COLOR)
+        multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
         return multiLineCommentFormat
 
     @staticmethod
     def format_number():
         numberFormat = QtGui.QTextCharFormat()
-        numberFormat.setForeground(Config.STX_NUMBER_COLOR)
+        numberFormat.setForeground(QtGui.QColor(Config.value("col.number")))
         return numberFormat
 
     @staticmethod
     def format_string():
         quotedStringFormat = QtGui.QTextCharFormat()
-        quotedStringFormat.setForeground(Config.STX_STRING_COLOR)
+        quotedStringFormat.setForeground(QtGui.QColor(Config.value("col.string")))
         return quotedStringFormat
 
     @staticmethod
     def format_html():
         htmlStringFormat = QtGui.QTextCharFormat()
-        htmlStringFormat.setForeground(Config.STX_STRING_COLOR)
+        htmlStringFormat.setForeground(QtGui.QColor(Config.value("col.html")))
         return htmlStringFormat
 
     @staticmethod
     def format_error(current, tooltip=""):
         errorFormat = current
         errorFormat.setFontUnderline(True)
-        errorFormat.setUnderlineColor(Config.STX_ERROR_COLOR)
+        errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
         errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
         return errorFormat
 

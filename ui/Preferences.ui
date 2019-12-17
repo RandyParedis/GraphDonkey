@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>685</width>
+    <height>557</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_general">
+      <attribute name="title">
+       <string>&amp;General</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Startup</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="check_rememberLayout">
+            <property name="text">
+             <string>Remember Layout</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Workspace</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radio_ws_restore">
+               <property name="text">
+                <string>Restore Last Session</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radio_ws_openempty">
+               <property name="text">
+                <string>Open Empty File</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Other</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Limit Recent Files Menu to</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="num_recents">
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>entries.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_editor">
+      <attribute name="title">
+       <string>&amp;Editor</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="6" column="1">
+        <widget class="QSpinBox" name="num_tabwidth">
+         <property name="suffix">
+          <string> characters</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Width of the &quot;tab&quot; character:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Parser</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="check_autorender">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Automatically render the graph if valid</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="check_parse">
+            <property name="text">
+             <string>Use parser for validity checking</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="check_syntax">
+            <property name="text">
+             <string>Use Syntax Highlighting</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="check_highlightLine">
+         <property name="text">
+          <string>Highlight Current Line</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="check_lineNumbers">
+         <property name="text">
+          <string>Show Line Numbers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QCheckBox" name="check_monospace">
+         <property name="text">
+          <string>Use Monospace Font</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_appearance">
+      <attribute name="title">
+       <string>&amp;Appearance</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_14">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>-393</y>
+            <width>629</width>
+            <height>850</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="1">
+            <widget class="QComboBox" name="combo_style">
+             <property name="currentText">
+              <string>Fusion</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Fusion</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Windows</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_53">
+             <property name="text">
+              <string>Quick Color Theme Select:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QGroupBox" name="box_general">
+             <property name="title">
+              <string>General</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_18">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_39">
+                <property name="text">
+                 <string>Window:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="label_47">
+                <property name="text">
+                 <string>Bright Text:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="label_50">
+                <property name="text">
+                 <string>Link:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_40">
+                <property name="text">
+                 <string>Base:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_42">
+                <property name="text">
+                 <string>Tooltip Base:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_44">
+                <property name="text">
+                 <string>Text:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_45">
+                <property name="text">
+                 <string>Button:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_49">
+                <property name="text">
+                 <string>Highlighted Text:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_48">
+                <property name="text">
+                 <string>Highlight:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_51">
+                <property name="text">
+                 <string>Visited Link:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_38">
+                <property name="text">
+                 <string>Foreground:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_43">
+                <property name="text">
+                 <string>Tooltip Text:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_41">
+                <property name="text">
+                 <string>Alternate Base:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_46">
+                <property name="text">
+                 <string>Button Text:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="combo_theme"/>
+           </item>
+           <item row="3" column="0" colspan="2">
+            <widget class="QGroupBox" name="box_editor">
+             <property name="title">
+              <string>Editor</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_32">
+                <property name="text">
+                 <string>Current Line:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_36">
+                <property name="text">
+                 <string>Line Number Background:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_35">
+                <property name="text">
+                 <string>Current Line Number Background:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_33">
+                <property name="text">
+                 <string>Current Line Number Foreground:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_37">
+                <property name="text">
+                 <string>Line Number Foreground:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_52">
+             <property name="text">
+              <string>Style:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QGroupBox" name="box_syntax">
+             <property name="title">
+              <string>Syntax Highlighting</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_15">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_24">
+                <property name="text">
+                 <string>Keyword:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>Attribute:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>Number:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string>String:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_30">
+                <property name="text">
+                 <string>HTML String:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>Comment:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>Preprocessor:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>Error:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>Other:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_shortcuts">
+      <attribute name="title">
+       <string>&amp;Shortcuts</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>629</width>
+            <height>808</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="1" column="0">
+            <widget class="QGroupBox" name="groupBox_6">
+             <property name="title">
+              <string>Edit Actions</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>Redo:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QKeySequenceEdit" name="ks_copy"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Paste Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QKeySequenceEdit" name="ks_paste"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Copy Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_redo"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>Undo:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_undo"/>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_select_all"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Select All:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Delete Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_delete"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Cut Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QKeySequenceEdit" name="ks_cut"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QGroupBox" name="groupBox_7">
+             <property name="title">
+              <string>View Actions</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>Toggle Code Editor:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_toggleCodeEditor"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_19">
+                <property name="text">
+                 <string>Render the Graph:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_render"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="groupBox_5">
+             <property name="title">
+              <string>File Actions</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>Exit</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>New File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Open a File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_new"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Save a File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_open"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Open Preferences:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_save"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_save_as"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Save a File As...:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>Clear Recent Files:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QKeySequenceEdit" name="ks_clear_recents"/>
+              </item>
+              <item row="5" column="1">
+               <widget class="QKeySequenceEdit" name="ks_preferences"/>
+              </item>
+              <item row="6" column="1">
+               <widget class="QKeySequenceEdit" name="ks_exit"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QGroupBox" name="groupBox_8">
+             <property name="title">
+              <string>Other Actions</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Show Graphviz Info:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>Look for Updates:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>Show GraphDonkey Info:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_graphDonkey"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_updates"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>Show Qt Info:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_graphviz"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_qt"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_parse</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>check_autorender</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>230</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>342</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

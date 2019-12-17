@@ -44,6 +44,7 @@
     <addaction name="action_Save"/>
     <addaction name="action_Save_As"/>
     <addaction name="separator"/>
+    <addaction name="action_Preferences"/>
     <addaction name="action_Exit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -255,6 +256,11 @@
   <action name="action_CheckUpdates">
    <property name="text">
     <string>Check for &amp;Updates</string>
+   </property>
+  </action>
+  <action name="action_Preferences">
+   <property name="text">
+    <string>&amp;Preferences</string>
    </property>
   </action>
  </widget>

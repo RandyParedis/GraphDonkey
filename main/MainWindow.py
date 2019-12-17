@@ -4,12 +4,16 @@ Author: Randy Paredis
 Date:   14/12/2019
 """
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
+
+from main.Preferences import Preferences
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
-from main.extra import Constants, Config
+from main.extra import Constants
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz
+
+Config = IOHandler.get_preferences()
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -19,6 +23,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.scene is None:
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
+
+        self.preferences = Preferences(self)
+        self.preferences.apply()
 
         self.recents = []
         self.restore()
@@ -35,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Open.triggered.connect(self.open)
         self.action_Save.triggered.connect(self.save)
         self.action_Save_As.triggered.connect(self.saveAs)
+        self.action_Preferences.triggered.connect(lambda: self.preferences.exec_())
         self.action_Exit.triggered.connect(self.close) # TODO: Check for saved
         self.action_Undo.triggered.connect(self.editor.undo)
         self.action_Redo.triggered.connect(self.editor.redo)
@@ -63,10 +71,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRender.triggered.connect(self.displayGraph)
         self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
 
-        # Shortcuts
-        for s in Config.SHORTCUTS:
-            a = getattr(self, "action_" + s.replace(" ", "_"))
-            a.setShortcuts([QtGui.QKeySequence(x) for x in Config.SHORTCUTS[s]])
+        # Shortcuts: TODO
+        # for s in Config.SHORTCUTS:
+        #     a = getattr(self, "action_" + s.replace(" ", "_"))
+        #     a.setShortcuts([QtGui.QKeySequence(x) for x in Config.SHORTCUTS[s]])
 
     def updateTitle(self):
         rest = "undefined"
@@ -128,17 +136,17 @@ class MainWindow(QtWidgets.QMainWindow):
             while file in self.recents:
                 self.recents.remove(file)
             self.recents.insert(0, file)
-            self.recents = self.recents[:Config.RECENTS_LIMIT]
+            self.recents = self.recents[:Config.value("recents")]
         self.menuOpen_Recent.clear()
 
         for file in self.recents:
             self.menuOpen_Recent.addAction(file, lambda: self.openFile(file))
         if len(self.recents) > 0:
             self.menuOpen_Recent.addSeparator()
-        clr = "Clear Recents"
-        clear = self.menuOpen_Recent.addAction(clr)
-        if clr in Config.SHORTCUTS:
-            clear.setShortcuts([QtGui.QKeySequence(x) for x in Config.SHORTCUTS[clr]])
+        clear = self.menuOpen_Recent.addAction("Clear Recents")
+        clr = Config.value("ks.clear_recents")
+        if clr != "":
+            clear.setShortcuts(QtGui.QKeySequence(clr))
         clear.triggered.connect(lambda x: self.clearRecents())
 
     def clearRecents(self):
