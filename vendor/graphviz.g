@@ -3,7 +3,7 @@
 
 start: graph
 graph: STRICT? (GRAPH|DIGRAPH) ID? "{" stmt_list "}"
-stmt_list: (stmt ";" stmt_list)?
+stmt_list: (stmt ";"? stmt_list)?
 stmt: node_stmt | edge_stmt | attr_stmt | (ID "=" ID) | subgraph
 attr_stmt: (GRAPH | NODE | EDGE) attr_list
 attr_list: "[" a_list? "]" attr_list?

@@ -76,6 +76,10 @@ class MainWindow(QtWidgets.QMainWindow):
             rest += "*"
         self.setWindowTitle(" " + rest)
 
+    def updateStatus(self, text):
+        self.statusBar().clearMessage()
+        self.statusBar().showMessage(text)
+
     def setupEditor(self):
         if self.editor is None:
             font = QtGui.QFont()

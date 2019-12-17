@@ -16,6 +16,7 @@ from main.extra.Parser import Parser
 class CodeEditor(QtWidgets.QTextEdit):
     def __init__(self, parent):
         super(CodeEditor, self).__init__(parent)
+        self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
 
         fontWidth = QtGui.QFontMetrics(self.currentCharFormat().font()).averageCharWidth()
@@ -28,7 +29,7 @@ class CodeEditor(QtWidgets.QTextEdit):
 
         self.updateLineNumberAreaWidth(0)
         self.highlightCurrentLine()
-        self.highlighter = Highlighter(self.document())
+        self.highlighter = Highlighter(self.document(), self)
 
     def event(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.ShortcutOverride:
@@ -173,22 +174,11 @@ class CodeEditor(QtWidgets.QTextEdit):
         if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
 
-    def analyze(self):
-        txt = self.toPlainText()
-        T = self.parser.parse(txt)
-        if T is None:
-            for line, col, msg, exp in self.parser.errors:
-                # print(msg, file=sys.stderr)
-                # print("\t" + txt.split("\n")[line - 1], file=sys.stderr)
-                # print("\t" + ("~" * (col - 1)) + "^", file=sys.stderr)
-                # print("suggested:", file=sys.stderr)
-                # print("\t" + ", ".join([x.name for x in exp]), file=sys.stderr)
-                self.indicateError(line, col)
-
 
 class Highlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, editor=None):
         super(Highlighter, self).__init__(parent)
+        self.editor = editor
         self.highlightingRules = []
         self.multiLineCommentFormat = None
         self.commentStartExpression = None
@@ -253,6 +243,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 elif isinstance(token, Token):
                     size = len(token)
                 self.setFormat(startIndex, size, self.format_error(self.format(startIndex), msg))
+                self.editor.mainwindow.updateStatus(msg)
+        else:
+            self.editor.mainwindow.updateStatus("")
+            if Config.AUTO_RENDER:
+                self.editor.mainwindow.displayGraph()
 
 
     def highlightBlock(self, text):

@@ -45,6 +45,9 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.0] Added auto-render the ui if bug-free
+  * This can easily be disabled if required
+* [0.1.0] Statusbar now shows the parse error
 * [0.1.0] Syntax error highlighting
   * Squiggly underline (default in red)
   * Full token highlights
@@ -68,24 +71,21 @@ elsewhere, you **must** reference this project.
 Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
-
-* [0.1.0] Syntax error tooltip on hover
-  * _Maybe a workaround on the whole, seeing as this is a [bug in Qt](
-  https://bugreports.qt.io/browse/QTBUG-21553)_.
-* [0.1.0] Auto-render the ui if bug-free
-  * Allow for disabling of this feature as it can be costly and maybe not what
-  people would prefer.
-* [0.1.0] Use PyInstaller to turn this into a packaged app
 * [0.1.0] Enable Github Pages
 * [0.1.1] Custom user-options / preferences
   * Themes
-  * Custom Shortcuts
+  * Custom Shortcuts 
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
 * [0.1.2] Find and Replace functionality
 * [0.1.2] Autocompletion
+* [0.1.2] Syntax error tooltip on hover
+  * _Maybe a workaround on the whole, seeing as this is a [bug in Qt](
+  https://bugreports.qt.io/browse/QTBUG-21553)_.
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
+* [0.1.3] Allow for multiple files via tabbed pane?
+* [0.1.3] Open parse tree of dotfile as dotfile
 * [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
@@ -98,4 +98,5 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Toggling of modes
   * How? Run python script and use all captured output as input for graphviz.
 * [0.2.1] Multiple Languages
-* [0.2.1] Automatic install of updates
+* [0.2.1] Use PyInstaller to turn this into a packaged app
+* [0.2.1] Automatic install of updates via app
