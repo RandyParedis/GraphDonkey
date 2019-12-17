@@ -1,5 +1,6 @@
-<img align="left" width="260" height="260" src="vendor/icons/graphdonkey.svg">
 # GraphDonkey
+
+<img align="left" width="230" height="230" src="vendor/icons/graphdonkey.svg">
 A simple and easy-to-use application for visualizing and editing Graphviz
 Dot files, running on `Python 3`. It is based on the idea of `xdot`, combined 
 with a texteditor that can live-update the images. Behind the screens, it 
