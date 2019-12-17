@@ -1,4 +1,4 @@
-![](vendor/icons/graphdonkey.svg)
+<img align="left" width="260" height="260" src="vendor/icons/graphdonkey.svg">
 # GraphDonkey
 A simple and easy-to-use application for visualizing and editing Graphviz
 Dot files, running on `Python 3`. It is based on the idea of `xdot`, combined 
