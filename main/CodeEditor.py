@@ -239,6 +239,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
     def highlightBlock(self, text):
         if bool(Config.value("syntaxHighlighting", True)):
+            self.setPatterns()
             for pattern, format in self.highlightingRules:
                 expression = QtCore.QRegExp(pattern)
                 index = expression.indexIn(text)

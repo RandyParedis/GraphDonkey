@@ -48,6 +48,13 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.1] Added different ui styles (_beta_)
+  * Burning Berta
+  * Dark Doris
+  * Fierce Fiona
+  * Light Lucy
+  * Vicious Victoria
+* [0.1.1] Added preferences menu
 * [0.1.0] Added auto-render the ui if bug-free
   * This can easily be disabled if required
 * [0.1.0] Statusbar now shows the parse error
@@ -74,12 +81,10 @@ elsewhere, you **must** reference this project.
 Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
-* [0.1.1] Custom user-options / preferences
-  * Themes
-  * Custom Shortcuts 
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
 * [0.1.2] Find and Replace functionality
+* [0.1.2] Duplicate selection/line
 * [0.1.2] Autocompletion
 * [0.1.2] Syntax error tooltip on hover
   * _Maybe a workaround on the whole, seeing as this is a [bug in Qt](

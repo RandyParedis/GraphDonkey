@@ -5,6 +5,8 @@ Date:   17/12/2019
 """
 from PyQt5 import QtWidgets, QtGui, uic
 from main.extra.IOHandler import IOHandler
+import configparser
+import glob
 
 
 def bool(name: str):
@@ -18,12 +20,16 @@ class Preferences(QtWidgets.QDialog):
     def __init__(self, parent):
         super(Preferences, self).__init__(parent)
         uic.loadUi(IOHandler.dir_ui("Preferences.ui"), self)
+        self.buttonBox.clicked.connect(self.restoreDefaults)
 
+        self.themes = []
         self.preferences = IOHandler.get_preferences()
         self.check_parse.toggled.connect(self.parseDisable)
         self.fillQuickSelect()
         self._setColorPickers()
         self.rectify()
+
+        self.combo_theme.activated.connect(self.setTheme)
 
     def parseDisable(self, b):
         if not b:
@@ -31,10 +37,13 @@ class Preferences(QtWidgets.QDialog):
             self.check_autorender.setEnabled(False)
 
     def fillQuickSelect(self):
-        pass
+        files = [f for f in glob.glob(IOHandler.dir_styles() + "**/*.ini", recursive=True)]
+        self.themes = sorted([Theme(f) for f in files])
+        for theme in self.themes:
+            self.combo_theme.addItem(theme.name, theme)
 
     def _setColorPickers(self):
-        names_general = [
+        self.names_general = [
             "col_foreground",
             "col_window",
             "col_base",
@@ -50,14 +59,14 @@ class Preferences(QtWidgets.QDialog):
             "col_link",
             "col_visitedLink"
         ]
-        names_editor =[
+        self.names_editor =[
             "col_cline",
             "col_lnf",
             "col_lnb",
             "col_clnf",
             "col_clnb"
         ]
-        names_syntax =[
+        self.names_syntax =[
             "col_keyword",
             "col_attribute",
             "col_number",
@@ -65,26 +74,33 @@ class Preferences(QtWidgets.QDialog):
             "col_html",
             "col_comment",
             "col_hash",
-            "col_error",
-            "col_other"
+            "col_error"
         ]
         lo = self.box_general.layout()
-        for i in range(len(names_general)):
-            name = names_general[i]
+        for i in range(len(self.names_general)):
+            name = self.names_general[i]
             setattr(self, name, ColorButton(parent=self))
             lo.addWidget(getattr(self, name), i, 2)
 
         lo = self.box_editor.layout()
-        for i in range(len(names_editor)):
-            name = names_editor[i]
+        for i in range(len(self.names_editor)):
+            name = self.names_editor[i]
             setattr(self, name, ColorButton(parent=self))
             lo.addWidget(getattr(self, name), i, 2)
 
         lo = self.box_syntax.layout()
-        for i in range(len(names_syntax)):
-            name = names_syntax[i]
+        for i in range(len(self.names_syntax)):
+            name = self.names_syntax[i]
             setattr(self, name, ColorButton(parent=self))
             lo.addWidget(getattr(self, name), i, 2)
+
+    def setTheme(self, idx):
+        name = self.combo_theme.currentText()
+        theme = [x for x in self.themes if x.name == name][0]
+        lst = self.names_general + self.names_editor + self.names_syntax
+        for i in range(len(lst)):
+            name = lst[i]
+            getattr(self, name).setColor(QtGui.QColor(theme.color(name[4:].lower(), getattr(self, name).colorName())))
 
     def rectify(self):
         # GENERAL
@@ -112,7 +128,7 @@ class Preferences(QtWidgets.QDialog):
         # APPEARANCE
         if True:
             self.combo_style.setCurrentIndex(int(self.preferences.value("style", 0)))
-            self.combo_theme.setCurrentIndex(int(self.preferences.value("theme", 0)))
+            self.combo_theme.setCurrentText(self.preferences.value("theme", "Light Lucy"))
             self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col.foreground", "#000000")))
             self.col_window.setColor(QtGui.QColor(self.preferences.value("col.window", "#efefef")))
             self.col_base.setColor(QtGui.QColor(self.preferences.value("col.base", "#ffffff")))
@@ -123,7 +139,7 @@ class Preferences(QtWidgets.QDialog):
             self.col_button.setColor(QtGui.QColor(self.preferences.value("col.button", "#efefef")))
             self.col_buttonText.setColor(QtGui.QColor(self.preferences.value("col.buttonText", "#000000")))
             self.col_brightText.setColor(QtGui.QColor(self.preferences.value("col.brightText", "#dcdcff")))
-            self.col_highlight.setColor(QtGui.QColor(self.preferences.value("col.highlight", "#30ecc6")))
+            self.col_highlight.setColor(QtGui.QColor(self.preferences.value("col.highlight", "#30acc6")))
             self.col_highlightedText.setColor(QtGui.QColor(self.preferences.value("col.highlightedText", "#ffffff")))
             self.col_link.setColor(QtGui.QColor(self.preferences.value("col.link", "#8be9fd")))
             self.col_visitedLink.setColor(QtGui.QColor(self.preferences.value("col.visitedLink", "#253fe8")))
@@ -183,12 +199,10 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
             self.preferences.setValue("useParser", self.check_parse.isChecked())
             self.preferences.setValue("autorender", self.check_autorender.isChecked())
-            self.applyEditor()
 
         # APPEARANCE
         if True:
             self.preferences.setValue("style", self.combo_style.currentIndex())
-            self.preferences.setValue("theme", self.combo_theme.currentIndex())
             self.preferences.setValue("col.foreground", self.col_foreground.colorName())
             self.preferences.setValue("col.window", self.col_window.colorName())
             self.preferences.setValue("col.base", self.col_base.colorName())
@@ -215,7 +229,6 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("col.comment", self.col_comment.colorName())
             self.preferences.setValue("col.hash", self.col_hash.colorName())
             self.preferences.setValue("col.error", self.col_error.colorName())
-            self.applyStyle()
 
         # SHORTCUTS
         if True:
@@ -239,7 +252,11 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.graphDonkey", self.ks_graphDonkey.keySequence().toString())
             self.preferences.setValue("ks.graphviz", self.ks_graphviz.keySequence().toString())
             self.preferences.setValue("ks.qt", self.ks_qt.keySequence().toString())
-            self.applyShortcuts()
+
+        self.preferences.sync()
+        self.applyEditor()
+        self.applyStyle()
+        self.applyShortcuts()
 
     def applyShortcuts(self):
         actions = [
@@ -256,7 +273,24 @@ class Preferences(QtWidgets.QDialog):
         self.parent().action_AboutQt.setShortcut(self.ks_qt.keySequence())
 
     def applyStyle(self):
-        pass # TODO
+        app = QtWidgets.QApplication.instance()
+        app.setStyle(self.combo_style.currentText())
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.WindowText, self.col_foreground.color())
+        palette.setColor(QtGui.QPalette.Window, self.col_window.color())
+        palette.setColor(QtGui.QPalette.Base, self.col_base.color())
+        palette.setColor(QtGui.QPalette.AlternateBase, self.col_alternateBase.color())
+        palette.setColor(QtGui.QPalette.ToolTipBase, self.col_tooltipBase.color())
+        palette.setColor(QtGui.QPalette.ToolTipText, self.col_tooltipText.color())
+        palette.setColor(QtGui.QPalette.Text, self.col_text.color())
+        palette.setColor(QtGui.QPalette.Button, self.col_button.color())
+        palette.setColor(QtGui.QPalette.ButtonText, self.col_buttonText.color())
+        palette.setColor(QtGui.QPalette.BrightText, self.col_brightText.color())
+        palette.setColor(QtGui.QPalette.Highlight, self.col_highlight.color())
+        palette.setColor(QtGui.QPalette.HighlightedText, self.col_highlightedText.color())
+        palette.setColor(QtGui.QPalette.Link, self.col_link.color())
+        palette.setColor(QtGui.QPalette.LinkVisited, self.col_visitedLink.color())
+        app.setPalette(palette)
 
     def applyEditor(self):
         editor = self.parent().editor
@@ -277,6 +311,12 @@ class Preferences(QtWidgets.QDialog):
         self.apply()
         QtWidgets.QDialog.accept(self)
 
+    def restoreDefaults(self, button):
+        if button.text() == "Restore Defaults":
+            self.preferences.clear()
+            self.preferences.sync()
+            self.rectify()
+
 
 class ColorButton(QtWidgets.QPushButton):
     def __init__(self, color=None, parent=None):
@@ -295,8 +335,11 @@ class ColorButton(QtWidgets.QPushButton):
     def setColor(self, col):
         pal = self.palette()
         pal.setColor(QtGui.QPalette.Button, col)
+        pal.setColor(QtGui.QPalette.ButtonText,
+                     QtGui.QColor.fromHsv(col.hue(), col.saturation(), (col.value() - 100) % 255))
         self.setAutoFillBackground(True)
         self.setPalette(pal)
+        self.setText(col.name())
 
     def colorPicker(self):
         color = self.color()
@@ -305,3 +348,18 @@ class ColorButton(QtWidgets.QPushButton):
         dialog.setCurrentColor(color)
         dialog.currentColorChanged.connect(self.setColor)
         dialog.open()
+
+
+class Theme:
+    def __init__(self, fname:str):
+        self.file = fname
+        self.config = configparser.ConfigParser()
+        self.config.read(self.file)
+        self.name = self.config.get("info", "name", fallback=self.file)
+        self.description = self.config.get("info", "description", fallback="")
+
+    def __lt__(self, other):
+        return self.name < other.name
+
+    def color(self, name:str="", default=None):
+        return self.config.get("styles", name, fallback=default)
