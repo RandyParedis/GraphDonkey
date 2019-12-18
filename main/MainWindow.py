@@ -5,7 +5,7 @@ Date:   14/12/2019
 """
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
 
-from main.Preferences import Preferences
+from main.Preferences import Preferences, bool
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
 from main.extra import Constants
@@ -24,6 +24,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
 
+        self.editor = None
+        self.setupEditor()
+
         self.preferences = Preferences(self)
         self.preferences.apply()
 
@@ -33,9 +36,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filename = ""
         self.saved = False
         self.updateTitle()
-
-        self.editor = None
-        self.setupEditor()
 
         # Set menu
         self.action_New.triggered.connect(self.new)
@@ -70,11 +70,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionSave.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_SAVE)))
         self.actionRender.triggered.connect(self.displayGraph)
         self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
-
-        # Shortcuts: TODO
-        # for s in Config.SHORTCUTS:
-        #     a = getattr(self, "action_" + s.replace(" ", "_"))
-        #     a.setShortcuts([QtGui.QKeySequence(x) for x in Config.SHORTCUTS[s]])
 
     def updateTitle(self):
         rest = "undefined"
@@ -112,19 +107,25 @@ class MainWindow(QtWidgets.QMainWindow):
     def restore(self):
         # Restore layout from memory iff needs be/possible
         settings = IOHandler.get_settings()
-        if settings.contains("geometry"):
-            self.restoreGeometry(settings.value("geometry"))
-        if settings.contains("windowState"):
-            self.restoreState(settings.value("windowState"))
-        if settings.contains("recents") and settings.value("recents") is not None:
-            self.recents = settings.value("recents")
+        if bool(Config.value("rememberLayout", True)):
+            if settings.contains("geometry"):
+                self.restoreGeometry(settings.value("geometry"))
+            if settings.contains("windowState"):
+                self.restoreState(settings.value("windowState"))
+            if settings.value("recents", None) is not None:
+                self.recents = settings.value("recents")
+        if int(Config.value("restore", 0)) == 1:
+            self.openFile(settings.value("open", ""))
         self.updateRecents()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         settings = IOHandler.get_settings()
-        settings.setValue("geometry", self.saveGeometry())
-        settings.setValue("windowState", self.saveState())
-        settings.setValue("recents", self.recents)
+        if bool(Config.value("rememberLayout", True)):
+            settings.setValue("geometry", self.saveGeometry())
+            settings.setValue("windowState", self.saveState())
+            settings.setValue("recents", self.recents)
+        if int(Config.value("restore", 0)) == 1:
+            settings.setValue("open", self.filename)
         QtWidgets.QMainWindow.closeEvent(self, event)
 
     def textChangedEvent(self):

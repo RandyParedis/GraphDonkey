@@ -13,6 +13,7 @@ from lark import UnexpectedToken, Token, UnexpectedCharacters
 from main.extra import Constants
 from main.extra.Parser import Parser
 from main.extra.IOHandler import IOHandler
+from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
 
@@ -39,36 +40,16 @@ class CodeEditor(QtWidgets.QTextEdit):
             return False
         return QtWidgets.QTextEdit.event(self, event)
 
-    def indicateError(self, line, pos):
-        selections = self.extraSelections()
-        if not self.isReadOnly():
-            cursor = QtGui.QTextCursor(self.document())
-            cursor.movePosition(QtGui.QTextCursor.Start)
-            cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line -1)
-            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos-1)
-            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, 2)
-            cursor.select(QtGui.QTextCursor.WordUnderCursor)
-
-            selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, False)
-            Highlighter.format_error(selection.format)
-            selection.cursor = cursor
-            selection.cursor.clearSelection()
-            selections.append(selection)
-
-        self.setExtraSelections(selections)
-
-
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
 
     def highlightCurrentLine(self):
-        selections = self.extraSelections()
+        selections = []
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
-            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            if bool(Config.value("highlightCurrentLine", True)):
+                selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
+                selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
             selections.append(selection)
@@ -139,6 +120,8 @@ class CodeEditor(QtWidgets.QTextEdit):
             blockNumber += 1
 
     def lineNumberAreaWidth(self):
+        if not bool(Config.value("showLineNumbers", True)):
+            return 0
         digits = 1
         _max = max(1, self.document().blockCount())
         while _max >= 10:
@@ -163,6 +146,7 @@ class CodeEditor(QtWidgets.QTextEdit):
 
     def updateLineNumberAreaText(self):
         self.highlightCurrentLine()
+
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().sliderPosition())
 
         rect = self.contentsRect()
@@ -254,15 +238,17 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
 
     def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
-            expression = QtCore.QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-        self.highlightMultilineComments(text)
-        self.highlightErrors(text)
+        if bool(Config.value("syntaxHighlighting", True)):
+            for pattern, format in self.highlightingRules:
+                expression = QtCore.QRegExp(pattern)
+                index = expression.indexIn(text)
+                while index >= 0:
+                    length = expression.matchedLength()
+                    self.setFormat(index, length, format)
+                    index = expression.indexIn(text, index + length)
+            self.highlightMultilineComments(text)
+        if bool(Config.value("useParser", True)):
+            self.highlightErrors(text)
 
     @staticmethod
     def format_keyword():
