@@ -25,8 +25,8 @@ class Preferences(QtWidgets.QDialog):
         self.themes = []
         self.preferences = IOHandler.get_preferences()
         self.check_parse.toggled.connect(self.parseDisable)
-        self.fillQuickSelect()
         self._setColorPickers()
+        self.fillQuickSelect()
         self.rectify()
 
         self.combo_theme.activated.connect(self.setTheme)
@@ -102,6 +102,11 @@ class Preferences(QtWidgets.QDialog):
             name = lst[i]
             getattr(self, name).setColor(QtGui.QColor(theme.color(name[4:].lower(), getattr(self, name).colorName())))
 
+    def findColor(self, identifier):
+        name = self.combo_theme.currentText()
+        theme = [x for x in self.themes if x.name == name][0]
+        return theme.color(identifier)
+
     def rectify(self):
         # GENERAL
         if True:
@@ -129,6 +134,14 @@ class Preferences(QtWidgets.QDialog):
         if True:
             self.combo_style.setCurrentIndex(int(self.preferences.value("style", 0)))
             self.combo_theme.setCurrentText(self.preferences.value("theme", "Light Lucy"))
+            # lst = self.names_general + self.names_editor + self.names_syntax
+            # for i in range(len(lst)):
+            #     name = lst[i]
+            #     cname = name.replace("_", ".")
+            #     getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
+
+            # BUILTIN STANDARD THEME IN CASE SOMEONE MESSES WITH THE FILES:
+            # TODO: Is there a cleaner way?
             self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col.foreground", "#000000")))
             self.col_window.setColor(QtGui.QColor(self.preferences.value("col.window", "#efefef")))
             self.col_base.setColor(QtGui.QColor(self.preferences.value("col.base", "#ffffff")))
@@ -145,15 +158,15 @@ class Preferences(QtWidgets.QDialog):
             self.col_visitedLink.setColor(QtGui.QColor(self.preferences.value("col.visitedLink", "#253fe8")))
             self.col_cline.setColor(QtGui.QColor(self.preferences.value("col.cline", "#fffeb5")))
             self.col_lnf.setColor(QtGui.QColor(self.preferences.value("col.lnf", "#000000")))
-            self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col.lnb", "#787878")))
-            self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col.clnf", "#fffeb5")))
-            self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col.clnb", "#3b3b3b")))
+            self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col.lnb", "#f7f7f7")))
+            self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col.clnf", "#ffffff")))
+            self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col.clnb", "#30acc6")))
             self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col.keyword", "#800000")))
             self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col.attribute", "#000080")))
             self.col_number.setColor(QtGui.QColor(self.preferences.value("col.number", "#ff00ff")))
             self.col_string.setColor(QtGui.QColor(self.preferences.value("col.string", "#00ff00")))
-            self.col_html.setColor(QtGui.QColor(self.preferences.value("col.html", "#00ff00")))
-            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col.comment", "#0000ff")))
+            self.col_html.setColor(QtGui.QColor(self.preferences.value("col.html", "#158724")))
+            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col.comment", "#158724")))
             self.col_hash.setColor(QtGui.QColor(self.preferences.value("col.hash", "#0000ff")))
             self.col_error.setColor(QtGui.QColor(self.preferences.value("col.error", "#ff0000")))
 
@@ -203,6 +216,7 @@ class Preferences(QtWidgets.QDialog):
         # APPEARANCE
         if True:
             self.preferences.setValue("style", self.combo_style.currentIndex())
+            self.preferences.setValue("theme", self.combo_theme.currentText())
             self.preferences.setValue("col.foreground", self.col_foreground.colorName())
             self.preferences.setValue("col.window", self.col_window.colorName())
             self.preferences.setValue("col.base", self.col_base.colorName())

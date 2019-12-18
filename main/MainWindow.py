@@ -30,12 +30,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.preferences = Preferences(self)
         self.preferences.apply()
 
-        self.recents = []
-        self.restore()
-
         self.filename = ""
         self.saved = False
         self.updateTitle()
+
+        self.recents = []
+        self.restore()
 
         # Set menu
         self.action_New.triggered.connect(self.new)
