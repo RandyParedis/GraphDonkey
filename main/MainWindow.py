@@ -24,15 +24,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
 
+        self.filename = ""
+        self.saved = False
+        self.updateTitle()
+
         self.editor = None
         self.setupEditor()
 
         self.preferences = Preferences(self)
         self.preferences.apply()
-
-        self.filename = ""
-        self.saved = False
-        self.updateTitle()
 
         self.recents = []
         self.restore()

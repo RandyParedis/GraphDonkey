@@ -161,10 +161,6 @@ class CodeEditor(QtWidgets.QTextEdit):
         if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
 
-        if bool(Config.value("useParser", True)):
-            self.highlighter.highlightErrors(self.toPlainText())
-            # TODO: apply QSyntaxHighlighter first on file before going over all blocks
-
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -219,7 +215,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             self.setFormat(startIndex, commentLength, self.format_comment_multi())
             startIndex = self.commentStartExpression.indexIn(text, startIndex + commentLength)
 
-    def highlightErrors(self, text):
+    def highlightErrors(self):
+        text = self.editor.toPlainText()
         T = self.parser.parse(text)
         if T is None:
             for token, msg, exp in self.parser.errors:
@@ -237,7 +234,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     size = endIndex - startIndex
                 elif isinstance(token, Token):
                     size = len(token)
-                self.setFormat(startIndex, size, self.format_error(msg))
+                bix = self.currentBlock().position()
+                self.setFormat(startIndex - bix, size, self.format_error(msg))
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
@@ -255,6 +253,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     self.setFormat(index, length, formatter())
                     index = expression.indexIn(text, index + length)
             self.highlightMultilineComments(text)
+        if bool(Config.value("useParser", True)):
+            self.highlightErrors()
 
     @staticmethod
     def format_keyword():

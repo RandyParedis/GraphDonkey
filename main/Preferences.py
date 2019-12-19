@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, QtGui, uic
 from main.extra.IOHandler import IOHandler
 import configparser
 import glob
+import re
 
 
 def bool(name: str):
@@ -30,6 +31,8 @@ class Preferences(QtWidgets.QDialog):
         self.rectify()
 
         self.combo_theme.activated.connect(self.setTheme)
+        self.pb_reload.clicked.connect(self.setTheme)
+        self.pb_saveTheme.clicked.connect(self.saveTheme)
 
     def parseDisable(self, b):
         if not b:
@@ -37,6 +40,7 @@ class Preferences(QtWidgets.QDialog):
             self.check_autorender.setEnabled(False)
 
     def fillQuickSelect(self):
+        self.combo_theme.clear()
         files = [f for f in glob.glob(IOHandler.dir_styles() + "**/*.ini", recursive=True)]
         self.themes = sorted([Theme(f) for f in files])
         for theme in self.themes:
@@ -163,9 +167,9 @@ class Preferences(QtWidgets.QDialog):
             self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col.keyword", "#800000")))
             self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col.attribute", "#000080")))
             self.col_number.setColor(QtGui.QColor(self.preferences.value("col.number", "#ff00ff")))
-            self.col_string.setColor(QtGui.QColor(self.preferences.value("col.string", "#00ff00")))
+            self.col_string.setColor(QtGui.QColor(self.preferences.value("col.string", "#158724")))
             self.col_html.setColor(QtGui.QColor(self.preferences.value("col.html", "#158724")))
-            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col.comment", "#158724")))
+            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col.comment", "#0000ff")))
             self.col_hash.setColor(QtGui.QColor(self.preferences.value("col.hash", "#0000ff")))
             self.col_error.setColor(QtGui.QColor(self.preferences.value("col.error", "#ff0000")))
 
@@ -315,6 +319,7 @@ class Preferences(QtWidgets.QDialog):
         editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
         editor.updateLineNumberArea(None)
         editor.highlightCurrentLine()
+        editor.highlighter.rehighlight()
 
     def open(self):
         self.rectify()
@@ -329,6 +334,30 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.clear()
             self.preferences.sync()
             self.rectify()
+
+    def saveTheme(self, b):
+        title, ok = "", True
+        while ok and title == "":
+            title, ok = QtWidgets.QInputDialog.getText(self, "Enter a Theme Name", "Theme Name",
+                                                       text=self.combo_theme.currentText())
+            if title in [x.name for x in self.themes]:
+                btn = QtWidgets.QMessageBox.question(self,
+                                                     "Enter a Title Name",
+                                                     "The theme '%s' already exists.\n"
+                                                     "Do you want to replace it?" % title)
+                if btn == QtWidgets.QMessageBox.No:
+                    title = ""
+
+        config = configparser.ConfigParser()
+        config["info"] = {"name": title, "description": title + " Theme"}
+        lst = self.names_general + self.names_editor + self.names_syntax
+        config["styles"] = {x[4:]: getattr(self, x).colorName() for x in lst}
+        with open(IOHandler.dir_styles(re.sub(r'[^a-z0-9]', "-", title.lower()) + ".ini"), "w") as f:
+            config.write(f)
+        self.fillQuickSelect()
+        self.combo_theme.setCurrentText(title)
+
+
 
 
 class ColorButton(QtWidgets.QPushButton):
