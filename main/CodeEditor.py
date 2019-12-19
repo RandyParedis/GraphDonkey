@@ -35,10 +35,22 @@ class CodeEditor(QtWidgets.QTextEdit):
         self.highlightCurrentLine()
         self.highlighter = Highlighter(self.document(), self)
 
+        self.setMouseTracking(True)
+
     def event(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.ShortcutOverride:
             return False
         return QtWidgets.QTextEdit.event(self, event)
+
+    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+        pos = event.pos()
+        cursor = self.cursorForPosition(pos)
+        cursor.select(QtGui.QTextCursor.WordUnderCursor)
+        tpos = cursor.position()
+        error = self.highlighter.errors.get(tpos, "")
+        if error != "":
+            QtWidgets.QToolTip.showText(event.globalPos(), error, self)
+        return QtWidgets.QTextEdit.mouseMoveEvent(self, event)
 
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
@@ -172,6 +184,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.commentEndExpression = None
         self.setPatterns()
         self.parser = Parser()
+        self.errors = {}
 
     def setPatterns(self):
         keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
@@ -217,6 +230,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
     def highlightErrors(self):
         text = self.editor.toPlainText()
+        self.errors = {}
         T = self.parser.parse(text)
         if T is None:
             for token, msg, exp in self.parser.errors:
@@ -236,6 +250,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     size = len(token)
                 bix = self.currentBlock().position()
                 self.setFormat(startIndex - bix, size, self.format_error(msg))
+                for i in range(startIndex, startIndex + size + 1):
+                    self.errors[i] = msg
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
@@ -315,6 +331,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         errorFormat.setFontUnderline(True)
         errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
         errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
+        errorFormat.setToolTip(tooltip)
         return errorFormat
 
 

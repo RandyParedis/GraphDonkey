@@ -33,7 +33,7 @@ class Parser:
                 splt.remove("")
             exp = [x[1:-1] for x in splt[-1][len("Expecting: {"):-1].split(", ")]
             exp = [self.lookup(x) for x in exp if x is not None]
-            self.errors.append((e, splt[0] + ".", exp))
+            self.errors.append((e, splt[0], exp))
         except UnexpectedEOF as e:
             self.errors.append((EOFToken(text), "Unexpected end-of-input.", set(e.expected)))
         return None

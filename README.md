@@ -48,6 +48,7 @@ Did you run into another error or a bug?
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Added tooltip for syntax error on hover
 * [0.1.1] Added different ui styles (_beta_)
   * Burning Berta
   * Dark Doris
@@ -86,13 +87,10 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Find and Replace functionality
 * [0.1.2] Duplicate selection/line
 * [0.1.2] Autocompletion
-* [0.1.2] Syntax error tooltip on hover
-  * _Maybe a workaround on the whole, seeing as this is a [bug in Qt](
-  https://bugreports.qt.io/browse/QTBUG-21553)_.
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?
-* [0.1.3] Open parse tree of dotfile as dotfile
+* [0.1.3] Open parse tree of dotfile as dotfile?
 * [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features

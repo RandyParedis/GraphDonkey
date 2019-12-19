@@ -1,4 +1,19 @@
 https://graphviz.readthedocs.io/en/stable/manual.html#using-raw-dot
 https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-within-a-qtextedit
 
-graph { t -> d }
+TODO: - Save File => Save as text (gv, canvas, dot...)
+                     Allow saving file with errors/comments
+      - Add Export Function  (actually strips comments and crashes on errors)
+      - Remove Auto-Updater (for now)
+      - Bugfix: Copy not working iff file was closed
+                i.e.: Closing a file seems to clear the clipboard
+      - Syntax Highlighting does not work 100% as intended
+
+TODO| FUTURE (see also README.md)
+        - Autocomplete [live-searching for possibilities depending on AST]
+        - Add parser warnings
+        - Duplicate line/selection
+        - Find + Replace window
+        - Snippets
+        - Custom RMB menu in Editor
+            ==> In Qt, this is called a ContextMenu
