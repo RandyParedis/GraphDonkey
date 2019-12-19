@@ -161,6 +161,10 @@ class CodeEditor(QtWidgets.QTextEdit):
         if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
 
+        if bool(Config.value("useParser", True)):
+            self.highlighter.highlightErrors(self.toPlainText())
+            # TODO: apply QSyntaxHighlighter first on file before going over all blocks
+
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -174,11 +178,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.parser = Parser()
 
     def setPatterns(self):
-        keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS ]
-        self.highlightingRules = [(QtCore.QRegExp(pattern), self.format_keyword) for pattern in keywordPatterns]
+        keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
+        self.highlightingRules = [(QtCore.QRegExp(pattern, QtCore.Qt.CaseInsensitive), self.format_keyword)
+                                  for pattern in keywordPatterns]
 
-        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % "|".join(Constants.ATTRIBUTES)),
-                                       self.format_attribute))
+        attributePatterns = "|".join(["(" + x + ")" for x in Constants.ATTRIBUTES])
+        attributePatterns = "(%s)(?=\\s*[=])" % attributePatterns
+        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % attributePatterns), self.format_attribute))
         for a in Constants.SPECIAL_ATTRIBUTES:
             self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), self.format_attribute))
 
@@ -189,6 +195,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.commentEndExpression = QtCore.QRegExp("\\*/")
 
         self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
+        # TODO: quoted strings may contain newlines
+        #       also; "yay" + "yay" will be marked as string as a whole, which is okay for now
         self.highlightingRules.append((QtCore.QRegExp("\".*\""), self.format_string))
         self.highlightingRules.append((QtCore.QRegExp("<.*>"), self.format_html))
 
@@ -229,7 +237,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     size = endIndex - startIndex
                 elif isinstance(token, Token):
                     size = len(token)
-                self.setFormat(startIndex, size, self.format_error(self.format(startIndex), msg))
+                self.setFormat(startIndex, size, self.format_error(msg))
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
@@ -247,8 +255,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     self.setFormat(index, length, formatter())
                     index = expression.indexIn(text, index + length)
             self.highlightMultilineComments(text)
-        if bool(Config.value("useParser", True)):
-            self.highlightErrors(text)
 
     @staticmethod
     def format_keyword():
@@ -268,18 +274,21 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     def format_comment_hash():
         hashCommentFormat = QtGui.QTextCharFormat()
         hashCommentFormat.setForeground(QtGui.QColor(Config.value("col.hash")))
+        hashCommentFormat.setFontItalic(True)
         return hashCommentFormat
 
     @staticmethod
     def format_comment_single():
         singleLineCommentFormat = QtGui.QTextCharFormat()
         singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
+        singleLineCommentFormat.setFontItalic(True)
         return singleLineCommentFormat
 
     @staticmethod
     def format_comment_multi():
         multiLineCommentFormat = QtGui.QTextCharFormat()
         multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
+        multiLineCommentFormat.setFontItalic(True)
         return multiLineCommentFormat
 
     @staticmethod
@@ -301,8 +310,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         return htmlStringFormat
 
     @staticmethod
-    def format_error(current, tooltip=""):
-        errorFormat = current
+    def format_error(tooltip=""):
+        errorFormat = QtGui.QTextCharFormat()
         errorFormat.setFontUnderline(True)
         errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
         errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)

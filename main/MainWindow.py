@@ -195,6 +195,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             ext = self.filename.split(".")[-1]
             dot = Source(self.editor.toPlainText())
+            print(dot)
             contents = dot.pipe(ext)
             with open(self.filename, 'bw') as myfile:
                 myfile.write(contents)

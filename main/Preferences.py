@@ -141,7 +141,6 @@ class Preferences(QtWidgets.QDialog):
             #     getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
 
             # BUILTIN STANDARD THEME IN CASE SOMEONE MESSES WITH THE FILES:
-            # TODO: Is there a cleaner way?
             self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col.foreground", "#000000")))
             self.col_window.setColor(QtGui.QColor(self.preferences.value("col.window", "#efefef")))
             self.col_base.setColor(QtGui.QColor(self.preferences.value("col.base", "#ffffff")))

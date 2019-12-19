@@ -81,7 +81,7 @@ if __name__ == "__main__":
     from sys import stderr
 
     parser = Parser()
-    txt = "graph T { test -> trial; }"
+    txt = "graph T { test [label=\"0, 5\"]; }"
     T = parser.parse(txt)
     if T is None:
         for token, msg, exp in parser.errors:
