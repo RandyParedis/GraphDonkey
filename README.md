@@ -54,14 +54,6 @@ _See also `requirements.txt`._
 * `lark-parser`
 * `pytest` (for testing purposes only)
 
-### Installation
-Installing `GraphDonkey` is quite easy. All you have to do is clone this
-repository. Also make sure you have installed the `PyQt5` and `graphviz`
-modules for `pip3`, which will allow this application to work.
-
-_For future work, the goal is to make this available as an application on
-either PyPI or as a bundled resource._
-
 ### Known Bugs
 Often, bugs can be annoying and frustrating, therefore it is good to inform the
 developers of issues you run into. It's better to ask once to many than not ask
