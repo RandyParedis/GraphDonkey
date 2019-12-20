@@ -12,7 +12,7 @@ from lark.exceptions import UnexpectedCharacters, UnexpectedToken, UnexpectedEOF
 class Parser:
     def __init__(self):
         self.grammar = ""
-        with open(IOHandler.dir_vendor("graphviz.g"), "r") as file:
+        with open(IOHandler.dir_vendor("graphviz.lark"), "r") as file:
             self.grammar = file.read()
         self.parser = Lark(self.grammar)
 

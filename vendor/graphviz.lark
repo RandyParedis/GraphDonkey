@@ -6,6 +6,7 @@
 COMMENT_PRE: /^#[^\n]*/
 COMMENT_SNG: "//" /[^\n]/*
 COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
+WS: /[ \t\f\r\n]/+
 
 %ignore WS
 %ignore COMMENT_PRE
@@ -45,5 +46,3 @@ NUMERAL: /[-]?(.[0-9]+|[0-9]+(.[0-9]*)?)/
 STRING: "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""
 HTML: /<.*?>/
 id: NAME | NUMERAL | STRING | HTML
-
-%import common.WS

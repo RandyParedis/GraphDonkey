@@ -28,12 +28,12 @@ class IOHandler:
         return os.path.realpath(IOHandler.join(IOHandler.dir_main(), "..", *paths))
 
     @staticmethod
-    def dir_ui(*paths):
-        return os.path.realpath(IOHandler.join(IOHandler.dir_root(), "ui", *paths))
-
-    @staticmethod
     def dir_vendor(*path):
         return os.path.realpath(IOHandler.join(IOHandler.dir_root(), "vendor", *path))
+
+    @staticmethod
+    def dir_ui(*paths):
+        return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "ui", *paths))
 
     @staticmethod
     def dir_styles(*styles):

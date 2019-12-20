@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon, QImage
 from main.extra.IOHandler import IOHandler
 
 APP_NAME = "GraphDonkey"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.1"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
 ICON_GRAPHVIZ = QImage(IOHandler.dir_icons("graphviz.png"))

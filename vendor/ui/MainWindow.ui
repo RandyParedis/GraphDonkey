@@ -59,8 +59,6 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="action_CheckUpdates"/>
-    <addaction name="separator"/>
     <addaction name="action_AboutGraphDonkey"/>
     <addaction name="action_AboutGraphviz"/>
     <addaction name="action_AboutQt"/>
