@@ -47,6 +47,10 @@ with python 3 (this may be done in a virtual environment).
 _**Note:** Only do this if you know what you're doing. I'm not responsible for
 any misconfiguration of your system._
 
+_**Note:** Cloning the repo should allow for a working app, but this is no
+guarantee. To be certain, please revert to the latest tag
+(version number, preceded with the letter `v`) on the `master` branch._
+
 ##### Requirements
 _See also `requirements.txt`._
 * `PyQt5`
@@ -62,15 +66,24 @@ at all (this is a general lifeline).
 For `GraphDonkey`, some bugs are common and known by me, which I've listed
 below. These are on the top of the list to be fixed in a future version.
 
-* Saving a file and reopening it can cause its contents to change and comments
-to disappear.
-* Copying and cutting text from the editor before closing it clears the
-clipboard.
-* Syntax highlighting may do some weird things.
+* Error highlighting may do some weird things.
 * RMB menu in the editor is not linked to other functionality.
 
 Did you run into another error or a bug?
 [Please let me know!](https://github.com/RandyParedis/GraphDonkey/issues)
+
+##### wontfix
+The `wontfix` label is usually associated with bugs that will not get a
+solution. This is often used if there are things beyond the developer's control.
+Alas, `GraphDonkey` is not in the clear for issues like this. The following
+list is a list of bugs that will not be fixed because of the explained reason.
+
+* Copying and cutting text from the editor before closing it clears the
+clipboard.
+  * This issue is linked to the OS. For efficiency, a clipboard stores a 
+  reference to the copied data, instead of the actual data. When the application
+  closes, this reference isn't pointing to anything anymore. Without the use of
+  a proper clipboard manager, this issue cannot be fixed.
 
 ### Copyright
 It's important to list your sources if you're working on a project. One does not
@@ -82,6 +95,10 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Fixed invalid syntax highlighting
+* [0.1.2] Changed 'Save' function to saving without typechecking
+  * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
+* [0.1.2] Added new 'Export' function
 * [0.1.1] Created first actual release
 * [0.1.1] Removed Auto-Updater
 * [0.1.1] Added tooltip for syntax error on hover
@@ -123,20 +140,21 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Find and Replace functionality
 * [0.1.2] Duplicate selection/line
 * [0.1.2] Autocompletion
+* [0.1.2] Quick comment insert
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?
 * [0.1.3] Open parse tree of dotfile as dotfile?
-* [1.0.0] Interactive view of DOT files
+* [0.2.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
-* [1.0.1] Add all different node and edge types in interactive mode
-* [1.1.0] Add Python scripting engine for live-showing of graph updates
+* [0.2.1] Add all different node and edge types in interactive mode
+* [0.3.0] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?
   * Toggling of modes
   * How? Run python script and use all captured output as input for graphviz.
-* [1.1.1] Multiple Languages
-* [1.1.2] Automatic install of updates via app
+* [0.3.1] Multiple Languages
+* [0.3.2] Automatic install of updates via app

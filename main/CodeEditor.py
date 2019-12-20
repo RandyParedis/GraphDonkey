@@ -174,19 +174,21 @@ class CodeEditor(QtWidgets.QTextEdit):
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
 
 
+BLOCKSTATE_NORMAL = 0
+BLOCKSTATE_COMMENT = 1
+BLOCKSTATE_STRING = 2
+BLOCKSTATE_HTML = 4
+
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
         super(Highlighter, self).__init__(parent)
         self.editor = editor
         self.highlightingRules = []
-        self.multiLineCommentFormat = None
-        self.commentStartExpression = None
-        self.commentEndExpression = None
-        self.setPatterns()
+        self._setPatterns()
         self.parser = Parser()
         self.errors = {}
 
-    def setPatterns(self):
+    def _setPatterns(self):
         keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
         self.highlightingRules = [(QtCore.QRegExp(pattern, QtCore.Qt.CaseInsensitive), self.format_keyword)
                                   for pattern in keywordPatterns]
@@ -197,36 +199,51 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         for a in Constants.SPECIAL_ATTRIBUTES:
             self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), self.format_attribute))
 
+        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
+
         self.highlightingRules.append((QtCore.QRegExp("^#[^\n]*$"), self.format_comment_hash))
         self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"), self.format_comment_single))
 
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")
+        self.stringExpression = QtCore.QRegExp('"')
+        self.htmlStartExpression = QtCore.QRegExp('<')
+        self.htmlEndExpression = QtCore.QRegExp('>')
+        self.htmlTag = QtCore.QRegExp("</?[^<>\n]*>")
 
-        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
-        # TODO: quoted strings may contain newlines
-        #       also; "yay" + "yay" will be marked as string as a whole, which is okay for now
-        self.highlightingRules.append((QtCore.QRegExp("\".*\""), self.format_string))
-        self.highlightingRules.append((QtCore.QRegExp("<.*>"), self.format_html))
-
-    def highlightMultilineComments(self, text):
-        self.setCurrentBlockState(0)
-
+    def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
-        if self.previousBlockState() != 1:
-            startIndex = self.commentStartExpression.indexIn(text)
+        pbs = self.previousBlockState()
+        if pbs == -1 or not pbs & blockstate:
+            startIndex = startexp.indexIn(text)
 
         while startIndex >= 0:
-            endIndex = self.commentEndExpression.indexIn(text, startIndex)
+            begin = 0 if startIndex == 0 else startIndex + 1
+            if skipexp:
+                skipIndex = skipexp.lastIndexIn(text)
+                begin = skipIndex + skipexp.matchedLength()
+            endIndex = endexp.indexIn(text, begin)
 
             if endIndex == -1:
-                self.setCurrentBlockState(1)
+                self.setCurrentBlockState(self.currentBlockState() | blockstate)
                 commentLength = len(text) - startIndex
             else:
-                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
+                commentLength = endIndex - startIndex + endexp.matchedLength()
 
-            self.setFormat(startIndex, commentLength, self.format_comment_multi())
-            startIndex = self.commentStartExpression.indexIn(text, startIndex + commentLength)
+            self.setFormat(startIndex, commentLength, format)
+            startIndex = startexp.indexIn(text, startIndex + commentLength)
+
+    def highlightMultilineComments(self, text):
+        self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, BLOCKSTATE_COMMENT,
+                                  self.format_comment_multi())
+
+    def highlightMultilineStrings(self, text):
+        self.multilineHighlighter(text, self.stringExpression, self.stringExpression, BLOCKSTATE_STRING,
+                                  self.format_string())
+
+    def highlightMultilineHtml(self, text):
+        self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, BLOCKSTATE_HTML,
+                                  self.format_html(), self.htmlTag)
 
     def highlightErrors(self):
         text = self.editor.toPlainText()
@@ -260,7 +277,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
 
     def highlightBlock(self, text):
-        if bool(Config.value("syntaxHighlighting", True)):
+        self.setCurrentBlockState(BLOCKSTATE_NORMAL)
+        sh = bool(Config.value("syntaxHighlighting", True))
+        if sh:
             for pattern, formatter in self.highlightingRules:
                 expression = QtCore.QRegExp(pattern)
                 index = expression.indexIn(text)
@@ -268,9 +287,12 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     length = expression.matchedLength()
                     self.setFormat(index, length, formatter())
                     index = expression.indexIn(text, index + length)
-            self.highlightMultilineComments(text)
         if bool(Config.value("useParser", True)):
             self.highlightErrors()
+        if sh:
+            self.highlightMultilineStrings(text)
+            self.highlightMultilineHtml(text)
+            self.highlightMultilineComments(text)
 
     @staticmethod
     def format_keyword():

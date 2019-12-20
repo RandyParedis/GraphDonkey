@@ -42,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Open.triggered.connect(self.open)
         self.action_Save.triggered.connect(self.save)
         self.action_Save_As.triggered.connect(self.saveAs)
+        self.action_Export.triggered.connect(self.export)
         self.action_Preferences.triggered.connect(lambda: self.preferences.exec_())
         self.action_Exit.triggered.connect(self.close) # TODO: Check for saved
         self.action_Undo.triggered.connect(self.editor.undo)
@@ -126,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
             settings.setValue("recents", self.recents)
         if int(Config.value("restore", 0)) == 1:
             settings.setValue("open", self.filename)
+
         QtWidgets.QMainWindow.closeEvent(self, event)
 
     def textChangedEvent(self):
@@ -150,16 +152,31 @@ class MainWindow(QtWidgets.QMainWindow):
             clear.setShortcuts(QtGui.QKeySequence(clr))
         clear.triggered.connect(lambda x: self.clearRecents())
 
+    def warn(self, title, msg):
+        QtWidgets.QMessageBox.warning(self, title, msg)
+
+    def error(self, title, msg):
+        QtWidgets.QMessageBox.critical(self, title, msg)
+
+    def question(self, title, msg):
+        btn = QtWidgets.QMessageBox.question(self, title, msg)
+        return btn == QtWidgets.QMessageBox.Yes
+
     def clearRecents(self):
         self.recents.clear()
         self.updateRecents()
 
     def new(self):
-        # TODO: confirmation if not saved
-        self.setupEditor()
-        self.filename = ""
-        self.saved = False
-        self.updateTitle()
+        q = True
+        if not self.saved:
+            q = self.question("Not Saved", "There are changes detected in this file. "
+                                           "Are you sure you want to open a new one?\n"
+                                           "All changes will be lost.")
+        if q:
+            self.setupEditor()
+            self.filename = ""
+            self.saved = False
+            self.updateTitle()
 
     def openFile(self, fileName):
         if fileName:
@@ -168,36 +185,35 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setupEditor()
                 with open(fileName, "r") as myfile:
                     data = myfile.read()
-                    dot = Source(data, format=ext)
-                    self.editor.setText(dot.source)
+                    self.editor.setText(data)
 
                 self.updateRecents(fileName)
                 self.filename = fileName
                 self.saved = True
                 self.updateTitle()
-
-                self.displayGraph()
             else:
-                QtWidgets.QMessageBox.critical(self, "Invalid File", "It looks like this file cannot be opened.")
+                self.warn("Invalid File", "It looks like this file cannot be opened.")
 
     def open(self):
-        # TODO: confirmation if not saved
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog\
-            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
-                             options=options)
-        self.openFile(fileName)
+        q = True
+        if not self.saved:
+            q = self.question("Not Saved", "There are changes detected in this file. "
+                                           "Are you sure you want to open another?\n"
+                                           "All changes will be lost.")
+        if q:
+            options = QtWidgets.QFileDialog.Options()
+            options |= QtWidgets.QFileDialog.DontUseNativeDialog
+            fileName, _ = QtWidgets.QFileDialog\
+                .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
+                                 options=options)
+            self.openFile(fileName)
 
     def save(self):
         if self.filename == "":
             self.saveAs()
         else:
-            ext = self.filename.split(".")[-1]
-            dot = Source(self.editor.toPlainText())
-            print(dot)
-            contents = dot.pipe(ext)
-            with open(self.filename, 'bw') as myfile:
+            contents = self.editor.toPlainText()
+            with open(self.filename, 'w') as myfile:
                 myfile.write(contents)
             self.saved = True
             self.updateTitle()
@@ -206,10 +222,31 @@ class MainWindow(QtWidgets.QMainWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, t = QtWidgets.QFileDialog\
-            .getSaveFileName(self, "Save a Graphviz File", "", "All Files (*);;" + Constants.file_list_save(),
+            .getSaveFileName(self, "Save a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
                              options=options)
         if fileName:
-            # TODO: confirmation box
+            ext = fileName.split(".")[-1]
+            rext = Constants.obtain_ext(t)
+            if len(fileName.split(".")) == 1:
+                ext = "dot"
+            if rext == "":
+                rext = ext
+            if ext is not rext:
+                fileName += "." + rext
+            if Constants.valid_ext(rext, Constants.FILE_TYPES_OPEN):
+                self.filename = fileName
+                self.save()
+            else:
+                self.warn("Invalid File", "It looks like you want to save a file with an invalid file type of '%s'."
+                                          "Please try another extension." % rext)
+
+    def export(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, t = QtWidgets.QFileDialog\
+            .getSaveFileName(self, "Export a Graphviz File", "", "All Files (*);;" + Constants.file_list_save(),
+                             options=options)
+        if fileName:
             ext = fileName.split(".")[-1]
             rext = Constants.obtain_ext(t)
             if len(fileName.split(".")) == 1:
@@ -219,8 +256,17 @@ class MainWindow(QtWidgets.QMainWindow):
             if ext is not rext:
                 fileName += "." + rext
             if Constants.valid_ext(rext, Constants.FILE_TYPES_SAVE):
-                self.filename = fileName
-                self.save()
+                try:
+                    dot = Source(self.editor.toPlainText())
+                    contents = dot.pipe(ext)
+                    with open(self.filename, 'bw') as myfile:
+                        myfile.write(contents)
+                except graphviz.backend.CalledProcessError as e:
+                    self.error("Uh oh!", "It looks like there are some errors in your dot file. Cannot export!\n" +
+                               e.stderr.decode("utf-8"))
+                except Exception as e:
+                    self.error("Uh oh!", "It looks as if something went wrong whilst trying to save this file.\n" +
+                               str(e))
 
     def displayGraph(self):
         self.scene.clear()

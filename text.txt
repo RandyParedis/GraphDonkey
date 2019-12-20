@@ -3,17 +3,15 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 
 pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
-TODO: - Save File => Save as text (gv, canvas, dot...)
-                     Allow saving file with errors/comments
-      - Add Export Function  (actually strips comments and crashes on errors)
-      - Bugfix: Copy/Cut not working iff file was closed
-                i.e.: Closing a file seems to clear the clipboard
-      - Syntax Highlighting does not work 100% as intended
+TODO: - Error message (Parser):
+            - XML-valid string in html-enclosed string
 
 TODO| FUTURE (see also README.md)
         - Autocomplete [live-searching for possibilities depending on AST]
         - Add parser warnings
         - Duplicate line/selection
+        - Toggle comments
+        - Smart intendations
         - Find + Replace window
         - Snippets
         - Custom RMB menu in Editor

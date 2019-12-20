@@ -43,8 +43,10 @@
     <addaction name="menuOpen_Recent"/>
     <addaction name="action_Save"/>
     <addaction name="action_Save_As"/>
+    <addaction name="action_Export"/>
     <addaction name="separator"/>
     <addaction name="action_Preferences"/>
+    <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -259,6 +261,11 @@
   <action name="action_Preferences">
    <property name="text">
     <string>&amp;Preferences</string>
+   </property>
+  </action>
+  <action name="action_Export">
+   <property name="text">
+    <string>&amp;Export</string>
    </property>
   </action>
  </widget>

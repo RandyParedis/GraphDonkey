@@ -179,6 +179,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_open.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.open", "CTRL+O")))
             self.ks_save.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save", "CTRL+S")))
             self.ks_save_as.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save_as", "CTRL+SHIFT+S")))
+            self.ks_export.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.export", "CTRL+E")))
             self.ks_clear_recents.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.clear_recents", "")))
             self.ks_preferences.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.preferences", "CTRL+P")))
             self.ks_exit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.exit", "CTRL+Q")))
@@ -253,6 +254,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.open", self.ks_open.keySequence().toString())
             self.preferences.setValue("ks.save", self.ks_save.keySequence().toString())
             self.preferences.setValue("ks.save_as", self.ks_save_as.keySequence().toString())
+            self.preferences.setValue("ks.export", self.ks_export.keySequence().toString())
             self.preferences.setValue("ks.clear_recents", self.ks_clear_recents.keySequence().toString())
             self.preferences.setValue("ks.preferences", self.ks_preferences.keySequence().toString())
             self.preferences.setValue("ks.exit", self.ks_exit.keySequence().toString())
@@ -277,7 +279,7 @@ class Preferences(QtWidgets.QDialog):
 
     def applyShortcuts(self):
         actions = [
-            "New", "Open", "Save", "Save_As", "Preferences", "Exit",
+            "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste",
             "Render"
         ]
