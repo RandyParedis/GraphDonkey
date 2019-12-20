@@ -14,8 +14,7 @@ texteditor, Graphviz-viewer and a terminal open at all times. Not anymore!
 `GraphDonkey`, originally called `DotGaper`, solves this issue by combining 
 these applications into one.
 
-**Current Version:** `0.1.1`<br/>
-**Build Type:** `beta`<br/>
+**Latest Release Version:** _Jack-in-a-Box_ (`v0.1.1`)<br/>
 **Executable OS:** Only `Linux` at this point in time
 (maybe Mac as well, but cannot confirm)<br/>
 **Author:** Randy Paredis

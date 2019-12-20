@@ -258,7 +258,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    "<p>A simple and easy-to-use application for visualizing and editing Graphviz Dot files. It is "
                    "based on the idea of xdot, combined with a texteditor that can live-update the images.</p>"
                    "<p>Current version is <b>%s</b>.</p>"
-                   "<p>Created by <b>Randy Paredis</b>." % Constants.APP_VERSION)
+                   "<p>Created by <b>Randy Paredis</b>." % (Constants.APP_VERSION_NAME + " v" + Constants.APP_VERSION))
 
     def aboutQt(self):
         QtWidgets.QMessageBox.aboutQt(self)

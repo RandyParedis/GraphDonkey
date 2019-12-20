@@ -15,12 +15,12 @@ from main.extra import Constants
 
 print("LAUNCING APP...")
 print("GraphViz Version:", graphviz.__version__)
-print("GraphDonkey Version:", Constants.APP_VERSION)
+print("GraphDonkey Version:", Constants.APP_VERSION_NAME, "(" + Constants.APP_VERSION + ")")
 
 app = QtWidgets.QApplication(sys.argv)
 app.setApplicationName(Constants.APP_NAME)
 app.setApplicationVersion(Constants.APP_VERSION)
-app.setApplicationDisplayName(Constants.APP_NAME + " v" + Constants.APP_VERSION)
+app.setApplicationDisplayName(Constants.APP_NAME + " [" + Constants.APP_VERSION_NAME + "] v" + Constants.APP_VERSION)
 app.setWindowIcon(Constants.APP_ICON)
 
 mainwindow = MainWindow()

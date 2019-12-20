@@ -8,6 +8,7 @@ from main.extra.IOHandler import IOHandler
 
 APP_NAME = "GraphDonkey"
 APP_VERSION = "0.1.1"
+APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
 ICON_GRAPHVIZ = QImage(IOHandler.dir_icons("graphviz.png"))
