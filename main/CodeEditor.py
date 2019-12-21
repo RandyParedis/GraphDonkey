@@ -209,7 +209,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.stringExpression = QtCore.QRegExp('"')
         self.htmlStartExpression = QtCore.QRegExp('<')
         self.htmlEndExpression = QtCore.QRegExp('>')
-        self.htmlTag = QtCore.QRegExp("</?[^<>\n]*>")
+        self.htmlTag = QtCore.QRegExp("</?[^<>/\n]*>")
 
     def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
@@ -269,6 +269,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(startIndex - bix, size, self.format_error(msg))
                 for i in range(startIndex, startIndex + size + 1):
                     self.errors[i] = msg
+                    # self.setFormat(i - bix, 1, self.format_error(msg))
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
@@ -287,11 +288,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     length = expression.matchedLength()
                     self.setFormat(index, length, formatter())
                     index = expression.indexIn(text, index + length)
+            self.highlightMultilineStrings(text)
+            self.highlightMultilineHtml(text)
         if bool(Config.value("useParser", True)):
             self.highlightErrors()
         if sh:
-            self.highlightMultilineStrings(text)
-            self.highlightMultilineHtml(text)
             self.highlightMultilineComments(text)
 
     @staticmethod

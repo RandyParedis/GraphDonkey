@@ -66,7 +66,6 @@ at all (this is a general lifeline).
 For `GraphDonkey`, some bugs are common and known by me, which I've listed
 below. These are on the top of the list to be fixed in a future version.
 
-* Error highlighting may do some weird things.
 * RMB menu in the editor is not linked to other functionality.
 
 Did you run into another error or a bug?
@@ -95,7 +94,7 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
-* [0.1.2] Fixed invalid syntax highlighting
+* [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
 * [0.1.2] Added new 'Export' function
@@ -141,6 +140,7 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Duplicate selection/line
 * [0.1.2] Autocompletion
 * [0.1.2] Quick comment insert
+* [0.1.2] Smart indentation
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?
@@ -151,6 +151,7 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Quick connections
   * Should make Editor only useful for advanced features
 * [0.2.1] Add all different node and edge types in interactive mode
+* [0.2.1] Add graphviz html syntax highlighting + parsing
 * [0.3.0] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?

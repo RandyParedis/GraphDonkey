@@ -44,6 +44,10 @@ class IOHandler:
         return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "icons", *icons))
 
     @staticmethod
+    def dir_grammars(*grammars):
+        return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "grammars", *grammars))
+
+    @staticmethod
     def dir_lang(*lang):
         return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "i18n", *lang))
 
