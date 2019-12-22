@@ -94,6 +94,7 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Added Auto Indent of Selection
 * [0.1.2] Added Quick Comment Toggle
 * [0.1.2] Added ability to duplicate selection/line
 * [0.1.2] Fixed invalid syntax and error highlighting

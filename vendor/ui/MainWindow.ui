@@ -81,6 +81,7 @@
     <addaction name="action_Duplicate"/>
     <addaction name="separator"/>
     <addaction name="action_Comment"/>
+    <addaction name="action_Auto_Indent"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -279,6 +280,11 @@
   <action name="action_Comment">
    <property name="text">
     <string>&amp;Toggle Comment</string>
+   </property>
+  </action>
+  <action name="action_Auto_Indent">
+   <property name="text">
+    <string>Auto &amp;Indent</string>
    </property>
   </action>
  </widget>

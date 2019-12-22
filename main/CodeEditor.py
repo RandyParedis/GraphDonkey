@@ -40,6 +40,28 @@ class CodeEditor(QtWidgets.QTextEdit):
     def event(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.ShortcutOverride:
             return False
+        if event.type() == QtCore.QEvent.KeyPress:
+            event = QtGui.QKeyEvent(event)
+            if event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
+                self.insertPlainText(Constants.LINE_ENDING)
+                self.autoIndent()
+                cursor = self.textCursor()
+                pos = cursor.position()
+                cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+                txt = cursor.selectedText().lstrip()
+                if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
+                    cursor.setPosition(pos)
+                    cursor.insertText(Constants.LINE_ENDING)
+                    cursor.movePosition(QtGui.QTextCursor.Up)
+                    cursor.movePosition(QtGui.QTextCursor.EndOfLine)
+                    cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.KeepAnchor)
+                    self.setTextCursor(cursor)
+                    self.autoIndent()
+                    bsel = cursor.selectionStart()
+                    cursor.setPosition(bsel)
+                    cursor.movePosition(QtGui.QTextCursor.EndOfLine)
+                    self.setTextCursor(cursor)
+                return False
         return QtWidgets.QTextEdit.event(self, event)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
@@ -60,43 +82,113 @@ class CodeEditor(QtWidgets.QTextEdit):
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText()
-            cursor.insertText(txt + '\n' + txt)
+            cursor.insertText(txt + Constants.LINE_ENDING + txt)
         else:           # Duplicate selection
             cursor.insertText(txt + txt)
             cursor.setPosition(posE)
             cursor.setPosition(posE + len(txt), QtGui.QTextCursor.KeepAnchor)
             self.setTextCursor(cursor)
 
-    def comment(self):
+    def lines(self, func, state=None):
         cursor = self.textCursor()
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
-        cnum = cursor.positionInBlock()
         cursor.setPosition(posS)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         line = cursor.selectionStart()
         cursor.setPosition(posE)
-        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+        cursor.movePosition(QtGui.QTextCursor.EndOfLine)
         lineE = cursor.selectionEnd()
 
         cursor.setPosition(line)
-        succ = True
-        while line <= lineE and succ:
+        lastL = None
+        offset = 0
+        ostart = None
+        while line != lastL:
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-            txt = cursor.selectedText()
-            if txt[:2] == "//":
-                txt = txt[2:]
-            else:
-                txt = "//" + txt
-            cursor.insertText(txt)
-            succ = cursor.movePosition(QtGui.QTextCursor.Down)
-            cursor.setPosition(cnum + cursor.block().position())
-            cnum = cursor.positionInBlock()
+
+            # Compute Offset
+            before = len(cursor.selectedText())
+            state = func(cursor, state)
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            after = len(cursor.selectedText())
+            offset += after - before
+            if ostart is None:
+                ostart = after - before
+
+            # Go to the next line
+            if line > lineE:
+                break
+            cursor.movePosition(QtGui.QTextCursor.Down)
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            lastL = line
             line = cursor.selectionStart()
 
-        cursor.setPosition(cnum + cursor.block().position())
+        cursor.setPosition(posS + ostart)
+        cursor.setPosition(posE + offset, QtGui.QTextCursor.KeepAnchor)
         self.setTextCursor(cursor)
+        return cursor
+
+    def comment(self):
+        def cmnt(cursor, state):
+            txt = cursor.selectedText()
+            if txt[:2] == "//" and state in [True, None]:
+                txt = txt[2:]
+                state = True
+            elif txt[0] == "#" and state in [True, None]:
+                txt = txt[1:]
+                state = True
+            elif state in [False, None]:
+                txt = "//" + txt
+                state = False
+            cursor.insertText(txt)
+            return state
+
+        self.lines(cmnt)
+
+    def autoIndent(self):
+        cursor = self.textCursor()
+        posS = cursor.selectionStart()
+        cursor.setPosition(posS)
+        s = cursor.movePosition(QtGui.QTextCursor.Up)
+        indent = 0
+        tw = int(Config.value("tabwidth"))
+        if s:
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            for c in txt:
+                if c == ' ':
+                    indent += 1
+                elif c == '\t':
+                    indent += tw
+                else:
+                    break
+            txt = txt.lstrip()
+            for c in txt:
+                if c in Constants.INDENT_OPEN:
+                    indent += tw
+                elif c in Constants.INDENT_CLOSE:
+                    indent -= tw
+        indent //= tw
+
+        def indentLine(cursor, state):
+            txt = cursor.selectedText().lstrip()
+            if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
+                state -= 1
+            cursor.insertText(("\t" * state) + txt)
+            for c in txt:
+                if c in Constants.INDENT_CLOSE:
+                    state -= 1
+                    if state < 0:
+                        state = 0
+                elif c in Constants.INDENT_OPEN:
+                    state += 1
+            return state
+
+        self.lines(indentLine, indent)
+
 
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
@@ -247,15 +339,15 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
         self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
 
-        self.highlightingRules.append((QtCore.QRegExp("^#[^\n]*$"), self.format_comment_hash))
-        self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"), self.format_comment_single))
+        self.highlightingRules.append((QtCore.QRegExp("^#[^%s]*$" % Constants.LINE_ENDING), self.format_comment_hash))
+        self.highlightingRules.append((QtCore.QRegExp("//[^%s]*" % Constants.LINE_ENDING), self.format_comment_single))
 
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")
         self.stringExpression = QtCore.QRegExp('"')
         self.htmlStartExpression = QtCore.QRegExp('<')
         self.htmlEndExpression = QtCore.QRegExp('>')
-        self.htmlTag = QtCore.QRegExp("</?[^<>/\n]*>")
+        self.htmlTag = QtCore.QRegExp("</?[^<>/%s]*>" % Constants.LINE_ENDING)
 
     def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
@@ -322,17 +414,20 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.editor.mainwindow.displayGraph()
 
 
+    def highlightRules(self, text, rules):
+        for pattern, formatter in rules:
+            expression = QtCore.QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, formatter())
+                index = expression.indexIn(text, index + length)
+
     def highlightBlock(self, text):
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
         sh = bool(Config.value("syntaxHighlighting", True))
         if sh:
-            for pattern, formatter in self.highlightingRules:
-                expression = QtCore.QRegExp(pattern)
-                index = expression.indexIn(text)
-                while index >= 0:
-                    length = expression.matchedLength()
-                    self.setFormat(index, length, formatter())
-                    index = expression.indexIn(text, index + length)
+            self.highlightRules(text, self.highlightingRules)
             self.highlightMultilineStrings(text)
             self.highlightMultilineHtml(text)
         if bool(Config.value("useParser", True)):

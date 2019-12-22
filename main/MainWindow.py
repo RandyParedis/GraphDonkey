@@ -54,6 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Cut.triggered.connect(self.editor.cut)
         self.action_Duplicate.triggered.connect(self.editor.duplicate)
         self.action_Comment.triggered.connect(self.editor.comment)
+        self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
         self.action_Render.triggered.connect(self.displayGraph)
         self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)

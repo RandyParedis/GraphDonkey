@@ -4,7 +4,7 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
 TODO| FUTURE (see also README.md)
-        - Smart intendations
+        - Bracket Matching
         - Tabs to Spaces
         - Indent Selection
         - Find + Replace window

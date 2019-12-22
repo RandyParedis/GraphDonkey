@@ -19,6 +19,11 @@ ICON_OPEN = QImage(IOHandler.dir_icons("open.png"))
 ICON_SAVE = QImage(IOHandler.dir_icons("save.png"))
 ICON_RENDER = QImage(IOHandler.dir_icons("render.png"))
 
+LINE_ENDING = "\n"
+
+INDENT_OPEN = ['{', '[']
+INDENT_CLOSE = ['}', ']']
+
 
 ################################
 #       FILE TYPE CONFIG       #

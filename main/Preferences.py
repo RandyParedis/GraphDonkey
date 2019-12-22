@@ -192,6 +192,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.paste", "CTRL+V")))
             self.ks_duplicate.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.duplicate", "CTRL+D")))
             self.ks_comment.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.comment", "CTRL+/")))
+            self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.auto_indent", "CTRL+SHIFT+I")))
             self.ks_toggleCodeEditor.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.toggle_editor", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
             self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
@@ -269,6 +270,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.paste", self.ks_paste.keySequence().toString())
             self.preferences.setValue("ks.duplicate", self.ks_duplicate.keySequence().toString())
             self.preferences.setValue("ks.comment", self.ks_comment.keySequence().toString())
+            self.preferences.setValue("ks.auto_indent", self.ks_auto_indent.keySequence().toString())
             self.preferences.setValue("ks.toggle_editor", self.ks_toggleCodeEditor.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
             self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
@@ -284,7 +286,8 @@ class Preferences(QtWidgets.QDialog):
     def applyShortcuts(self):
         actions = [
             "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
-            "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
+            "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
+            "Comment", "Auto_Indent",
             "Render"
         ]
         for action in actions:
