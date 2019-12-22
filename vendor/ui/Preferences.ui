@@ -486,9 +486,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>271</width>
-            <height>839</height>
+            <y>-277</y>
+            <width>629</width>
+            <height>901</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -567,6 +567,26 @@
               </item>
               <item row="6" column="1">
                <widget class="QKeySequenceEdit" name="ks_cut"/>
+              </item>
+              <item row="7" column="1">
+               <widget class="QKeySequenceEdit" name="ks_duplicate"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>Duplicate Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_55">
+                <property name="text">
+                 <string>Toggle Comments:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QKeySequenceEdit" name="ks_comment"/>
               </item>
              </layout>
             </widget>

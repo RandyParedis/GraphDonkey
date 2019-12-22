@@ -94,6 +94,8 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Added Quick Comment Toggle
+* [0.1.2] Added ability to duplicate selection/line
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
@@ -137,7 +139,6 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
 * [0.1.2] Find and Replace functionality
-* [0.1.2] Duplicate selection/line
 * [0.1.2] Autocompletion
 * [0.1.2] Quick comment insert
 * [0.1.2] Smart indentation

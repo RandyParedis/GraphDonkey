@@ -78,6 +78,9 @@
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
     <addaction name="action_Cut"/>
+    <addaction name="action_Duplicate"/>
+    <addaction name="separator"/>
+    <addaction name="action_Comment"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -266,6 +269,16 @@
   <action name="action_Export">
    <property name="text">
     <string>&amp;Export</string>
+   </property>
+  </action>
+  <action name="action_Duplicate">
+   <property name="text">
+    <string>D&amp;uplicate</string>
+   </property>
+  </action>
+  <action name="action_Comment">
+   <property name="text">
+    <string>&amp;Toggle Comment</string>
    </property>
   </action>
  </widget>

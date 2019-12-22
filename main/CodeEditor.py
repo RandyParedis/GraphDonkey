@@ -52,6 +52,52 @@ class CodeEditor(QtWidgets.QTextEdit):
             QtWidgets.QToolTip.showText(event.globalPos(), error, self)
         return QtWidgets.QTextEdit.mouseMoveEvent(self, event)
 
+    def duplicate(self):
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        posE = cursor.selectionEnd()
+        if txt == "":   # Duplicate line
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            cursor.insertText(txt + '\n' + txt)
+        else:           # Duplicate selection
+            cursor.insertText(txt + txt)
+            cursor.setPosition(posE)
+            cursor.setPosition(posE + len(txt), QtGui.QTextCursor.KeepAnchor)
+            self.setTextCursor(cursor)
+
+    def comment(self):
+        cursor = self.textCursor()
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
+        cnum = cursor.positionInBlock()
+        cursor.setPosition(posS)
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+        line = cursor.selectionStart()
+        cursor.setPosition(posE)
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+        lineE = cursor.selectionEnd()
+
+        cursor.setPosition(line)
+        succ = True
+        while line <= lineE and succ:
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            if txt[:2] == "//":
+                txt = txt[2:]
+            else:
+                txt = "//" + txt
+            cursor.insertText(txt)
+            succ = cursor.movePosition(QtGui.QTextCursor.Down)
+            cursor.setPosition(cnum + cursor.block().position())
+            cnum = cursor.positionInBlock()
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            line = cursor.selectionStart()
+
+        cursor.setPosition(cnum + cursor.block().position())
+        self.setTextCursor(cursor)
+
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
 
@@ -226,12 +272,12 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
             if endIndex == -1:
                 self.setCurrentBlockState(self.currentBlockState() | blockstate)
-                commentLength = len(text) - startIndex
+                length = len(text) - startIndex
             else:
-                commentLength = endIndex - startIndex + endexp.matchedLength()
+                length = endIndex - startIndex + endexp.matchedLength()
 
-            self.setFormat(startIndex, commentLength, format)
-            startIndex = startexp.indexIn(text, startIndex + commentLength)
+            self.setFormat(startIndex, length, format)
+            startIndex = startexp.indexIn(text, startIndex + length)
 
     def highlightMultilineComments(self, text):
         self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, BLOCKSTATE_COMMENT,
@@ -251,7 +297,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         T = self.parser.parse(text)
         if T is None:
             for token, msg, exp in self.parser.errors:
-                self.setCurrentBlockState(0)
                 startIndex = token.pos_in_stream
                 size = 1
                 if isinstance(token, UnexpectedToken):
@@ -260,9 +305,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     regex = QtCore.QRegExp(r"\s")
                     endIndex = regex.indexIn(text, startIndex)
                     if endIndex == -1:
-                        self.setCurrentBlockState(1)
-                        endIndex = len(text) - startIndex
-                    size = endIndex - startIndex
+                        size = len(text) - startIndex
+                    else:
+                        size = endIndex - startIndex
                 elif isinstance(token, Token):
                     size = len(token)
                 bix = self.currentBlock().position()
