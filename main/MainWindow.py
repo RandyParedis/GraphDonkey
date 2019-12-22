@@ -54,6 +54,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Cut.triggered.connect(self.editor.cut)
         self.action_Duplicate.triggered.connect(self.editor.duplicate)
         self.action_Comment.triggered.connect(self.editor.comment)
+        self.action_Indent.triggered.connect(self.editor.indent)
+        self.action_Unindent.triggered.connect(self.editor.unindent)
         self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
         self.action_Render.triggered.connect(self.displayGraph)
         self.action_CheckUpdates.triggered.connect(self.checkUpdates)
@@ -171,7 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def new(self):
         q = True
-        if not self.saved:
+        if self.filename != "" and not self.saved:
             q = self.question("Not Saved", "There are changes detected in this file. "
                                            "Are you sure you want to open a new one?\n"
                                            "All changes will be lost.")

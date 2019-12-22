@@ -93,40 +93,29 @@ class CodeEditor(QtWidgets.QTextEdit):
         cursor = self.textCursor()
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
-        cursor.setPosition(posS)
-        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-        line = cursor.selectionStart()
-        cursor.setPosition(posE)
-        cursor.movePosition(QtGui.QTextCursor.EndOfLine)
-        lineE = cursor.selectionEnd()
 
-        cursor.setPosition(line)
-        lastL = None
-        offset = 0
-        ostart = None
-        while line != lastL:
+        cursor.setPosition(posS)
+        line = cursor.selectionStart()
+        add = None
+        while line <= posE:
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
 
-            # Compute Offset
+            # Apply function and Compute Offset
             before = len(cursor.selectedText())
             state = func(cursor, state)
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             after = len(cursor.selectedText())
-            offset += after - before
-            if ostart is None:
-                ostart = after - before
+            posE += after - before
+            if add is None:
+                add = after - before
 
-            # Go to the next line
-            if line > lineE:
-                break
             cursor.movePosition(QtGui.QTextCursor.Down)
-            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            lastL = line
             line = cursor.selectionStart()
 
-        cursor.setPosition(posS + ostart)
-        cursor.setPosition(posE + offset, QtGui.QTextCursor.KeepAnchor)
+        cursor.setPosition(posS + add)
+        cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
         self.setTextCursor(cursor)
         return cursor
 
@@ -136,7 +125,7 @@ class CodeEditor(QtWidgets.QTextEdit):
             if txt[:2] == "//" and state in [True, None]:
                 txt = txt[2:]
                 state = True
-            elif txt[0] == "#" and state in [True, None]:
+            elif len(txt) > 0 and txt[0] == "#" and state in [True, None]:
                 txt = txt[1:]
                 state = True
             elif state in [False, None]:
@@ -146,6 +135,30 @@ class CodeEditor(QtWidgets.QTextEdit):
             return state
 
         self.lines(cmnt)
+
+    def indent(self):
+        def func(cursor, state):
+            txt = cursor.selectedText()
+            txt = '\t' + txt
+            cursor.insertText(txt)
+            return state
+
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        if txt != "":
+            self.lines(func)
+        else:
+            self.insertPlainText("\t")
+
+    def unindent(self):
+        def func(cursor, state):
+            txt = cursor.selectedText()
+            if len(txt) > 0 and txt[0] in [' ', '\t']:
+                txt = txt[1:]
+            cursor.insertText(txt)
+            return state
+
+        self.lines(func)
 
     def autoIndent(self):
         cursor = self.textCursor()
@@ -386,7 +399,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     def highlightErrors(self):
         text = self.editor.toPlainText()
         self.errors = {}
-        T = self.parser.parse(text)
+        T = self.parser.parse(text) if text is not "" else None
         if T is None:
             for token, msg, exp in self.parser.errors:
                 startIndex = token.pos_in_stream

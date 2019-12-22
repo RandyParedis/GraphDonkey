@@ -6,7 +6,6 @@ pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 TODO| FUTURE (see also README.md)
         - Bracket Matching
         - Tabs to Spaces
-        - Indent Selection
         - Find + Replace window
         - Autocomplete [live-searching for possibilities depending on AST]
         - Add parser warnings

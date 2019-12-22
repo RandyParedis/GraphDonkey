@@ -81,6 +81,8 @@
     <addaction name="action_Duplicate"/>
     <addaction name="separator"/>
     <addaction name="action_Comment"/>
+    <addaction name="action_Indent"/>
+    <addaction name="action_Unindent"/>
     <addaction name="action_Auto_Indent"/>
    </widget>
    <addaction name="menu_File"/>
@@ -274,7 +276,7 @@
   </action>
   <action name="action_Duplicate">
    <property name="text">
-    <string>D&amp;uplicate</string>
+    <string>Du&amp;plicate</string>
    </property>
   </action>
   <action name="action_Comment">
@@ -285,6 +287,16 @@
   <action name="action_Auto_Indent">
    <property name="text">
     <string>Auto &amp;Indent</string>
+   </property>
+  </action>
+  <action name="action_Indent">
+   <property name="text">
+    <string>&amp;Indent</string>
+   </property>
+  </action>
+  <action name="action_Unindent">
+   <property name="text">
+    <string>U&amp;nindent</string>
    </property>
   </action>
  </widget>

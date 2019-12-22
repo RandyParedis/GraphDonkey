@@ -94,9 +94,11 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
-* [0.1.2] Added Auto Indent of Selection
-* [0.1.2] Added Quick Comment Toggle
-* [0.1.2] Added ability to duplicate selection/line
+* [0.1.2] Added Actions for better User experience:
+  * Indent/Unindent of current Selection or Line
+  * Possibility to Auto-Indent Selection
+  * Turn a Selection easily into a Comment
+  * Duplicate the current Selection or Line
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)

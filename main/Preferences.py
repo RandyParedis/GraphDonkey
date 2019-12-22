@@ -192,6 +192,8 @@ class Preferences(QtWidgets.QDialog):
             self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.paste", "CTRL+V")))
             self.ks_duplicate.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.duplicate", "CTRL+D")))
             self.ks_comment.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.comment", "CTRL+/")))
+            self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.indent", "TAB")))
+            self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.unindent", "SHIFT+TAB")))
             self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.auto_indent", "CTRL+SHIFT+I")))
             self.ks_toggleCodeEditor.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.toggle_editor", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
@@ -270,6 +272,8 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.paste", self.ks_paste.keySequence().toString())
             self.preferences.setValue("ks.duplicate", self.ks_duplicate.keySequence().toString())
             self.preferences.setValue("ks.comment", self.ks_comment.keySequence().toString())
+            self.preferences.setValue("ks.indent", self.ks_indent.keySequence().toString())
+            self.preferences.setValue("ks.unindent", self.ks_unindent.keySequence().toString())
             self.preferences.setValue("ks.auto_indent", self.ks_auto_indent.keySequence().toString())
             self.preferences.setValue("ks.toggle_editor", self.ks_toggleCodeEditor.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
@@ -287,7 +291,7 @@ class Preferences(QtWidgets.QDialog):
         actions = [
             "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
-            "Comment", "Auto_Indent",
+            "Comment", "Indent", "Unindent", "Auto_Indent",
             "Render"
         ]
         for action in actions:
