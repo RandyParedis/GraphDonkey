@@ -1,8 +1,13 @@
 """The code editor of GraphDonkey, with a few features:
 
 - Syntax Highlighting
+- Error Highlighting
 - Line Numbers
     Based on https://stackoverflow.com/questions/2443358/how-to-add-lines-numbers-to-qtextedit
+- Selection/Line Events (Duplicate, Copy, Cut, Comment/Uncomment, Auto-Indent, Indent/Unindent...)
+- Parenthesis Matching
+    Based on QtQuarterly 31: https://doc.qt.io/archives/qq/QtQuarterly31.pdf
+- Auto-Expand Squiggly and Square brackets
 
 Author: Randy Paredis
 Date:   12/14/2019
@@ -17,7 +22,7 @@ from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
 
-class CodeEditor(QtWidgets.QTextEdit):
+class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent):
         super(CodeEditor, self).__init__(parent)
         self.mainwindow = parent
@@ -34,6 +39,8 @@ class CodeEditor(QtWidgets.QTextEdit):
         self.updateLineNumberAreaWidth(0)
         self.highlightCurrentLine()
         self.highlighter = Highlighter(self.document(), self)
+
+        self.matches = []
 
         self.setMouseTracking(True)
 
@@ -62,7 +69,10 @@ class CodeEditor(QtWidgets.QTextEdit):
                     cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                     self.setTextCursor(cursor)
                 return False
-        return QtWidgets.QTextEdit.event(self, event)
+        return QtWidgets.QPlainTextEdit.event(self, event)
+
+    def setText(self, text):
+        self.document().setPlainText(text)
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
         pos = event.pos()
@@ -72,7 +82,24 @@ class CodeEditor(QtWidgets.QTextEdit):
         error = self.highlighter.errors.get(tpos, "")
         if error != "":
             QtWidgets.QToolTip.showText(event.globalPos(), error, self)
-        return QtWidgets.QTextEdit.mouseMoveEvent(self, event)
+        return QtWidgets.QPlainTextEdit.mouseMoveEvent(self, event)
+
+    def _cc(self):
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        if txt == "":
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor)
+            self.setTextCursor(cursor)
+
+    def copy(self):
+        self._cc()
+        QtWidgets.QPlainTextEdit.copy(self)
+
+    def cut(self):
+        self._cc()
+        QtWidgets.QPlainTextEdit.cut(self)
 
     def duplicate(self):
         cursor = self.textCursor()
@@ -202,6 +229,97 @@ class CodeEditor(QtWidgets.QTextEdit):
 
         self.lines(indentLine, indent)
 
+    def matchParenthesis(self):
+        curs = self.textCursor()
+        data = curs.block().userData()
+        if data:
+            infos = data.parenthesis
+
+            pos = curs.block().position()
+            for i in range(len(infos)):
+                info = infos[i]
+                curPos = curs.positionInBlock()
+                if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_OPEN:
+                    if self.matchOpenParenthesis(Constants.INDENT_OPEN.index(info.char), curs.block(), i+1):
+                        self.highlightParenthesis(pos + info.pos)
+                if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_CLOSE:
+                    if self.matchCloseParenthesis(Constants.INDENT_CLOSE.index(info.char), curs.block(), i - 1):
+                        self.highlightParenthesis(pos + info.pos)
+
+    def matchOpenParenthesis(self, cidx, block, i, num=0):
+        data = block.userData()
+        infos = data.parenthesis
+
+        docPos = block.position()
+        for j in range(i, len(infos)):
+            info = infos[i]
+
+            if info.char == Constants.INDENT_OPEN[cidx]:
+                num += 1
+                continue
+            if info.char == Constants.INDENT_CLOSE[cidx] and num == 0:
+                self.highlightParenthesis(docPos + info.pos)
+                return True
+            num -= 1
+
+        block = block.next()
+        if block.isValid():
+            return self.matchOpenParenthesis(cidx, block, 0, num)
+
+        return False
+
+    def matchCloseParenthesis(self, cidx, block, i, num=0):
+        data = block.userData()
+        infos = data.parenthesis
+
+        docPos = block.position()
+        for j in range(i, -1, -1):
+            if len(infos) == 0:
+                break
+            info = infos[i]
+
+            if info.char == Constants.INDENT_CLOSE[cidx]:
+                num += 1
+                continue
+            if info.char == Constants.INDENT_OPEN[cidx] and num == 0:
+                self.highlightParenthesis(docPos + info.pos)
+                return True
+            num -= 1
+
+        block = block.previous()
+        if block.isValid():
+            return self.matchCloseParenthesis(cidx, block, 0, num)
+
+        return False
+
+    def highlightParenthesis(self, pos):
+        selection = QtWidgets.QTextEdit.ExtraSelection()
+        selection.format.setBackground(QtGui.QColor(Config.value("col.clnb")))
+        selection.format.setForeground(QtGui.QColor(Config.value("col.clnf")))
+
+        curs = self.textCursor()
+        curs.setPosition(pos)
+        curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        selection.cursor = curs
+
+        selections = self.extraSelections()
+        selections.append(selection)
+        self.setExtraSelections(selections)
+
+    def highlightMatches(self):
+        selections = self.extraSelections()
+
+        for start, end, _ in self.matches:
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format.setBackground(QtGui.QColor(Config.value("col.find")))
+
+            curs = self.textCursor()
+            curs.setPosition(start)
+            curs.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+            selection.cursor = curs
+            selections.append(selection)
+
+        self.setExtraSelections(selections)
 
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
@@ -210,9 +328,8 @@ class CodeEditor(QtWidgets.QTextEdit):
         selections = []
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            if bool(Config.value("highlightCurrentLine", True)):
-                selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
-                selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
+            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
             selections.append(selection)
@@ -294,7 +411,7 @@ class CodeEditor(QtWidgets.QTextEdit):
         return 13 + self.fontMetrics().width('9') * digits
 
     def resizeEvent(self, event):
-        QtWidgets.QTextEdit.resizeEvent(self, event)
+        QtWidgets.QPlainTextEdit.resizeEvent(self, event)
         cr = self.contentsRect()
         self.lineNumberArea.setGeometry(QtCore.QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
 
@@ -308,7 +425,11 @@ class CodeEditor(QtWidgets.QTextEdit):
         self.updateLineNumberAreaText()
 
     def updateLineNumberAreaText(self):
-        self.highlightCurrentLine()
+        if Config.value("highlightCurrentLine"):
+            self.highlightCurrentLine()
+        if Config.value("parentheses"):
+            self.matchParenthesis()
+        self.highlightMatches()
 
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().sliderPosition())
 
@@ -329,6 +450,22 @@ BLOCKSTATE_NORMAL = 0
 BLOCKSTATE_COMMENT = 1
 BLOCKSTATE_STRING = 2
 BLOCKSTATE_HTML = 4
+
+class ParenthesisInfo:
+    def __init__(self, char, pos):
+        self.char = char
+        self.pos = pos
+
+class TextBlockData(QtGui.QTextBlockUserData):
+    def __init__(self):
+        super(TextBlockData, self).__init__()
+        self.parenthesis = []
+
+    def insert(self, info):
+        i = 0
+        while i < len(self.parenthesis) and info.pos > self.parenthesis[i].pos:
+            i += 1
+        self.parenthesis.insert(i, info)
 
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -426,7 +563,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             if Config.value("autorender"):
                 self.editor.mainwindow.displayGraph()
 
-
     def highlightRules(self, text, rules):
         for pattern, formatter in rules:
             expression = QtCore.QRegExp(pattern)
@@ -436,7 +572,18 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(index, length, formatter())
                 index = expression.indexIn(text, index + length)
 
+    def storeParenthesis(self, text:str):
+        data = TextBlockData()
+        for c in Constants.INDENT_OPEN + Constants.INDENT_CLOSE:
+            leftpos = text.index(c) if c in text else -1
+            while leftpos != -1:
+                info = ParenthesisInfo(c, leftpos)
+                data.insert(info)
+                leftpos = text[leftpos+1:].index(c) if c in text[leftpos+1:] else -1
+        self.setCurrentBlockUserData(data)
+
     def highlightBlock(self, text):
+        self.storeParenthesis(text)
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
         sh = bool(Config.value("syntaxHighlighting", True))
         if sh:
@@ -506,7 +653,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         errorFormat = QtGui.QTextCharFormat()
         errorFormat.setFontUnderline(True)
         errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
-        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
+        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
         errorFormat.setToolTip(tooltip)
         return errorFormat
 

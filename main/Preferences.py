@@ -68,7 +68,8 @@ class Preferences(QtWidgets.QDialog):
             "col_lnf",
             "col_lnb",
             "col_clnf",
-            "col_clnb"
+            "col_clnb",
+            "col_find"
         ]
         self.names_syntax =[
             "col_keyword",
@@ -127,6 +128,7 @@ class Preferences(QtWidgets.QDialog):
         if True:
             self.check_lineNumbers.setChecked(bool(self.preferences.value("showLineNumbers", True)))
             self.check_highlightLine.setChecked(bool(self.preferences.value("highlightCurrentLine", True)))
+            self.check_parentheses.setChecked(bool(self.preferences.value("parentheses", True)))
             self.check_monospace.setChecked(bool(self.preferences.value("monospace", True)))
             self.num_tabwidth.setValue(int(self.preferences.value("tabwidth", 4)))
             self.check_syntax.setChecked(bool(self.preferences.value("syntaxHighlighting", True)))
@@ -164,6 +166,7 @@ class Preferences(QtWidgets.QDialog):
             self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col.lnb", "#f7f7f7")))
             self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col.clnf", "#ffffff")))
             self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col.clnb", "#30acc6")))
+            self.col_find.setColor(QtGui.QColor(self.preferences.value("col.find", "#8be9fd")))
             self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col.keyword", "#800000")))
             self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col.attribute", "#000080")))
             self.col_number.setColor(QtGui.QColor(self.preferences.value("col.number", "#ff00ff")))
@@ -195,6 +198,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.indent", "TAB")))
             self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.unindent", "SHIFT+TAB")))
             self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.auto_indent", "CTRL+SHIFT+I")))
+            self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.find", "CTRL+F")))
             self.ks_toggleCodeEditor.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.toggle_editor", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
             self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
@@ -216,6 +220,7 @@ class Preferences(QtWidgets.QDialog):
         if True:
             self.preferences.setValue("showLineNumbers", self.check_lineNumbers.isChecked())
             self.preferences.setValue("highlightCurrentLine", self.check_highlightLine.isChecked())
+            self.preferences.setValue("parentheses", self.check_parentheses.isChecked())
             self.preferences.setValue("monospace", self.check_monospace.isChecked())
             self.preferences.setValue("tabwidth", self.num_tabwidth.value())
             self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
@@ -244,6 +249,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("col.lnb", self.col_lnb.colorName())
             self.preferences.setValue("col.clnf", self.col_clnf.colorName())
             self.preferences.setValue("col.clnb", self.col_clnb.colorName())
+            self.preferences.setValue("col.find", self.col_find.colorName())
             self.preferences.setValue("col.keyword", self.col_keyword.colorName())
             self.preferences.setValue("col.attribute", self.col_attribute.colorName())
             self.preferences.setValue("col.number", self.col_number.colorName())
@@ -275,6 +281,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.indent", self.ks_indent.keySequence().toString())
             self.preferences.setValue("ks.unindent", self.ks_unindent.keySequence().toString())
             self.preferences.setValue("ks.auto_indent", self.ks_auto_indent.keySequence().toString())
+            self.preferences.setValue("ks.find", self.ks_find.keySequence().toString())
             self.preferences.setValue("ks.toggle_editor", self.ks_toggleCodeEditor.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
             self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
@@ -291,7 +298,7 @@ class Preferences(QtWidgets.QDialog):
         actions = [
             "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
-            "Comment", "Indent", "Unindent", "Auto_Indent",
+            "Comment", "Indent", "Unindent", "Auto_Indent", "Find",
             "Render"
         ]
         for action in actions:
@@ -331,7 +338,6 @@ class Preferences(QtWidgets.QDialog):
         fontWidth = QtGui.QFontMetrics(editor.currentCharFormat().font()).averageCharWidth()
         editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
         editor.updateLineNumberArea(None)
-        editor.highlightCurrentLine()
         editor.highlighter.rehighlight()
 
     def open(self):

@@ -5,6 +5,7 @@ Date:   14/12/2019
 """
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
 
+from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
@@ -37,6 +38,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.recents = []
         self.restore()
 
+        self.find = FindReplace(self, self.editor)
+
         # Set menu
         self.action_New.triggered.connect(self.new)
         self.action_Open.triggered.connect(self.open)
@@ -57,6 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Indent.triggered.connect(self.editor.indent)
         self.action_Unindent.triggered.connect(self.editor.unindent)
         self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
+        self.action_Find.triggered.connect(self.findReplace)
         self.action_Render.triggered.connect(self.displayGraph)
         self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)
@@ -281,6 +285,9 @@ class MainWindow(QtWidgets.QMainWindow):
         image.loadFromData(bdata)
         pixmap = QtGui.QPixmap.fromImage(image)
         self.scene.addPixmap(pixmap)
+
+    def findReplace(self):
+        self.find.show()
 
     def checkUpdates(self):
         checker = UpdateChecker(self)

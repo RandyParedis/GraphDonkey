@@ -84,6 +84,8 @@
     <addaction name="action_Indent"/>
     <addaction name="action_Unindent"/>
     <addaction name="action_Auto_Indent"/>
+    <addaction name="separator"/>
+    <addaction name="action_Find"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -297,6 +299,11 @@
   <action name="action_Unindent">
    <property name="text">
     <string>U&amp;nindent</string>
+   </property>
+  </action>
+  <action name="action_Find">
+   <property name="text">
+    <string>&amp;Find and Replace</string>
    </property>
   </action>
  </widget>

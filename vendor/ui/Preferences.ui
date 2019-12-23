@@ -106,21 +106,58 @@
        <string>&amp;Editor</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="6" column="1">
-        <widget class="QSpinBox" name="num_tabwidth">
-         <property name="suffix">
-          <string> characters</string>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>Presentation</string>
          </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Width of the &quot;tab&quot; character:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="num_tabwidth">
+            <property name="suffix">
+             <string> characters</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QCheckBox" name="check_monospace">
+            <property name="text">
+             <string>Use Monospace Font</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="check_highlightLine">
+            <property name="text">
+             <string>Highlight Current Line</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="check_lineNumbers">
+            <property name="text">
+             <string>Show Line Numbers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="check_parentheses">
+            <property name="text">
+             <string>Match Parentheses</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Width of the &quot;tab&quot; character:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0" colspan="2">
+       <item row="5" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
           <string>Parser</string>
@@ -153,32 +190,11 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="check_highlightLine">
-         <property name="text">
-          <string>Highlight Current Line</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="check_lineNumbers">
-         <property name="text">
-          <string>Show Line Numbers</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QCheckBox" name="check_monospace">
-         <property name="text">
-          <string>Use Monospace Font</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_appearance">
       <attribute name="title">
-       <string>&amp;Appearance</string>
+       <string>&amp;Theme and Colors</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_14">
        <item row="0" column="0">
@@ -190,9 +206,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-401</y>
             <width>629</width>
-            <height>858</height>
+            <height>881</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_17">
@@ -353,14 +369,14 @@
               <item row="4" column="0">
                <widget class="QLabel" name="label_35">
                 <property name="text">
-                 <string>Current Line Number Background:</string>
+                 <string>Highlight Foreground:</string>
                 </property>
                </widget>
               </item>
               <item row="3" column="0">
                <widget class="QLabel" name="label_33">
                 <property name="text">
-                 <string>Current Line Number Foreground:</string>
+                 <string>Highlight Foreground:</string>
                 </property>
                </widget>
               </item>
@@ -368,6 +384,13 @@
                <widget class="QLabel" name="label_37">
                 <property name="text">
                  <string>Line Number Foreground:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_59">
+                <property name="text">
+                 <string>Find Highlight:</string>
                 </property>
                </widget>
               </item>
@@ -486,9 +509,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-277</y>
+            <y>-299</y>
             <width>629</width>
-            <height>994</height>
+            <height>1025</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -617,6 +640,16 @@
               </item>
               <item row="10" column="1">
                <widget class="QKeySequenceEdit" name="ks_unindent"/>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="label_60">
+                <property name="text">
+                 <string>Find and Replace:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QKeySequenceEdit" name="ks_find"/>
               </item>
              </layout>
             </widget>

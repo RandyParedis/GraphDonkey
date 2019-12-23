@@ -94,11 +94,17 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Renamed 'Appearance' in the Preferences to 'Theme and Colors'
 * [0.1.2] Added Actions for better User experience:
-  * Indent/Unindent of current Selection or Line
-  * Possibility to Auto-Indent Selection
-  * Turn a Selection easily into a Comment
-  * Duplicate the current Selection or Line
+  * Indent/Unindent of current selection or line
+  * Possibility to auto-indent selection
+  * Turn a selection easily into a comment
+  * Duplicate the current selection or line
+  * Pressing `ENTER` or `RETURN` will automatically try to indent the new line
+  * Entering before a closing bracket (either `}` or `]`) will open a scope
+  by adding two lines, both indented accordingly
+  * Copy and Cut of empty selections now will be applied on the entire line
+  * 'Find and Replace' dialog for easy text manipulation
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
@@ -141,10 +147,7 @@ Below, I've listed all features I'd like to see in future versions.
 https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
-* [0.1.2] Find and Replace functionality
 * [0.1.2] Autocompletion
-* [0.1.2] Quick comment insert
-* [0.1.2] Smart indentation
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?
@@ -154,6 +157,8 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
+* [0.2.0] Add mouse control section to 'Shortcuts' in the Preferences
+  * Rename 'Shortcuts' to 'Controls'
 * [0.2.1] Add all different node and edge types in interactive mode
 * [0.2.1] Add graphviz html syntax highlighting + parsing
 * [0.3.0] Add Python scripting engine for live-showing of graph updates
