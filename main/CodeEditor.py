@@ -415,6 +415,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cr = self.contentsRect()
         self.lineNumberArea.setGeometry(QtCore.QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
 
+    def updateIndicator(self):
+        cursor = self.textCursor()
+        if cursor.selectedText() != "":
+            self.mainwindow.charIndicator.setText("[%i chars]" % len(cursor.selectedText()))
+        else:
+            self.mainwindow.charIndicator.setText("")
+        self.mainwindow.positionIndicator.setText("%i:%i\t" % (cursor.blockNumber() + 1, cursor.columnNumber() + 1))
+
     def updateLineNumberAreaWidth(self, newBlockCount):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)
 
@@ -430,6 +438,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if Config.value("parentheses"):
             self.matchParenthesis()
         self.highlightMatches()
+
+        self.updateIndicator()
 
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().sliderPosition())
 

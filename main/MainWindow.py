@@ -25,6 +25,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
 
+        # Set Statusbar
+        self.statusMessage = QtWidgets.QLabel("")
+        self.positionIndicator = QtWidgets.QLabel(":")
+        self.charIndicator = QtWidgets.QLabel("")
+        self.statusBar().addPermanentWidget(self.statusMessage, 2)
+        self.statusBar().addPermanentWidget(self.charIndicator)
+        self.statusBar().addPermanentWidget(self.positionIndicator)
+
         self.filename = ""
         self.saved = False
         self.updateTitle()
@@ -90,8 +98,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(" " + rest)
 
     def updateStatus(self, text):
-        self.statusBar().clearMessage()
-        self.statusBar().showMessage(text)
+        self.statusMessage.setText(text)
 
     def setupEditor(self):
         if self.editor is None:
