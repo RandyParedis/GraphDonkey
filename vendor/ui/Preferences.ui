@@ -14,6 +14,16 @@
    <string>Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="3" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabPosition">
@@ -71,14 +81,7 @@
          <property name="title">
           <string>Other</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Limit Recent Files Menu to</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,0">
           <item row="0" column="1">
            <widget class="QSpinBox" name="num_recents">
             <property name="suffix">
@@ -89,10 +92,79 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Limit Recent Files Menu to</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_2">
             <property name="text">
              <string>entries.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_65">
+            <property name="text">
+             <string>File Encoding:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="2">
+           <widget class="QComboBox" name="combo_encoding">
+            <item>
+             <property name="text">
+              <string>UTF-8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>UTF-16</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>UTF-32</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ASCII</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ISO-8859-1</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="QComboBox" name="combo_lineEndings">
+            <item>
+             <property name="text">
+              <string>Posix (LF)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Mac (CR)</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Windows (CRLF)</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_66">
+            <property name="text">
+             <string>Line Endings:</string>
             </property>
            </widget>
           </item>
@@ -106,57 +178,6 @@
        <string>&amp;Editor</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_9">
-         <property name="title">
-          <string>Presentation</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_19">
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Width of the &quot;tab&quot; character:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="num_tabwidth">
-            <property name="suffix">
-             <string> characters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_monospace">
-            <property name="text">
-             <string>Use Monospace Font</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_highlightLine">
-            <property name="text">
-             <string>Highlight Current Line</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_lineNumbers">
-            <property name="text">
-             <string>Show Line Numbers</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="check_parentheses">
-            <property name="text">
-             <string>Match Parentheses</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="5" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
@@ -190,6 +211,114 @@
          </layout>
         </widget>
        </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>Presentation</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_19">
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="num_font">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>40</number>
+            </property>
+            <property name="value">
+             <number>12</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="check_monospace">
+            <property name="text">
+             <string>Show Monospace Fonts</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Tab size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_62">
+            <property name="text">
+             <string>spaces</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_61">
+            <property name="text">
+             <string>Font:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QFontComboBox" name="font_editor">
+            <property name="currentFont">
+             <font>
+              <pointsize>12</pointsize>
+              <stylestrategy>PreferDefault</stylestrategy>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_64">
+            <property name="text">
+             <string>pt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_63">
+            <property name="text">
+             <string>Font Size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="num_tabwidth">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="value">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_highlightLine">
+            <property name="text">
+             <string>Highlight Current Line</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_parentheses">
+            <property name="text">
+             <string>Match Parentheses</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_lineNumbers">
+            <property name="text">
+             <string>Show Line Numbers</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_appearance">
@@ -206,7 +335,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-401</y>
+            <y>0</y>
             <width>629</width>
             <height>881</height>
            </rect>
@@ -509,7 +638,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-299</y>
+            <y>0</y>
             <width>629</width>
             <height>1025</height>
            </rect>
@@ -827,16 +956,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
-     </property>
     </widget>
    </item>
   </layout>

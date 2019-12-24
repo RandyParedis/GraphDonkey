@@ -41,6 +41,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter = Highlighter(self.document(), self)
 
         self.matches = []
+        self.extraCursors = set()
 
         self.setMouseTracking(True)
 
@@ -121,6 +122,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         posS = cursor.selectionStart()
         posE = cursor.selectionEnd()
 
+        cursor.beginEditBlock()
         cursor.setPosition(posS)
         line = cursor.selectionStart()
         add = None
@@ -131,6 +133,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             # Apply function and Compute Offset
             before = len(cursor.selectedText())
             state = func(cursor, state)
+            cursor.setPosition(line)
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             after = len(cursor.selectedText())
@@ -138,9 +141,13 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             if add is None:
                 add = after - before
 
-            cursor.movePosition(QtGui.QTextCursor.Down)
-            line = cursor.selectionStart()
+            d = cursor.movePosition(QtGui.QTextCursor.Down)
+            if d:
+                line = cursor.selectionStart()
+            else:
+                break
 
+        cursor.endEditBlock()
         cursor.setPosition(posS + add)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
         self.setTextCursor(cursor)
@@ -228,6 +235,23 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             return state
 
         self.lines(indentLine, indent)
+
+    def nextOccurrence(self):
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        if txt == "":
+            cursor.select(QtGui.QTextCursor.WordUnderCursor)
+            self.setTextCursor(cursor)
+        else:
+            next = self.document().find(txt, cursor, QtGui.QTextDocument.FindCaseSensitively)
+            self.extraCursors.add(next)
+            selections = self.extraSelections()
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format.setBackground(QtGui.QColor(Config.value("col.highlight")))
+            selection.format.setForeground(QtGui.QColor(Config.value("col.highlightedText")))
+            selection.cursor = next
+            selections.append(selection)
+            self.setExtraSelections(selections)
 
     def matchParenthesis(self):
         curs = self.textCursor()
@@ -416,12 +440,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lineNumberArea.setGeometry(QtCore.QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
 
     def updateIndicator(self):
+        text = ""
         cursor = self.textCursor()
         if cursor.selectedText() != "":
-            self.mainwindow.charIndicator.setText("[%i chars]" % len(cursor.selectedText()))
-        else:
-            self.mainwindow.charIndicator.setText("")
-        self.mainwindow.positionIndicator.setText("%i:%i\t" % (cursor.blockNumber() + 1, cursor.columnNumber() + 1))
+            text = "[%i chars]" % len(cursor.selectedText())
+        self.mainwindow.positionIndicator\
+            .setText("%s      %i:%i" % (text, cursor.blockNumber() + 1, cursor.columnNumber() + 1))
 
     def updateLineNumberAreaWidth(self, newBlockCount):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)

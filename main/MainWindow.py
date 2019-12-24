@@ -28,10 +28,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set Statusbar
         self.statusMessage = QtWidgets.QLabel("")
         self.positionIndicator = QtWidgets.QLabel(":")
-        self.charIndicator = QtWidgets.QLabel("")
-        self.statusBar().addPermanentWidget(self.statusMessage, 2)
-        self.statusBar().addPermanentWidget(self.charIndicator)
-        self.statusBar().addPermanentWidget(self.positionIndicator)
+        self.encIndicator = QtWidgets.QLabel("")
+        self.positionIndicator.setAlignment(QtCore.Qt.AlignRight)
+        self.encIndicator.setAlignment(QtCore.Qt.AlignRight)
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
+        self.statusBar().addPermanentWidget(self.statusMessage, 7)
+        self.statusBar().addPermanentWidget(self.positionIndicator, 1)
+        self.statusBar().addPermanentWidget(self.encIndicator, 1)
+        self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
 
         self.filename = ""
         self.saved = False
@@ -199,9 +203,10 @@ class MainWindow(QtWidgets.QMainWindow):
             ext = fileName.split(".")[-1]
             if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
                 self.setupEditor()
-                with open(fileName, "r") as myfile:
+                with open(fileName, "rb") as myfile:
                     data = myfile.read()
-                    self.editor.setText(data)
+                    # TODO: On decoding crash => find actual encoding?
+                    self.editor.setText(data.decode(Config.value("encoding")))
 
                 self.updateRecents(fileName)
                 self.filename = fileName
@@ -229,8 +234,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.saveAs()
         else:
             contents = self.editor.toPlainText()
-            with open(self.filename, 'w') as myfile:
-                myfile.write(contents)
+            contents = contents.replace("\n", Constants.ENDINGS[int(Config.value("endings"))])
+            bc = bytes(contents, Config.value("encoding"))
+            # TODO: error on invalid encoding
+            with open(self.filename, 'wb') as myfile:
+                myfile.write(bc)
             self.saved = True
             self.updateTitle()
 

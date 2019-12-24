@@ -5,9 +5,11 @@ Date:   17/12/2019
 """
 from PyQt5 import QtWidgets, QtGui, uic
 from main.extra.IOHandler import IOHandler
+from main.extra import Constants
 import configparser
 import glob
 import re
+import os
 
 
 def bool(name: str):
@@ -22,6 +24,7 @@ class Preferences(QtWidgets.QDialog):
         super(Preferences, self).__init__(parent)
         uic.loadUi(IOHandler.dir_ui("Preferences.ui"), self)
         self.buttonBox.clicked.connect(self.restoreDefaults)
+        self.check_monospace.toggled.connect(self.setFontCombo)
 
         self.themes = []
         self.preferences = IOHandler.get_preferences()
@@ -45,6 +48,10 @@ class Preferences(QtWidgets.QDialog):
         self.themes = sorted([Theme(f) for f in files])
         for theme in self.themes:
             self.combo_theme.addItem(theme.name, theme)
+
+    def setFontCombo(self, on):
+        f = QtWidgets.QFontComboBox.MonospacedFonts if on else QtWidgets.QFontComboBox.AllFonts
+        self.font_editor.setFontFilters(f)
 
     def _setColorPickers(self):
         self.names_general = [
@@ -123,14 +130,20 @@ class Preferences(QtWidgets.QDialog):
                 self.radio_ws_openempty.setChecked(False)
                 self.radio_ws_restore.setChecked(True)
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
+            self.combo_encoding.setCurrentText(self.preferences.value("encoding", "UTF-8").upper())
+            self.combo_lineEndings.setCurrentIndex(int(self.preferences.value("endings",
+                                                                              Constants.ENDINGS.index(os.linesep))))
 
         # EDITOR
         if True:
+            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
+            self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("font", defFont.family())))
+            self.num_font.setValue(int(self.preferences.value("fontsize", 12)))
+            self.num_tabwidth.setValue(int(self.preferences.value("tabwidth", 4)))
             self.check_lineNumbers.setChecked(bool(self.preferences.value("showLineNumbers", True)))
             self.check_highlightLine.setChecked(bool(self.preferences.value("highlightCurrentLine", True)))
             self.check_parentheses.setChecked(bool(self.preferences.value("parentheses", True)))
             self.check_monospace.setChecked(bool(self.preferences.value("monospace", True)))
-            self.num_tabwidth.setValue(int(self.preferences.value("tabwidth", 4)))
             self.check_syntax.setChecked(bool(self.preferences.value("syntaxHighlighting", True)))
             self.check_parse.setChecked(bool(self.preferences.value("useParser", True)))
             self.check_autorender.setChecked(bool(self.preferences.value("autorender", True)))
@@ -215,15 +228,19 @@ class Preferences(QtWidgets.QDialog):
             else:
                 self.preferences.setValue("restore", 1)
             self.preferences.setValue("recents", self.num_recents.value())
+            self.preferences.setValue("encoding", self.combo_encoding.currentText())
+            self.preferences.setValue("endings", self.combo_lineEndings.currentIndex())
 
         # EDITOR
         if True:
+            self.preferences.setValue("font", self.font_editor.currentFont().family())
+            self.preferences.setValue("fontsize", self.num_font.value())
             self.preferences.setValue("showLineNumbers", self.check_lineNumbers.isChecked())
             self.preferences.setValue("highlightCurrentLine", self.check_highlightLine.isChecked())
+            self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
             self.preferences.setValue("parentheses", self.check_parentheses.isChecked())
             self.preferences.setValue("monospace", self.check_monospace.isChecked())
             self.preferences.setValue("tabwidth", self.num_tabwidth.value())
-            self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
             self.preferences.setValue("useParser", self.check_parse.isChecked())
             self.preferences.setValue("autorender", self.check_autorender.isChecked())
 
@@ -331,14 +348,17 @@ class Preferences(QtWidgets.QDialog):
 
     def applyEditor(self):
         editor = self.parent().editor
-        if self.check_monospace.isChecked():
-            editor.font().setFamily('Ubuntu Monospace')
-        else:
-            editor.font().setFamily('Ubuntu')
-        fontWidth = QtGui.QFontMetrics(editor.currentCharFormat().font()).averageCharWidth()
+        font = QtGui.QFont()
+        font.setFamily(self.font_editor.currentFont().family())
+        font.setFixedPitch(self.check_monospace.isChecked())
+        font.setPointSize(self.num_font.value())
+        editor.setFont(font)
+        fontWidth = QtGui.QFontMetrics(font).averageCharWidth()
         editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
         editor.updateLineNumberArea(None)
         editor.highlighter.rehighlight()
+
+        self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " + self.combo_encoding.currentText())
 
     def open(self):
         self.rectify()

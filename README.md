@@ -94,6 +94,8 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Added Font(size) selectors to Preferences>Editor
+* [0.1.2] Added File Encoding and Line Ending selectors to Preferences>General
 * [0.1.2] Renamed 'Appearance' in the Preferences to 'Theme and Colors'
 * [0.1.2] Added Actions for better User experience:
   * Indent/Unindent of current selection or line
