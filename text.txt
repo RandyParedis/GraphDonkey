@@ -4,7 +4,6 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
 TODO (see also README.md)
-        - Closing Preferences changes 'saved' state
         - If the parse tree is re-ran, it must be done so from the first block
             ==> Now, if there is a bug on line 1 and you fix it on line 4, line 1 remains highlighted in red
             ==> Maybe via ExtraSelections? (see Bracket Matching)

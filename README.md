@@ -94,6 +94,7 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+* [0.1.2] Better file 'saved' detection
 * [0.1.2] Added options to Preferences>Editor:
   * Font family
   * Font size
@@ -153,7 +154,6 @@ Below, I've listed all features I'd like to see in future versions.
 https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.2] Quick insert of special structures
   * Ability to create custom structures (i.e. code snippets)
-* [0.1.2] Autocompletion
 * [0.1.3] Opening from as many file types as possible
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?

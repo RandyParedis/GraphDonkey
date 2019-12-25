@@ -45,8 +45,22 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.setMouseTracking(True)
 
+        self.filename = ""
+        self.filecontents = ""
+
         self.completer = None
         self.setCompleter()
+
+    def isSaved(self):
+        """Returns True if the file was saved."""
+        return self.toPlainText() == self.filecontents
+
+    def save(self):
+        self.filecontents = self.toPlainText()
+
+    def clearFile(self):
+        self.filename = ""
+        self.filecontents = ""
 
     def setCompleter(self):
         keywords = Constants.STRICT_KEYWORDS + Constants.ATTRIBUTES
@@ -246,7 +260,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lines(func)
 
     def autoIndent(self):
-        # TODO: use spaces instead of tabs iff required
         cursor = self.textCursor()
         posS = cursor.selectionStart()
         cursor.setPosition(posS)

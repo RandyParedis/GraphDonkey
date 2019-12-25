@@ -37,12 +37,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusBar().addPermanentWidget(self.encIndicator, 1)
         self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
 
-        self.filename = ""
-        self.saved = False
-        self.updateTitle()
-
         self.editor = None
         self.setupEditor()
+        self.updateTitle()
 
         self.preferences = Preferences(self)
         self.preferences.apply()
@@ -96,9 +93,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def updateTitle(self):
         rest = "undefined"
-        if self.filename != "":
-            rest = self.filename
-        if not self.saved:
+        if self.editor.filename != "":
+            rest = self.editor.filename
+        if not self.editor.isSaved():
             rest += "*"
         self.setWindowTitle(" " + rest)
 
@@ -147,12 +144,11 @@ class MainWindow(QtWidgets.QMainWindow):
             settings.setValue("windowState", self.saveState())
             settings.setValue("recents", self.recents)
         if int(Config.value("restore", 0)) == 1:
-            settings.setValue("open", self.filename)
+            settings.setValue("open", self.editor.filename)
 
         QtWidgets.QMainWindow.closeEvent(self, event)
 
     def textChangedEvent(self):
-        self.saved = False
         self.updateTitle()
 
     def updateRecents(self, file=None):
@@ -189,14 +185,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def new(self):
         q = True
-        if self.filename != "" and not self.saved:
+        if self.editor.filename != "" and not self.editor.isSaved():
             q = self.question("Not Saved", "There are changes detected in this file. "
                                            "Are you sure you want to open a new one?\n"
                                            "All changes will be lost.")
         if q:
             self.setupEditor()
-            self.filename = ""
-            self.saved = False
+            self.editor.clearFile()
             self.updateTitle()
 
     def openFile(self, fileName):
@@ -207,18 +202,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 with open(fileName, "rb") as myfile:
                     data = myfile.read()
                     # TODO: On decoding crash => find actual encoding?
-                    self.editor.setText(data.decode(Config.value("encoding")))
+                    data = data.decode(Config.value("encoding"))
+                    self.editor.setText(data)
 
                 self.updateRecents(fileName)
-                self.filename = fileName
-                self.saved = True
+                self.editor.filename = fileName
+                self.editor.filecontents = data
                 self.updateTitle()
             else:
                 self.warn("Invalid File", "It looks like this file cannot be opened.")
 
     def open(self):
         q = True
-        if not self.saved:
+        if not self.editor.isSaved():
             q = self.question("Not Saved", "There are changes detected in this file. "
                                            "Are you sure you want to open another?\n"
                                            "All changes will be lost.")
@@ -231,16 +227,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openFile(fileName)
 
     def save(self):
-        if self.filename == "":
+        if self.editor.filename == "":
             self.saveAs()
         else:
             contents = self.editor.toPlainText()
             contents = contents.replace("\n", Constants.ENDINGS[int(Config.value("endings"))])
             bc = bytes(contents, Config.value("encoding"))
             # TODO: error on invalid encoding
-            with open(self.filename, 'wb') as myfile:
+            with open(self.editor.filename, 'wb') as myfile:
                 myfile.write(bc)
-            self.saved = True
+            self.editor.save()
             self.updateTitle()
 
     def saveAs(self):
@@ -259,7 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if ext is not rext:
                 fileName += "." + rext
             if Constants.valid_ext(rext, Constants.FILE_TYPES_OPEN):
-                self.filename = fileName
+                self.editor.filename = fileName
                 self.save()
             else:
                 self.warn("Invalid File", "It looks like you want to save a file with an invalid file type of '%s'."
@@ -284,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     dot = Source(self.editor.toPlainText())
                     contents = dot.pipe(ext)
-                    with open(self.filename, 'bw') as myfile:
+                    with open(self.editor.filename, 'bw') as myfile:
                         myfile.write(contents)
                 except graphviz.backend.CalledProcessError as e:
                     self.error("Uh oh!", "It looks like there are some errors in your dot file. Cannot export!\n" +
