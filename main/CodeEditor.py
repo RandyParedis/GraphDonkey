@@ -172,37 +172,34 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         cursor.beginEditBlock()
         cursor.setPosition(posS)
-        line = cursor.selectionStart()
-        add = None
-        while line <= posE:
-            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-
-            # Apply function and Compute Offset
-            before = len(cursor.selectedText())
-            state = func(cursor, state)
-            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-            after = len(cursor.selectedText())
-            posE += after - before
-            if add is None:
-                add = after - before
-
-            d = cursor.movePosition(QtGui.QTextCursor.Down)
-            if d:
-                line = cursor.selectionStart()
-            else:
-                break
-
-        cursor.endEditBlock()
-        cursor.setPosition(posS + add)
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
+        otxt = cursor.selectedText()
+        txt = otxt.split(Constants.LINE_ENDING)
+        add = 0
+        for i in range(len(txt)):
+            state, line = func(txt[i], state)
+            if i == 0:
+                add = len(line) - len(txt[i])
+            txt[i] = line
+        ntxt = Constants.LINE_ENDING.join(txt)
+        cursor.setPosition(posS)
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+        cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
+        if cursor.selectedText() == Constants.LINE_ENDING:
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        cursor.insertText(ntxt)
+        cursor.setPosition(posS + add)
+        cursor.setPosition(posE + len(ntxt) - len(otxt), QtGui.QTextCursor.KeepAnchor)
+        cursor.endEditBlock()
         self.setTextCursor(cursor)
+
         return cursor
 
     def comment(self):
-        def cmnt(cursor, state):
-            txt = cursor.selectedText()
+        # TODO: identify indents before/after comment signs
+        def cmnt(line, state):
+            txt = line
             if txt[:2] == "//" and state in [True, None]:
                 txt = txt[2:]
                 state = True
@@ -212,8 +209,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             elif state in [False, None]:
                 txt = "//" + txt
                 state = False
-            cursor.insertText(txt)
-            return state
+            return state, txt
 
         self.lines(cmnt)
 
@@ -221,11 +217,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         tab = '\t'
         if bool(Config.value("spacesOverTabs")):
             tab = ' ' * int(Config.value("tabwidth"))
-        def func(cursor, state):
-            txt = cursor.selectedText()
-            txt = tab + txt
-            cursor.insertText(txt)
-            return state
+
+        def func(line, state):
+            return state, tab + line
 
         cursor = self.textCursor()
         txt = cursor.selectedText()
@@ -243,19 +237,20 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         ws = (' ', '\t')
         useSpaces = bool(Config.value("spacesOverTabs"))
         tablength = int(Config.value("tabwidth"))
-        def func(cursor, state):
-            txt = cursor.selectedText()
-            lft = left(txt, ws).replace("\t", " " * tablength)
+
+        def func(line, state):
+            txt = line
+            lft = left(txt, ws)
             if useSpaces:
+                lft = lft.replace("\t", " " * tablength)
                 if len(lft) > 0:
                     lft = lft[:-1]
                 lft = lft[:(len(lft) // tablength) * tablength]
                 txt = lft + txt.lstrip()
             else:
-                if lft[-1] in ws:
+                if len(lft) > 0 and lft[-1] in ws:
                     txt = lft[:-1] + txt.lstrip()
-            cursor.insertText(txt)
-            return state
+            return state, txt
 
         self.lines(func)
 
@@ -289,14 +284,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             indent //= tw
 
 
-        def indentLine(cursor, state):
-            txt = cursor.selectedText().lstrip()
+        def indentLine(line, state):
+            txt = line.lstrip()
             if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
                 state -= tw if sot else 1
             if sot:
-                cursor.insertText((" " * state) + txt)
+                line = (" " * state) + txt
             else:
-                cursor.insertText(("\t" * state) + txt)
+                line = ("\t" * state) + txt
             for c in txt:
                 if c in Constants.INDENT_CLOSE:
                     state -= tw if sot else 1
@@ -304,7 +299,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                         state = 0
                 elif c in Constants.INDENT_OPEN:
                     state += tw if sot else 1
-            return state
+            return state, line
 
         self.lines(indentLine, indent)
 

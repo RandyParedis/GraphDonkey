@@ -19,7 +19,7 @@ ICON_OPEN = QImage(IOHandler.dir_icons("open.png"))
 ICON_SAVE = QImage(IOHandler.dir_icons("save.png"))
 ICON_RENDER = QImage(IOHandler.dir_icons("render.png"))
 
-LINE_ENDING = '\n'  # Qt Handles all line endings internally => only need to replace on save
+LINE_ENDING = "\u2029"  # Qt Handles all line endings internally => only need to replace on save
 ENDINGS = ['\n', '\r', '\r\n']
 
 INDENT_OPEN = ['{', '[']
