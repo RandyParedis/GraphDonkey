@@ -143,6 +143,7 @@ class Preferences(QtWidgets.QDialog):
             self.check_lineNumbers.setChecked(bool(self.preferences.value("showLineNumbers", True)))
             self.check_highlightLine.setChecked(bool(self.preferences.value("highlightCurrentLine", True)))
             self.check_parentheses.setChecked(bool(self.preferences.value("parentheses", True)))
+            self.check_spaceTabs.setChecked(bool(self.preferences.value("spacesOverTabs", False)))
             self.check_monospace.setChecked(bool(self.preferences.value("monospace", True)))
             self.check_syntax.setChecked(bool(self.preferences.value("syntaxHighlighting", True)))
             self.check_parse.setChecked(bool(self.preferences.value("useParser", True)))
@@ -212,6 +213,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.unindent", "SHIFT+TAB")))
             self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.auto_indent", "CTRL+SHIFT+I")))
             self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.find", "CTRL+F")))
+            self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.autocomplete", "CTRL+SPACE")))
             self.ks_toggleCodeEditor.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.toggle_editor", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
             self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
@@ -238,6 +240,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("showLineNumbers", self.check_lineNumbers.isChecked())
             self.preferences.setValue("highlightCurrentLine", self.check_highlightLine.isChecked())
             self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
+            self.preferences.setValue("spacesOverTabs", self.check_spaceTabs.isChecked())
             self.preferences.setValue("parentheses", self.check_parentheses.isChecked())
             self.preferences.setValue("monospace", self.check_monospace.isChecked())
             self.preferences.setValue("tabwidth", self.num_tabwidth.value())
@@ -299,6 +302,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.unindent", self.ks_unindent.keySequence().toString())
             self.preferences.setValue("ks.auto_indent", self.ks_auto_indent.keySequence().toString())
             self.preferences.setValue("ks.find", self.ks_find.keySequence().toString())
+            self.preferences.setValue("ks.autocomplete", self.ks_autocomplete.keySequence().toString())
             self.preferences.setValue("ks.toggle_editor", self.ks_toggleCodeEditor.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
             self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
@@ -315,7 +319,7 @@ class Preferences(QtWidgets.QDialog):
         actions = [
             "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
-            "Comment", "Indent", "Unindent", "Auto_Indent", "Find",
+            "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
             "Render"
         ]
         for action in actions:
@@ -358,7 +362,34 @@ class Preferences(QtWidgets.QDialog):
         editor.updateLineNumberArea(None)
         editor.highlighter.rehighlight()
 
-        self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " + self.combo_encoding.currentText())
+        self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " +
+                                           self.combo_encoding.currentText())
+
+        cursor = editor.textCursor()
+        seltxt = cursor.selectedText()
+        cstart = cursor.selectionStart()
+        cend = cursor.selectionEnd()
+        cursor.setPosition(0)
+        cursor.setPosition(cstart, QtGui.QTextCursor.KeepAnchor)
+        before = cursor.selectedText()
+        tw = self.num_tabwidth.value()
+        txt = editor.toPlainText()
+        if self.check_spaceTabs.isChecked():
+            e = "\t"
+            b4 = before.count(e) * (tw - 1)
+            cstart += b4
+            cend += seltxt.count(e) * (tw - 1) + b4
+            txt = txt.replace(e, " " * tw)
+        else:
+            e = " " * tw
+            b4 = before.count(e) * (tw - 1)
+            cstart -= b4
+            cend -= seltxt.count(e) * (tw - 1) + b4
+            txt = txt.replace(e, "\t")
+        editor.setText(txt)
+        cursor.setPosition(cstart)
+        cursor.setPosition(cend, QtGui.QTextCursor.KeepAnchor)
+        editor.setTextCursor(cursor)
 
     def open(self):
         self.rectify()

@@ -13,11 +13,11 @@ Author: Randy Paredis
 Date:   12/14/2019
 """
 from PyQt5 import QtGui, QtWidgets, QtCore
-from lark import UnexpectedToken, Token, UnexpectedCharacters
 
-from main.extra import Constants
-from main.extra.Parser import Parser
+
+from main.extra import Constants, left
 from main.extra.IOHandler import IOHandler
+from main.extra.Highlighter import Highlighter
 from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
@@ -45,31 +45,65 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.setMouseTracking(True)
 
+        self.completer = None
+        self.setCompleter()
+
+    def setCompleter(self):
+        keywords = Constants.STRICT_KEYWORDS + Constants.ATTRIBUTES
+        keywords.sort()
+        self.completer = QtWidgets.QCompleter(keywords, self)
+        self.completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
+        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.completer.setWrapAround(False)
+        self.completer.setWidget(self)
+        self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+
+    def insertCompletion(self, completion):
+        cursor = self.textCursor()
+        extra = len(self.completer.completionPrefix())
+        if extra > 0:
+            cursor.movePosition(QtGui.QTextCursor.Left)
+        cursor.movePosition(QtGui.QTextCursor.EndOfWord)
+        cursor.insertText(completion[extra:])
+        self.setTextCursor(cursor)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        if self.completer.popup().isVisible():
+            if event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return, QtCore.Qt.Key_Tab]:
+                completion = self.completer.popup().currentIndex().data()
+                self.insertCompletion(completion)
+                self.completer.popup().hide()
+            elif event.key() == QtCore.Qt.Key_Escape:
+                self.completer.popup().hide()
+            else:
+                QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
+                self.completer.popup().hide()
+                self.complete()
+        elif event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
+            self.insertPlainText(Constants.LINE_ENDING)
+            self.autoIndent()
+            cursor = self.textCursor()
+            pos = cursor.position()
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText().lstrip()
+            if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
+                cursor.setPosition(pos)
+                cursor.insertText(Constants.LINE_ENDING)
+                cursor.movePosition(QtGui.QTextCursor.Up)
+                cursor.movePosition(QtGui.QTextCursor.EndOfLine)
+                cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.KeepAnchor)
+                self.setTextCursor(cursor)
+                self.autoIndent()
+                bsel = cursor.selectionStart()
+                cursor.setPosition(bsel)
+                cursor.movePosition(QtGui.QTextCursor.EndOfLine)
+                self.setTextCursor(cursor)
+        else:
+            QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
+
     def event(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.ShortcutOverride:
             return False
-        if event.type() == QtCore.QEvent.KeyPress:
-            event = QtGui.QKeyEvent(event)
-            if event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
-                self.insertPlainText(Constants.LINE_ENDING)
-                self.autoIndent()
-                cursor = self.textCursor()
-                pos = cursor.position()
-                cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-                txt = cursor.selectedText().lstrip()
-                if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
-                    cursor.setPosition(pos)
-                    cursor.insertText(Constants.LINE_ENDING)
-                    cursor.movePosition(QtGui.QTextCursor.Up)
-                    cursor.movePosition(QtGui.QTextCursor.EndOfLine)
-                    cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.KeepAnchor)
-                    self.setTextCursor(cursor)
-                    self.autoIndent()
-                    bsel = cursor.selectionStart()
-                    cursor.setPosition(bsel)
-                    cursor.movePosition(QtGui.QTextCursor.EndOfLine)
-                    self.setTextCursor(cursor)
-                return False
         return QtWidgets.QPlainTextEdit.event(self, event)
 
     def setText(self, text):
@@ -133,7 +167,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             # Apply function and Compute Offset
             before = len(cursor.selectedText())
             state = func(cursor, state)
-            cursor.setPosition(line)
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             after = len(cursor.selectedText())
@@ -171,9 +204,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lines(cmnt)
 
     def indent(self):
+        tab = '\t'
+        if bool(Config.value("spacesOverTabs")):
+            tab = ' ' * int(Config.value("tabwidth"))
         def func(cursor, state):
             txt = cursor.selectedText()
-            txt = '\t' + txt
+            txt = tab + txt
             cursor.insertText(txt)
             return state
 
@@ -182,25 +218,42 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if txt != "":
             self.lines(func)
         else:
-            self.insertPlainText("\t")
+            self.insertPlainText(tab)
 
     def unindent(self):
+        # 1) take all left whitespace;
+        # 2) replace tabs with spaces (w.r.t. Config);
+        # 3) remove 1 character;
+        # 4) reduce string length until length % tablength == 0;
+        # 5) this is new whitespace length
+        ws = (' ', '\t')
+        useSpaces = bool(Config.value("spacesOverTabs"))
+        tablength = int(Config.value("tabwidth"))
         def func(cursor, state):
             txt = cursor.selectedText()
-            if len(txt) > 0 and txt[0] in [' ', '\t']:
-                txt = txt[1:]
+            lft = left(txt, ws).replace("\t", " " * tablength)
+            if useSpaces:
+                if len(lft) > 0:
+                    lft = lft[:-1]
+                lft = lft[:(len(lft) // tablength) * tablength]
+                txt = lft + txt.lstrip()
+            else:
+                if lft[-1] in ws:
+                    txt = lft[:-1] + txt.lstrip()
             cursor.insertText(txt)
             return state
 
         self.lines(func)
 
     def autoIndent(self):
+        # TODO: use spaces instead of tabs iff required
         cursor = self.textCursor()
         posS = cursor.selectionStart()
         cursor.setPosition(posS)
         s = cursor.movePosition(QtGui.QTextCursor.Up)
         indent = 0
         tw = int(Config.value("tabwidth"))
+        sot = bool(Config.value("spacesOverTabs"))
         if s:
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
@@ -218,20 +271,26 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                     indent += tw
                 elif c in Constants.INDENT_CLOSE:
                     indent -= tw
-        indent //= tw
+
+        if not sot:
+            indent //= tw
+
 
         def indentLine(cursor, state):
             txt = cursor.selectedText().lstrip()
             if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
-                state -= 1
-            cursor.insertText(("\t" * state) + txt)
+                state -= tw if sot else 1
+            if sot:
+                cursor.insertText((" " * state) + txt)
+            else:
+                cursor.insertText(("\t" * state) + txt)
             for c in txt:
                 if c in Constants.INDENT_CLOSE:
-                    state -= 1
+                    state -= tw if sot else 1
                     if state < 0:
                         state = 0
                 elif c in Constants.INDENT_OPEN:
-                    state += 1
+                    state += tw if sot else 1
             return state
 
         self.lines(indentLine, indent)
@@ -252,6 +311,26 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             selection.cursor = next
             selections.append(selection)
             self.setExtraSelections(selections)
+
+    def complete(self):
+        # TODO: identify context-specific actions
+        #   Model list can be changed with self.completer.model().setStringList()
+        cursor = self.textCursor()
+        cursor.select(QtGui.QTextCursor.WordUnderCursor)
+        prefix = cursor.selectedText()
+        eow = "~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="
+
+        if len(prefix) > 0 and prefix[-1] in eow:
+            return
+
+        if prefix != self.completer.completionPrefix():
+            self.completer.setCompletionPrefix(prefix)
+            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+        cr = self.cursorRect()
+        cr.setWidth(self.completer.popup().sizeHintForColumn(0) +
+                    self.completer.popup().verticalScrollBar().sizeHint().width())
+        self.completer.complete(cr)
 
     def matchParenthesis(self):
         curs = self.textCursor()
@@ -478,218 +557,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         first_block_id = self.getFirstVisibleBlockId()
         if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
             self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
-
-
-BLOCKSTATE_NORMAL = 0
-BLOCKSTATE_COMMENT = 1
-BLOCKSTATE_STRING = 2
-BLOCKSTATE_HTML = 4
-
-class ParenthesisInfo:
-    def __init__(self, char, pos):
-        self.char = char
-        self.pos = pos
-
-class TextBlockData(QtGui.QTextBlockUserData):
-    def __init__(self):
-        super(TextBlockData, self).__init__()
-        self.parenthesis = []
-
-    def insert(self, info):
-        i = 0
-        while i < len(self.parenthesis) and info.pos > self.parenthesis[i].pos:
-            i += 1
-        self.parenthesis.insert(i, info)
-
-class Highlighter(QtGui.QSyntaxHighlighter):
-    def __init__(self, parent=None, editor=None):
-        super(Highlighter, self).__init__(parent)
-        self.editor = editor
-        self.highlightingRules = []
-        self._setPatterns()
-        self.parser = Parser()
-        self.errors = {}
-
-    def _setPatterns(self):
-        keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
-        self.highlightingRules = [(QtCore.QRegExp(pattern, QtCore.Qt.CaseInsensitive), self.format_keyword)
-                                  for pattern in keywordPatterns]
-
-        attributePatterns = "|".join(["(" + x + ")" for x in Constants.ATTRIBUTES])
-        attributePatterns = "(%s)(?=\\s*[=])" % attributePatterns
-        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % attributePatterns), self.format_attribute))
-        for a in Constants.SPECIAL_ATTRIBUTES:
-            self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), self.format_attribute))
-
-        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
-
-        self.highlightingRules.append((QtCore.QRegExp("^#[^%s]*$" % Constants.LINE_ENDING), self.format_comment_hash))
-        self.highlightingRules.append((QtCore.QRegExp("//[^%s]*" % Constants.LINE_ENDING), self.format_comment_single))
-
-        self.commentStartExpression = QtCore.QRegExp("/\\*")
-        self.commentEndExpression = QtCore.QRegExp("\\*/")
-        self.stringExpression = QtCore.QRegExp('"')
-        self.htmlStartExpression = QtCore.QRegExp('<')
-        self.htmlEndExpression = QtCore.QRegExp('>')
-        self.htmlTag = QtCore.QRegExp("</?[^<>/%s]*>" % Constants.LINE_ENDING)
-
-    def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
-        startIndex = 0
-        pbs = self.previousBlockState()
-        if pbs == -1 or not pbs & blockstate:
-            startIndex = startexp.indexIn(text)
-
-        while startIndex >= 0:
-            begin = 0 if startIndex == 0 else startIndex + 1
-            if skipexp:
-                skipIndex = skipexp.lastIndexIn(text)
-                begin = skipIndex + skipexp.matchedLength()
-            endIndex = endexp.indexIn(text, begin)
-
-            if endIndex == -1:
-                self.setCurrentBlockState(self.currentBlockState() | blockstate)
-                length = len(text) - startIndex
-            else:
-                length = endIndex - startIndex + endexp.matchedLength()
-
-            self.setFormat(startIndex, length, format)
-            startIndex = startexp.indexIn(text, startIndex + length)
-
-    def highlightMultilineComments(self, text):
-        self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, BLOCKSTATE_COMMENT,
-                                  self.format_comment_multi())
-
-    def highlightMultilineStrings(self, text):
-        self.multilineHighlighter(text, self.stringExpression, self.stringExpression, BLOCKSTATE_STRING,
-                                  self.format_string())
-
-    def highlightMultilineHtml(self, text):
-        self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, BLOCKSTATE_HTML,
-                                  self.format_html(), self.htmlTag)
-
-    def highlightErrors(self):
-        text = self.editor.toPlainText()
-        self.errors = {}
-        T = self.parser.parse(text) if text is not "" else None
-        if T is None:
-            for token, msg, exp in self.parser.errors:
-                startIndex = token.pos_in_stream
-                size = 1
-                if isinstance(token, UnexpectedToken):
-                    size = len(token.token)
-                elif isinstance(token, UnexpectedCharacters):
-                    regex = QtCore.QRegExp(r"\s")
-                    endIndex = regex.indexIn(text, startIndex)
-                    if endIndex == -1:
-                        size = len(text) - startIndex
-                    else:
-                        size = endIndex - startIndex
-                elif isinstance(token, Token):
-                    size = len(token)
-                bix = self.currentBlock().position()
-                self.setFormat(startIndex - bix, size, self.format_error(msg))
-                for i in range(startIndex, startIndex + size + 1):
-                    self.errors[i] = msg
-                    # self.setFormat(i - bix, 1, self.format_error(msg))
-                self.editor.mainwindow.updateStatus(msg)
-        else:
-            self.editor.mainwindow.updateStatus("")
-            if Config.value("autorender"):
-                self.editor.mainwindow.displayGraph()
-
-    def highlightRules(self, text, rules):
-        for pattern, formatter in rules:
-            expression = QtCore.QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, formatter())
-                index = expression.indexIn(text, index + length)
-
-    def storeParenthesis(self, text:str):
-        data = TextBlockData()
-        for c in Constants.INDENT_OPEN + Constants.INDENT_CLOSE:
-            leftpos = text.index(c) if c in text else -1
-            while leftpos != -1:
-                info = ParenthesisInfo(c, leftpos)
-                data.insert(info)
-                leftpos = text[leftpos+1:].index(c) if c in text[leftpos+1:] else -1
-        self.setCurrentBlockUserData(data)
-
-    def highlightBlock(self, text):
-        self.storeParenthesis(text)
-        self.setCurrentBlockState(BLOCKSTATE_NORMAL)
-        sh = bool(Config.value("syntaxHighlighting", True))
-        if sh:
-            self.highlightRules(text, self.highlightingRules)
-            self.highlightMultilineStrings(text)
-            self.highlightMultilineHtml(text)
-        if bool(Config.value("useParser", True)):
-            self.highlightErrors()
-        if sh:
-            self.highlightMultilineComments(text)
-
-    @staticmethod
-    def format_keyword():
-        keywordFormat = QtGui.QTextCharFormat()
-        keywordFormat.setForeground(QtGui.QColor(Config.value("col.keyword")))
-        keywordFormat.setFontWeight(QtGui.QFont.Bold)
-        return keywordFormat
-
-    @staticmethod
-    def format_attribute():
-        attributeFormat = QtGui.QTextCharFormat()
-        attributeFormat.setForeground(QtGui.QColor(Config.value("col.attribute")))
-        attributeFormat.setFontWeight(QtGui.QFont.Bold)
-        return attributeFormat
-
-    @staticmethod
-    def format_comment_hash():
-        hashCommentFormat = QtGui.QTextCharFormat()
-        hashCommentFormat.setForeground(QtGui.QColor(Config.value("col.hash")))
-        hashCommentFormat.setFontItalic(True)
-        return hashCommentFormat
-
-    @staticmethod
-    def format_comment_single():
-        singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
-        singleLineCommentFormat.setFontItalic(True)
-        return singleLineCommentFormat
-
-    @staticmethod
-    def format_comment_multi():
-        multiLineCommentFormat = QtGui.QTextCharFormat()
-        multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
-        multiLineCommentFormat.setFontItalic(True)
-        return multiLineCommentFormat
-
-    @staticmethod
-    def format_number():
-        numberFormat = QtGui.QTextCharFormat()
-        numberFormat.setForeground(QtGui.QColor(Config.value("col.number")))
-        return numberFormat
-
-    @staticmethod
-    def format_string():
-        quotedStringFormat = QtGui.QTextCharFormat()
-        quotedStringFormat.setForeground(QtGui.QColor(Config.value("col.string")))
-        return quotedStringFormat
-
-    @staticmethod
-    def format_html():
-        htmlStringFormat = QtGui.QTextCharFormat()
-        htmlStringFormat.setForeground(QtGui.QColor(Config.value("col.html")))
-        return htmlStringFormat
-
-    @staticmethod
-    def format_error(tooltip=""):
-        errorFormat = QtGui.QTextCharFormat()
-        errorFormat.setFontUnderline(True)
-        errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
-        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
-        errorFormat.setToolTip(tooltip)
-        return errorFormat
 
 
 class LineNumberArea(QtWidgets.QWidget):

@@ -73,6 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Unindent.triggered.connect(self.editor.unindent)
         self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
         self.action_Find.triggered.connect(self.findReplace)
+        self.action_Autocomplete.triggered.connect(self.editor.complete)
         self.action_Render.triggered.connect(self.displayGraph)
         self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)

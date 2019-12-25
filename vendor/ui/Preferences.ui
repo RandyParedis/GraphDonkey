@@ -216,62 +216,11 @@
          <property name="title">
           <string>Presentation</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_19">
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="num_font">
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>40</number>
-            </property>
-            <property name="value">
-             <number>12</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="check_monospace">
-            <property name="text">
-             <string>Show Monospace Fonts</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Tab size:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_62">
-            <property name="text">
-             <string>spaces</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayout_19" columnstretch="0,0,0,0,0">
           <item row="0" column="0">
            <widget class="QLabel" name="label_61">
             <property name="text">
              <string>Font:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QFontComboBox" name="font_editor">
-            <property name="currentFont">
-             <font>
-              <pointsize>12</pointsize>
-              <stylestrategy>PreferDefault</stylestrategy>
-             </font>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_64">
-            <property name="text">
-             <string>pt</string>
             </property>
            </widget>
           </item>
@@ -282,8 +231,42 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="3" colspan="2">
+           <widget class="QCheckBox" name="check_spaceTabs">
+            <property name="text">
+             <string>Use spaces instead of tabs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3" colspan="2">
+           <widget class="QCheckBox" name="check_parentheses">
+            <property name="text">
+             <string>Match Parentheses</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3" colspan="2">
+           <widget class="QCheckBox" name="check_monospace">
+            <property name="text">
+             <string>Show Monospace Fonts</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Tab size:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
            <widget class="QSpinBox" name="num_tabwidth">
+            <property name="suffix">
+             <string> chars</string>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -295,24 +278,43 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0" colspan="3">
+          <item row="3" column="0" colspan="2">
+           <widget class="QCheckBox" name="check_lineNumbers">
+            <property name="text">
+             <string>Show Line Numbers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
            <widget class="QCheckBox" name="check_highlightLine">
             <property name="text">
              <string>Highlight Current Line</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="3">
-           <widget class="QCheckBox" name="check_parentheses">
-            <property name="text">
-             <string>Match Parentheses</string>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="num_font">
+            <property name="suffix">
+             <string> pt</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>40</number>
+            </property>
+            <property name="value">
+             <number>12</number>
             </property>
            </widget>
           </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="QCheckBox" name="check_lineNumbers">
-            <property name="text">
-             <string>Show Line Numbers</string>
+          <item row="0" column="1">
+           <widget class="QFontComboBox" name="font_editor">
+            <property name="currentFont">
+             <font>
+              <pointsize>12</pointsize>
+              <stylestrategy>PreferDefault</stylestrategy>
+             </font>
             </property>
            </widget>
           </item>
@@ -640,7 +642,7 @@
             <x>0</x>
             <y>0</y>
             <width>629</width>
-            <height>1025</height>
+            <height>1056</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -650,6 +652,16 @@
               <string>Edit Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>Undo:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_undo"/>
+              </item>
               <item row="8" column="1">
                <widget class="QKeySequenceEdit" name="ks_comment"/>
               </item>
@@ -689,16 +701,6 @@
               </item>
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_redo"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_11">
-                <property name="text">
-                 <string>Undo:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_undo"/>
               </item>
               <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_select_all"/>
@@ -779,6 +781,16 @@
               </item>
               <item row="12" column="1">
                <widget class="QKeySequenceEdit" name="ks_find"/>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="text">
+                 <string>Autocomplete:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QKeySequenceEdit" name="ks_autocomplete"/>
               </item>
              </layout>
             </widget>

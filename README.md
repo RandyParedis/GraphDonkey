@@ -94,7 +94,10 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
-* [0.1.2] Added Font(size) selectors to Preferences>Editor
+* [0.1.2] Added options to Preferences>Editor:
+  * Font family
+  * Font size
+  * Prefer spaces over tabs checkbox
 * [0.1.2] Added File Encoding and Line Ending selectors to Preferences>General
 * [0.1.2] Renamed 'Appearance' in the Preferences to 'Theme and Colors'
 * [0.1.2] Added Actions for better User experience:
@@ -107,6 +110,7 @@ elsewhere, you **must** reference this project.
   by adding two lines, both indented accordingly
   * Copy and Cut of empty selections now will be applied on the entire line
   * 'Find and Replace' dialog for easy text manipulation
+  * Autocompleter with all keywords of graphviz language
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
