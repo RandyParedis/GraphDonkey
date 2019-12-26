@@ -16,10 +16,11 @@ WS: /[ \t\f\r\n]/+
 start: graph
 graph: STRICT? (GRAPH|DIGRAPH) id? "{" stmt_list "}"
 stmt_list: (stmt ";"? stmt_list)?
-stmt: node_stmt | edge_stmt | attr_stmt | (id "=" id) | subgraph
+stmt: node_stmt | edge_stmt | attr_stmt | attr | subgraph
 attr_stmt: (GRAPH | NODE | EDGE) attr_list
 attr_list: "[" a_list? "]" attr_list?
-a_list: id "=" id (";" | ",")? a_list?
+a_list: attr (";" | ",")? a_list?
+attr: id "=" id
 edge_stmt: (node_id | subgraph) edge_rhs attr_list?
 edge_rhs: edgeop (node_id | subgraph) edge_rhs?
 edgeop: DIOP | UNOP

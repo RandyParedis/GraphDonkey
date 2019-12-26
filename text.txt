@@ -4,16 +4,19 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
 TODO (see also README.md)
-        - If the parse tree is re-ran, it must be done so from the first block
-            ==> Now, if there is a bug on line 1 and you fix it on line 4, line 1 remains highlighted in red
-            ==> Maybe via ExtraSelections? (see Bracket Matching)
         - Add parser warnings
+            - Invalid label for type (error instead of warning?)
+            - Label notes (see https://graphviz.gitlab.io/_pages/doc/info/attrs.html)
+            - When using directed labels in undirected graphs
+            - Warning disabling
+        - Add warning when using invalid encoding for graphviz (default is UTF-8, but ISO-8859-1 is also accepted)
         - Snippets
             - Insert from snippets into code
             - Tree view? ==> Store snippets as json and insert at cursor on drag & drop
             - Add/Edit/Remove snippets
         - Custom RMB menu in Editor
             ==> In Qt, this is called a ContextMenu
+        - Find when a selection is highlighted must fill the find field with the selection
 
 TODO FUTURE [0.1.3]
     - Additional configuration possibilities for graphviz
@@ -31,4 +34,5 @@ TODO FUTURE [0.1.3]
         ==> https://www.qtcentre.org/threads/27245-Printing-white-spaces-in-QPlainTextEdit-the-QtCreator-way
     - Force autocompleter to suggest context-specific items
     - For DEBUG only: Open parse tree of dotfile as dotfile
-    - Fix all TODOs
+    - Fix most TODOs
+    - Fully decouple CodeEditor, making it a standalone source that also works in any project/situation.

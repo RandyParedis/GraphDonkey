@@ -6,10 +6,11 @@ Date:   12/14/2019
 
 from PyQt5 import QtGui, QtCore
 from main.extra import Constants
-from main.extra.Parser import Parser
+from main.extra.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
+from main.Preferences import bool
 
-from lark import UnexpectedToken, Token, UnexpectedCharacters
+from lark import UnexpectedToken, UnexpectedCharacters
 
 Config = IOHandler.get_preferences()
 
@@ -41,7 +42,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.highlightingRules = []
         self._setPatterns()
         self.parser = Parser()
-        self.errors = {}
 
     def _setPatterns(self):
         keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
@@ -100,9 +100,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, BLOCKSTATE_HTML,
                                   self.format_html(), self.htmlTag)
 
-    def highlightErrors(self):
+    def storeErrors(self):
+        self.editor.errors = []
         text = self.editor.toPlainText()
-        self.errors = {}
         T = self.parser.parse(text) if text is not "" else None
         if T is None:
             for token, msg, exp in self.parser.errors:
@@ -117,17 +117,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                         size = len(text) - startIndex
                     else:
                         size = endIndex - startIndex
-                elif isinstance(token, Token):
+                elif isinstance(token, EOFToken):
                     size = len(token)
-                bix = self.currentBlock().position()
-                self.setFormat(startIndex - bix, size, self.format_error(msg))
-                for i in range(startIndex, startIndex + size + 1):
-                    self.errors[i] = msg
-                    # self.setFormat(i - bix, 1, self.format_error(msg))
+                self.editor.errors.append((startIndex, size, msg))
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
-            if Config.value("autorender"):
+            if bool(Config.value("autorender")):
                 self.editor.mainwindow.displayGraph()
 
     def highlightRules(self, text, rules):
@@ -151,15 +147,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
     def highlightBlock(self, text):
         self.storeParenthesis(text)
+        self.storeErrors()
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
         sh = bool(Config.value("syntaxHighlighting", True))
         if sh:
             self.highlightRules(text, self.highlightingRules)
             self.highlightMultilineStrings(text)
             self.highlightMultilineHtml(text)
-        if bool(Config.value("useParser", True)):
-            self.highlightErrors()
-        if sh:
             self.highlightMultilineComments(text)
 
     @staticmethod

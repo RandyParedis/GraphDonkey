@@ -41,6 +41,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter = Highlighter(self.document(), self)
 
         self.matches = []
+        self.errors = []
         self.extraCursors = set()
 
         self.setMouseTracking(True)
@@ -128,9 +129,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor = self.cursorForPosition(pos)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         tpos = cursor.position()
-        error = self.highlighter.errors.get(tpos, "")
-        if error != "":
-            QtWidgets.QToolTip.showText(event.globalPos(), error, self)
+        for start, size, msg in self.errors:
+            if start <= tpos <= start + size:
+                QtWidgets.QToolTip.showText(event.globalPos(), msg, self)
         return QtWidgets.QPlainTextEdit.mouseMoveEvent(self, event)
 
     def _cc(self):
@@ -432,6 +433,19 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.setExtraSelections(selections)
 
+    def highlightErrors(self):
+        selections = self.extraSelections()
+        for start, size, message in self.errors:
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format = Highlighter.format_error(message)
+
+            curs = self.textCursor()
+            curs.setPosition(start)
+            curs.setPosition(start + size, QtGui.QTextCursor.KeepAnchor)
+            selection.cursor = curs
+            selections.append(selection)
+        self.setExtraSelections(selections)
+
     def insertFromMimeData(self, QMimeData):
         self.insertPlainText(QMimeData.text())
 
@@ -544,10 +558,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.updateLineNumberAreaText()
 
     def updateLineNumberAreaText(self):
-        if Config.value("highlightCurrentLine"):
+        if bool(Config.value("highlightCurrentLine")):
             self.highlightCurrentLine()
-        if Config.value("parentheses"):
+        if bool(Config.value("parentheses")):
             self.matchParenthesis()
+        if bool(Config.value("useParser", True)):
+            self.highlightErrors()
         self.highlightMatches()
 
         self.updateIndicator()

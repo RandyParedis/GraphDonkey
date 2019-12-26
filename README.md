@@ -112,6 +112,7 @@ elsewhere, you **must** reference this project.
   * Copy and Cut of empty selections now will be applied on the entire line
   * 'Find and Replace' dialog for easy text manipulation
   * Autocompleter with all keywords of graphviz language
+  * Fixed Syntax Error Highlighting
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)

@@ -122,21 +122,6 @@
             </item>
             <item>
              <property name="text">
-              <string>UTF-16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>UTF-32</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ASCII</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>ISO-8859-1</string>
              </property>
             </item>
@@ -338,7 +323,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>366</width>
             <height>881</height>
            </rect>
           </property>
@@ -641,7 +626,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>271</width>
             <height>1056</height>
            </rect>
           </property>

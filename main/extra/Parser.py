@@ -5,6 +5,8 @@ It also loads the Graphviz grammar from the vendor folder.
 Author: Randy Paredis
 Date:   16/12/2019
 """
+from graphviz import Source
+
 from main.extra.IOHandler import IOHandler
 from lark import Lark, Tree
 from lark.exceptions import UnexpectedCharacters, UnexpectedToken, UnexpectedEOF
@@ -50,8 +52,14 @@ class EOFToken:
         split = text.split("\n")
         self.line = len(split)
         self.column = len(split[-1])
-        self.pos_in_stream = sum([len(x) for x in split]) - 1
+        self.pos_in_stream = len(text.rstrip()) - 1
         self.end_pos = self.pos_in_stream + 1
+
+    def __len__(self):
+        return self.end_pos - self.pos_in_stream
+
+    def __repr__(self):
+        return "EOFToken <%i, %i; %i, %i>" % (self.line, self.column, self.pos_in_stream, self.end_pos)
 
 
 class CheckVisitor:
@@ -69,6 +77,10 @@ class CheckVisitor:
                 self.errors.append((op,
                                     "Invalid edge operation for graph type at line %i col %i." % (op.line, op.column),
                                     {self.parser.lookup("DIOP") if self.type == "GRAPH" else self.parser.lookup("UNOP")}))
+        elif tree.data == "attr":
+            key = tree.children[0].children[0].value
+            value = tree.children[1].children[0].value
+            print(key, value, type(value))
         for child in tree.children:
             if isinstance(child, Tree):
                 self.visit(child)
@@ -81,7 +93,7 @@ if __name__ == "__main__":
     from sys import stderr
 
     parser = Parser()
-    txt = "graph T { test [label=\"0, 5\"]; }"
+    txt = "graph T { test -- maybe [arrowhead=odiamondopen]; }"
     T = parser.parse(txt)
     if T is None:
         for token, msg, exp in parser.errors:
@@ -91,3 +103,6 @@ if __name__ == "__main__":
             print("\t" + ("~" * (token.column - 1)) + "^", file=stderr)
             print("suggested:", file=stderr)
             print("\t" + ", ".join([x.name for x in exp]), file=stderr)
+    else:
+        dot = Source(txt)
+        bdata = dot.pipe('jpg')
