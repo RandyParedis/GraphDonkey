@@ -103,7 +103,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     def storeErrors(self):
         self.editor.errors = []
         text = self.editor.toPlainText()
-        T = self.parser.parse(text) if text is not "" else None
+        T = self.parser.parse(text) if text != "" else None
         if T is None:
             for token, msg, exp in self.parser.errors:
                 startIndex = token.pos_in_stream
