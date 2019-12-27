@@ -94,6 +94,7 @@ creating it.
 elsewhere, you **must** reference this project.
 
 ### Changelog
+##### Jack-in-a-Box
 * [0.1.2] Better file 'saved' detection
 * [0.1.2] Added options to Preferences>Editor:
   * Font family
@@ -135,6 +136,8 @@ elsewhere, you **must** reference this project.
   * Squiggly underline (default in red)
   * Full token highlights
 * [0.1.0] Added automatic check for updates
+
+##### Unnamed Release
 * [0.0.2] Added "Recent Files" menu
 * [0.0.2] Added testing framework
   * Run `pytest` in the root folder to test
@@ -158,20 +161,21 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [0.1.3] Additional configuration possibilities for graphviz
 * [0.1.3] Allow for multiple files via tabbed pane?
 * [0.1.3] Open parse tree of dotfile as dotfile?
-* [0.2.0] Interactive view of DOT files
+* **-- CONVERT TO SEMANTIC VERSIONING --**
+* [1.0.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
-* [0.2.0] Add mouse control section to 'Shortcuts' in the Preferences
+* [1.0.0] Add mouse control section to 'Shortcuts' in the Preferences
   * Rename 'Shortcuts' to 'Controls'
-* [0.2.1] Add all different node and edge types in interactive mode
-* [0.2.1] Add graphviz html syntax highlighting + parsing
-* [0.2.2] Continue work on attribute checking (currently discontinued)
-* [0.3.0] Add Python scripting engine for live-showing of graph updates
+* [1.1.0] Add all different node and edge types in interactive mode
+* [1.1.1] Add graphviz html syntax highlighting + parsing
+* [1.1.2] Continue work on attribute checking (currently discontinued)
+* [1.2.0] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?
   * Toggling of modes
   * How? Run python script and use all captured output as input for graphviz.
-* [0.3.1] Multiple Languages
-* [0.3.2] Automatic install of updates via app
+* [1.3.0] Multiple Languages
+* [1.3.0] Automatic install of updates via app

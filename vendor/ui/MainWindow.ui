@@ -16,7 +16,27 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QGraphicsView" name="view"/>
+     <widget class="QTabWidget" name="files">
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -53,7 +73,7 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="action_ShowCode"/>
+    <addaction name="action_Show_Render_Area"/>
     <addaction name="action_Snippets"/>
     <addaction name="separator"/>
     <addaction name="action_Render"/>
@@ -95,17 +115,6 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="graphvizDataDock">
-   <property name="windowTitle">
-    <string>Enter Graphviz Data:</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="graphvizData">
-    <layout class="QVBoxLayout" name="verticalLayout_2"/>
-   </widget>
-  </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -124,6 +133,21 @@
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionRender"/>
+  </widget>
+  <widget class="QDockWidget" name="viewDock">
+   <property name="windowTitle">
+    <string>View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QGraphicsView" name="view"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionNew">
    <property name="text">
@@ -169,7 +193,7 @@
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="action_ShowCode">
+  <action name="action_Show_Render_Area">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -177,7 +201,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show &amp;Code Editor</string>
+    <string>S&amp;how Render Area</string>
    </property>
   </action>
   <action name="action_Render">
@@ -320,22 +344,5 @@
   </action>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>action_ShowCode</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>graphvizDataDock</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>28</x>
-     <y>335</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

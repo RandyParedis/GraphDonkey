@@ -38,8 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusBar().addPermanentWidget(self.encIndicator, 1)
         self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
 
-        self.editor = None
-        self.setupEditor()
+        self.files.clear()
         self.updateTitle()
 
         self.preferences = Preferences(self)
@@ -48,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.recents = []
         self.restore()
 
-        self.find = FindReplace(self, self.editor)
+        self.find = FindReplace(self, self.editor())
         self.snippets = Snippets(self)
 
         # Set menu
@@ -58,32 +57,33 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Save_As.triggered.connect(self.saveAs)
         self.action_Export.triggered.connect(self.export)
         self.action_Preferences.triggered.connect(lambda: self.preferences.exec_())
-        self.action_Exit.triggered.connect(self.close) # TODO: Check for saved
-        self.action_Undo.triggered.connect(self.editor.undo)
-        self.action_Redo.triggered.connect(self.editor.redo)
-        self.action_Select_All.triggered.connect(self.editor.selectAll)
-        self.action_Delete.triggered.connect(lambda x: self.editor.insertPlainText(""))
-        self.action_Copy.triggered.connect(self.editor.copy)
-        self.action_Paste.triggered.connect(self.editor.paste)
-        self.action_Cut.triggered.connect(self.editor.cut)
-        self.action_Duplicate.triggered.connect(self.editor.duplicate)
-        self.action_Comment.triggered.connect(self.editor.comment)
-        self.action_Indent.triggered.connect(self.editor.indent)
-        self.action_Unindent.triggered.connect(self.editor.unindent)
-        self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
+        self.action_Exit.triggered.connect(lambda: self.editor().close) # TODO: Check for saved
+        self.action_Undo.triggered.connect(lambda: self.editor().undo)
+        self.action_Redo.triggered.connect(lambda: self.editor().redo)
+        self.action_Select_All.triggered.connect(lambda: self.editor().selectAll)
+        self.action_Delete.triggered.connect(lambda x: self.editor().insertPlainText(""))
+        self.action_Copy.triggered.connect(lambda: self.editor().copy)
+        self.action_Paste.triggered.connect(lambda: self.editor().paste())
+        self.action_Cut.triggered.connect(lambda: self.editor().cut())
+        self.action_Duplicate.triggered.connect(lambda: self.editor().duplicate())
+        self.action_Comment.triggered.connect(lambda: self.editor().comment())
+        self.action_Indent.triggered.connect(lambda: self.editor().indent())
+        self.action_Unindent.triggered.connect(lambda: self.editor().unindent())
+        self.action_Auto_Indent.triggered.connect(lambda: self.editor().autoIndent())
         self.action_Find.triggered.connect(self.findReplace)
-        self.action_Autocomplete.triggered.connect(self.editor.complete)
+        self.action_Autocomplete.triggered.connect(lambda: self.editor().complete())
+        self.viewDock.closeEvent = self.gdDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.displayGraph)
-        self.action_CheckUpdates.triggered.connect(self.checkUpdates)
+        # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)
         self.action_AboutQt.triggered.connect(self.aboutQt)
         self.action_AboutGraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
         # Set Toolbar
-        self.actionUndo.triggered.connect(self.editor.undo)
+        self.actionUndo.triggered.connect(lambda: self.editor().undo())
         self.actionUndo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_UNDO)))
-        self.actionRedo.triggered.connect(self.editor.redo)
+        self.actionRedo.triggered.connect(lambda: self.editor().redo())
         self.actionRedo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_REDO)))
         self.actionNew.triggered.connect(self.new)
         self.actionNew.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_NEW)))
@@ -94,36 +94,33 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRender.triggered.connect(self.displayGraph)
         self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
 
+    def editor(self):
+        idx = self.files.currentIndex()
+        if idx > -1:
+            return self.files.widget(idx)
+        return None
+        
     def updateTitle(self):
-        rest = "undefined"
-        if self.editor.filename != "":
-            rest = self.editor.filename
-        if not self.editor.isSaved():
-            rest += "*"
-        self.setWindowTitle(" " + rest)
+        if self.editor() is not None:
+            rest = "undefined"
+            if self.editor().filename != "":
+                rest = self.editor().filename
+            if not self.editor().isSaved():
+                rest += "*"
+            self.setWindowTitle(" " + rest)
 
     def updateStatus(self, text):
         self.statusMessage.setText(text)
 
-    def setupEditor(self):
-        if self.editor is None:
-            font = QtGui.QFont()
-            font.setFamily('Ubuntu Monospace')
-            font.setFixedPitch(True)
-            font.setPointSize(12)
-
-            self.editor = CodeEditor(self)
-            self.editor.textChanged.connect(self.textChangedEvent)
-            self.editor.setFont(font)
-            self.graphvizData.layout().addWidget(self.editor)
-            self.graphvizDataDock.closeEvent = self.gdDockCloseEvent
-        else:
-            self.editor.clear()
-
-        self.displayGraph()
+    def newTab(self, label):
+        editor = CodeEditor(self)
+        editor.textChanged.connect(self.textChangedEvent)
+        self.files.addTab(editor, label)
+        self.files.setCurrentIndex(self.files.count() - 1)
+        self.preferences.applyEditor()
 
     def gdDockCloseEvent(self, event):
-        self.action_ShowCode.setChecked(False)
+        self.action_Show_Render_Area.setChecked(False)
         self.graphvizDataDock.setVisible(False)
 
     def restore(self):
@@ -147,7 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
             settings.setValue("windowState", self.saveState())
             settings.setValue("recents", self.recents)
         if int(Config.value("restore", 0)) == 1:
-            settings.setValue("open", self.editor.filename)
+            settings.setValue("open", self.editor().filename)
 
         QtWidgets.QMainWindow.closeEvent(self, event)
 
@@ -187,59 +184,46 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateRecents()
 
     def new(self):
-        q = True
-        if self.editor.filename != "" and not self.editor.isSaved():
-            q = self.question("Not Saved", "There are changes detected in this file. "
-                                           "Are you sure you want to open a new one?\n"
-                                           "All changes will be lost.")
-        if q:
-            self.setupEditor()
-            self.editor.clearFile()
-            self.updateTitle()
+        self.newTab("undefined *")
+        self.updateTitle()
 
     def openFile(self, fileName):
         if fileName:
             ext = fileName.split(".")[-1]
             if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
-                self.setupEditor()
+                self.newTab(fileName)
                 with open(fileName, "rb") as myfile:
                     data = myfile.read()
                     # TODO: On decoding crash => find actual encoding?
                     data = data.decode(Config.value("encoding"))
-                    self.editor.setText(data)
+                    self.editor().setText(data)
 
                 self.updateRecents(fileName)
-                self.editor.filename = fileName
-                self.editor.filecontents = data
+                self.editor().filename = fileName
+                self.editor().filecontents = data
                 self.updateTitle()
             else:
                 self.warn("Invalid File", "It looks like this file cannot be opened.")
 
     def open(self):
-        q = True
-        if not self.editor.isSaved():
-            q = self.question("Not Saved", "There are changes detected in this file. "
-                                           "Are you sure you want to open another?\n"
-                                           "All changes will be lost.")
-        if q:
-            options = QtWidgets.QFileDialog.Options()
-            options |= QtWidgets.QFileDialog.DontUseNativeDialog
-            fileName, _ = QtWidgets.QFileDialog\
-                .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
-                                 options=options)
-            self.openFile(fileName)
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog\
+            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
+                             options=options)
+        self.openFile(fileName)
 
     def save(self):
-        if self.editor.filename == "":
+        if self.editor() is not None and self.editor().filename == "":
             self.saveAs()
         else:
-            contents = self.editor.toPlainText()
+            contents = self.editor().toPlainText()
             contents = contents.replace("\n", Constants.ENDINGS[int(Config.value("endings"))])
             bc = bytes(contents, Config.value("encoding"))
             # TODO: error on invalid encoding
-            with open(self.editor.filename, 'wb') as myfile:
+            with open(self.editor().filename, 'wb') as myfile:
                 myfile.write(bc)
-            self.editor.save()
+            self.editor().save()
             self.updateTitle()
 
     def saveAs(self):
@@ -258,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if ext is not rext:
                 fileName += "." + rext
             if Constants.valid_ext(rext, Constants.FILE_TYPES_OPEN):
-                self.editor.filename = fileName
+                self.editor().filename = fileName
                 self.save()
             else:
                 self.warn("Invalid File", "It looks like you want to save a file with an invalid file type of '%s'."
@@ -281,9 +265,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 fileName += "." + rext
             if Constants.valid_ext(rext, Constants.FILE_TYPES_SAVE):
                 try:
-                    dot = Source(self.editor.toPlainText())
+                    dot = Source(self.editor().toPlainText())
                     contents = dot.pipe(ext)
-                    with open(self.editor.filename, 'bw') as myfile:
+                    with open(self.editor().filename, 'bw') as myfile:
                         myfile.write(contents)
                 except graphviz.backend.CalledProcessError as e:
                     self.error("Uh oh!", "It looks like there are some errors in your dot file. Cannot export!\n" +
@@ -295,7 +279,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayGraph(self):
         self.scene.clear()
         try:
-            dot = Source(self.editor.toPlainText())
+            dot = Source(self.editor().toPlainText())
             bdata = dot.pipe('jpg')
             image = QtGui.QImage()
             image.loadFromData(bdata)
@@ -308,7 +292,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.snippets.exec_()
 
     def findReplace(self):
-        sel = self.editor.textCursor().selectedText()
+        sel = self.editor().textCursor().selectedText()
         if sel != "":
             self.find.le_find.setText(sel)
             self.find.le_replace.setText("")

@@ -789,12 +789,12 @@
               <item row="0" column="0">
                <widget class="QLabel" name="label_18">
                 <property name="text">
-                 <string>Toggle Code Editor:</string>
+                 <string>Toggle Render Area:</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_toggleCodeEditor"/>
+               <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_19">

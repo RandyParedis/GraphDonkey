@@ -28,6 +28,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
 
+        font = QtGui.QFont(Config.value("font"))
+
         fontWidth = QtGui.QFontMetrics(self.currentCharFormat().font()).averageCharWidth()
         self.setTabStopWidth(4 * fontWidth)
 
