@@ -1,5 +1,7 @@
 """This file is a collection of Graphviz attributes.
 
+NOTE: THIS IS CURRENTLY DISCONTINUED (see below)
+
 More specifically, all attributes are functions that check
 the validity of the assigned value. All values need to be
 passed as strings for generality. On top of that, they have
@@ -28,6 +30,12 @@ the attributes.
 
 TODO: return 'constraints' dictionary for checking against
       other attributes
+
+FIXME: If there is an issue in a graph, dot just ignores this.
+        This is the reason this file is incomplete and remains
+        incomplete until the user-base requests a feature like
+        this. Or, until someone makes a PR with a completion of
+        this file.
 
 Author: Randy Paredis
 Date:   12-26-2019
@@ -149,6 +157,7 @@ def checkColorList(val):
     raise ValueError("No such color")
 
 def checkString(val):
+    # TODO: fix this, seeing as '\t' is valid (crf. layersep default value)
     if '\\' in val:
         raise ValueError("Escape character found in non-escapeable string")
     return True
@@ -246,6 +255,7 @@ def charset(val, scope):
     checkString(val)
     if val.lower() in ["utf-8", "latin1", "iso-8859-1"]:
         return ""
+    # TODO: check against document charset
     raise ValueError("No such charset")
 
 def clusterrank(val, scope):
@@ -379,5 +389,269 @@ def fillcolor(val, scope):
     else:
         checkColor(val)
     return ""
+
+def fixedsize(val, scope):
+    checkValidScope(scope, "N")
+    checkString(val)
+    if val.lower() not in ["true", "yes", "false", "no", "shape"]:
+        raise ValueError("Invalid value")
+    return ""
+
+def fontcolor(val, scope):
+    checkValidScope(scope, "ENGC")
+    checkColor(val)
+    return ""
+
+def fontname(val, scope):
+    checkValidScope(scope, "ENGC")
+    checkString(val)
+    return ""
+
+def fontnames(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    return "svg only"
+
+def fontpath(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    return ""
+
+def fontsize(val, scope):
+    checkValidScope(scope, "ENGC")
+    checkDouble(val, 1.0)
+    return ""
+
+def forcelabels(val, scope):
+    checkValidScope(scope, "G")
+    checkBool(val)
+    return ""
+
+def gradientangle(val, scope):
+    checkValidScope(scope, "NCG")
+    k = int(val)
+    return ""
+
+def group(val, scope):
+    checkValidScope(scope, "N")
+    checkString(val)
+    return "dot only"
+
+def headURL(val, scope):
+    # TODO: when using an undirected graph, this does not make sense
+    checkValidScope(scope, "E")
+    return "svg, map only"
+
+def head_lp(val, scope):
+    checkValidScope(scope, "E")
+    checkPoint(val)
+    return "write only"
+
+def headclip(val, scope):
+    checkValidScope(scope, "E")
+    checkBool(val)
+    return ""
+
+def headhref(val, scope):
+    # TODO: synonym for headURL, don't use both
+    checkValidScope(scope, "E")
+    return "svg, map only"
+
+def headlabel(val, scope):
+    # TODO: when using an undirected graph, this does not make sense
+    checkValidScope(scope, "E")
+    # TODO: type = escString or HTML label
+    return ""
+
+def headport(val, scope):
+    # TODO: when using an undirected graph, this does not make sense
+    checkValidScope(scope, "E")
+    # TODO: check port pos
+    return ""
+
+def headtarget(val, scope):
+    checkValidScope(scope, "E")
+    return "svg, map only"
+
+def headtooltip(val, scope):
+    checkValidScope(scope, "E")
+    # TODO: only used if the edge has a headURL attribute
+    return "svg, cmap only"
+
+def height(val, scope):
+    # TODO: if shape is regular and width or height is set, that value is used. If both are set, max is used, min otherwise
+    checkValidScope(scope, "N")
+    checkDouble(val, 0.02)
+    return ""
+
+def href(val, scope):
+    checkValidScope(scope, "GCNE")
+    # TODO: synonym for URL, don't use both
+    return "svg, postscript, map only"
+
+def id(val, scope):
+    checkValidScope(scope, "GCNE")
+    return "svg, postscript, map only"
+
+def image(val, scope):
+    checkValidScope(scope, "N")
+    checkString(val)
+    return ""
+
+def imagepath(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    return ""
+
+def imagepos(val, scope):
+    checkValidScope(scope, "N")
+    checkString(val)
+    if val not in ["tl", "tc", "tr", "ml", "mc", "mr", "bl", "bc", "br"]:
+        raise ValueError("Invalid position")
+    return ""
+
+def imagescale(val, scope):
+    checkValidScope(scope, "N")
+    checkString(val)
+    if val.lower not in ["true", "yes", "false", "no", "width", "height"]:
+        raise ValueError("Invalid scale")
+    return ""
+
+def inputscale(val, scope):
+    checkValidScope(scope, "G")
+    checkDouble(val)
+    return "fdp, neato only"
+
+def label(val, scope):
+    checkValidScope(scope, "ENGC")
+    # TODO: type = escString or HTML label
+    # TODO: record based nodes
+    return ""
+
+def labelURL(val, scope):
+    checkValidScope(scope, "E")
+    return "svg, map only"
+
+def label_scheme(val, scope):
+    checkValidScope(scope, "G")
+    k = int(val)
+    if k < 0:
+        raise ValueError("Invalid scheme")
+    return "sfdp only"
+
+def labelangle(val, scope):
+    checkValidScope(scope, "E")
+    checkDouble(val, -180.0)
+    return ""
+
+def labeldistance(val, scope):
+    checkValidScope(scope, "E")
+    checkDouble(val, 0.0)
+    return ""
+
+def labelfloat(val, scope):
+    checkValidScope(scope, "E")
+    checkBool(val)
+    return ""
+
+def labelfontcolor(val, scope):
+    checkValidScope(scope, "E")
+    checkColor(val)
+    return ""
+
+def labelfontname(val, scope):
+    checkValidScope(scope, "E")
+    checkString(val)
+    return ""
+
+def labelfontsize(val, scope):
+    checkValidScope(scope, "E")
+    checkDouble(val, 1.0)
+    return ""
+
+def labelhref(val, scope):
+    checkValidScope(scope, "E")
+    # TODO: synonym of labelURL, don't use both
+    return "svg, map only"
+
+def labeljust(val, scope):
+    checkValidScope(scope, "GC")
+    checkString(val)
+    if val not in ["l", "c", "r"]:
+        raise ValueError("Invalid alignment")
+    return ""
+
+def labelloc(val, scope):
+    checkValidScope(scope, "NGC")
+    checkString(val)
+    if (scope in "GC" and val not in ["t", "b"]) or (scope == "N" and val not in ["t", "c", "b"]):
+        raise ValueError("Invalid location")
+    return ""
+
+def labeltarget(val, scope):
+    checkValidScope(scope, "E")
+    return "svg, map only"
+
+def labeltooltip(val, scope):
+    checkValidScope(scope, "E")
+    # TODO: only used if edge has URL or labelURL
+    return "svg, cmap only"
+
+def landscape(val, scope):
+    checkValidScope(scope, "G")
+    checkBool(val)
+    # TODO: synonym of rotate=90 or orientation=landscape
+    return ""
+
+def layer(val, scope):
+    checkValidScope(scope, "ENC")
+    # TODO: check layerRange
+    return ""
+
+def layerlistsep(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    return ""
+
+def layers(val, scope):
+    checkValidScope(scope, "G")
+    # TODO: check layerList
+    return ""
+
+def layerselect(val, scope):
+    checkValidScope(scope, "G")
+    # TODO: check layerRange
+    return ""
+
+def layersep(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    return ""
+
+def layout(val, scope):
+    checkValidScope(scope, "G")
+    checkString(val)
+    if val not in ["circo", "dot", "fdp", "neato", "osage", "patchwork", "sfdp", "twopi"]:
+        raise ValueError("No such layout")
+    return ""
+
+def len(val, scope):
+    checkValidScope(scope, "E")
+    checkDouble(val)
+    return "fdp, neato only"
+
+def levels(val, scope):
+    checkValidScope(scope, "G")
+    k = int(val)
+    if k < 0:
+        raise ValueError("Level must be at least 0")
+    return "sfdp only"
+
+def levelsgap(val, scope):
+    checkValidScope(scope, "G")
+    checkDouble(val)
+    # TODO: only applied when mode="ipsep" or "hier"
+    return "neato only"
+
 
 # TODO: finish this

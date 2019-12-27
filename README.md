@@ -113,6 +113,7 @@ elsewhere, you **must** reference this project.
   * 'Find and Replace' dialog for easy text manipulation
   * Autocompleter with all keywords of graphviz language
   * Fixed Syntax Error Highlighting
+  * Added snippets for quick insert of structures (use RMB)
 * [0.1.2] Fixed invalid syntax and error highlighting
 * [0.1.2] Changed 'Save' function to saving without typechecking
   * Saving now only allows Graphviz-files to be saved (*.canvas, *.gv, *.dot...)
@@ -168,6 +169,7 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Rename 'Shortcuts' to 'Controls'
 * [0.2.1] Add all different node and edge types in interactive mode
 * [0.2.1] Add graphviz html syntax highlighting + parsing
+* [0.2.2] Continue work on attribute checking (currently discontinued)
 * [0.3.0] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?

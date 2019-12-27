@@ -3,27 +3,11 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 
 pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
-TODO (see also README.md)
-        - Add parser warnings
-            - Invalid label for type (error instead of warning?)
-            - Label notes (see https://graphviz.gitlab.io/_pages/doc/info/attrs.html)
-            - When using directed labels in undirected graphs
-            - Warning disabling
-        - Add warning when using invalid encoding for graphviz (default is UTF-8, but ISO-8859-1 is also accepted)
-        - Snippets
-            - Insert from snippets into code
-            - Tree view? ==> Store snippets as json and insert at cursor on drag & drop
-            - Add/Edit/Remove snippets
-        - Custom RMB menu in Editor
-            ==> In Qt, this is called a ContextMenu
-        - Find when a selection is highlighted must fill the find field with the selection
-
 TODO FUTURE [0.1.3]
     - Additional configuration possibilities for graphviz
     - Smart File Encoding detection
-    - Shortcut for find next occurrence of selection (JetBrains ALT+J)
-        ==> Multiple cursors?
     - Remember last cursor position on startup
+    - Fully decouple CodeEditor, making it a standalone source that also works in any project/situation.
     - Allow opening from multiple files
         ==> Turn Dockwidget into tabbed pane
     - Opening from as many file types as possible
@@ -35,4 +19,5 @@ TODO FUTURE [0.1.3]
     - Force autocompleter to suggest context-specific items
     - For DEBUG only: Open parse tree of dotfile as dotfile
     - Fix most TODOs
-    - Fully decouple CodeEditor, making it a standalone source that also works in any project/situation.
+    - Layers?
+        ==> https://graphviz.gitlab.io/faq/#FaqOverlays

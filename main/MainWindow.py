@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui, uic
 
 from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
+from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
 from main.extra import Constants
@@ -48,6 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.restore()
 
         self.find = FindReplace(self, self.editor)
+        self.snippets = Snippets(self)
 
         # Set menu
         self.action_New.triggered.connect(self.new)
@@ -71,6 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Auto_Indent.triggered.connect(self.editor.autoIndent)
         self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(self.editor.complete)
+        self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.displayGraph)
         self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)
@@ -291,14 +294,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayGraph(self):
         self.scene.clear()
-        dot = Source(self.editor.toPlainText())
-        bdata = dot.pipe('jpg')
-        image = QtGui.QImage()
-        image.loadFromData(bdata)
-        pixmap = QtGui.QPixmap.fromImage(image)
-        self.scene.addPixmap(pixmap)
+        try:
+            dot = Source(self.editor.toPlainText())
+            bdata = dot.pipe('jpg')
+            image = QtGui.QImage()
+            image.loadFromData(bdata)
+            pixmap = QtGui.QPixmap.fromImage(image)
+            self.scene.addPixmap(pixmap)
+        except graphviz.backend.CalledProcessError as e:
+            self.error("Error", e.stderr.decode("utf-8"))
+
+    def openSnippets(self):
+        self.snippets.exec_()
 
     def findReplace(self):
+        sel = self.editor.textCursor().selectedText()
+        if sel != "":
+            self.find.le_find.setText(sel)
+            self.find.le_replace.setText("")
         self.find.show()
 
     def checkUpdates(self):

@@ -10,7 +10,7 @@ from main.extra.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
 from main.Preferences import bool
 
-from lark import UnexpectedToken, UnexpectedCharacters
+from lark import UnexpectedToken, UnexpectedCharacters, Token
 
 Config = IOHandler.get_preferences()
 
@@ -117,7 +117,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                         size = len(text) - startIndex
                     else:
                         size = endIndex - startIndex
-                elif isinstance(token, EOFToken):
+                elif isinstance(token, (EOFToken, Token)):
                     size = len(token)
                 self.editor.errors.append((startIndex, size, msg))
                 self.editor.mainwindow.updateStatus(msg)

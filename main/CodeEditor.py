@@ -52,6 +52,13 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.completer = None
         self.setCompleter()
 
+    def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
+        menu = QtWidgets.QMenu(self)
+        snippets = self.mainwindow.snippets.snippets
+        for name in snippets:
+            menu.addAction(name, lambda: self.insertPlainText(snippets[name]))
+        menu.exec_(event.globalPos())
+
     def isSaved(self):
         """Returns True if the file was saved."""
         return self.toPlainText() == self.filecontents

@@ -5,10 +5,11 @@ It also loads the Graphviz grammar from the vendor folder.
 Author: Randy Paredis
 Date:   16/12/2019
 """
-from graphviz import Source
+import graphviz
 
 from main.extra.IOHandler import IOHandler
-from lark import Lark, Tree
+from main.extra import Graphviz, Constants
+from lark import Lark, Tree, Token
 from lark.exceptions import UnexpectedCharacters, UnexpectedToken, UnexpectedEOF
 
 class Parser:
@@ -77,10 +78,22 @@ class CheckVisitor:
                 self.errors.append((op,
                                     "Invalid edge operation for graph type at line %i col %i." % (op.line, op.column),
                                     {self.parser.lookup("DIOP") if self.type == "GRAPH" else self.parser.lookup("UNOP")}))
-        elif tree.data == "attr":
-            key = tree.children[0].children[0].value
-            value = tree.children[1].children[0].value
-            print(key, value, type(value))
+        # FIXME: CURRENTLY DISCONTINUED
+        #   (it would increase ease-of-use, but is not necessary atm)
+        # elif tree.data == "attr":
+        #     key = tree.children[0].children[0]
+        #     value = tree.children[1].children[0]
+        #     if key.value not in Constants.ATTRIBUTES:
+        #         self.errors.append((key, "Invalid attribute", set()))
+        #     # TODO: determine scope
+        #     scope = "G"
+        #     try:
+        #         info = getattr(Graphviz, key)(Graphviz.strip(value), scope)
+        #         # TODO: info as warnings?
+        #     except ValueError as e:
+        #         self.errors.append((value, str(e), set()))
+        #     except KeyError as e:
+        #         self.errors.append((value, str(e), set()))
         for child in tree.children:
             if isinstance(child, Tree):
                 self.visit(child)
@@ -89,11 +102,32 @@ class CheckVisitor:
                     self.type = child.type
 
 
+class DotVisitor:
+    """Helper class that generates a dot file from the parse tree."""
+    def __init__(self):
+        self.nodes = {}
+        self.root = graphviz.Digraph()
+
+    def visit(self, tree: Tree):
+        for child in tree.children:
+            if isinstance(child, Tree):
+                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.data)
+                self.visit(child)
+            elif isinstance(child, Token): # TOKENS
+                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + child.value,
+                                                       color="blue", fontcolor="blue", shape="box")
+            self.root.edge("node_%i" % id(tree), "node_%i" % id(child))
+
+    def show(self):
+        self.root.view()
+
+
+
 if __name__ == "__main__":
     from sys import stderr
 
     parser = Parser()
-    txt = "graph T { test -- maybe [arrowhead=odiamondopen]; }"
+    txt = "digraph T { start [label=\"\", shape=none, width=\"0\"]; start -> bla; }"
     T = parser.parse(txt)
     if T is None:
         for token, msg, exp in parser.errors:
@@ -104,5 +138,6 @@ if __name__ == "__main__":
             print("suggested:", file=stderr)
             print("\t" + ", ".join([x.name for x in exp]), file=stderr)
     else:
-        dot = Source(txt)
-        bdata = dot.pipe('jpg')
+        dot = DotVisitor()
+        dot.visit(T)
+        dot.show()

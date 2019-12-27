@@ -24,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
@@ -323,7 +323,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>366</width>
+            <width>629</width>
             <height>881</height>
            </rect>
           </property>
@@ -625,8 +625,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>271</width>
+            <y>-599</y>
+            <width>629</width>
             <height>1056</height>
            </rect>
           </property>
@@ -796,15 +796,25 @@
               <item row="0" column="1">
                <widget class="QKeySequenceEdit" name="ks_toggleCodeEditor"/>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="0">
                <widget class="QLabel" name="label_19">
                 <property name="text">
                  <string>Render the Graph:</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
+              <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_render"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_62">
+                <property name="text">
+                 <string>Open Snippets:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_snippets"/>
               </item>
              </layout>
             </widget>
@@ -905,6 +915,19 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_13">
               <item row="2" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>Show Qt Info:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_graphviz"/>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_qt"/>
+              </item>
+              <item row="1" column="0">
                <widget class="QLabel" name="label_22">
                 <property name="text">
                  <string>Show Graphviz Info:</string>
@@ -912,37 +935,14 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_20">
-                <property name="text">
-                 <string>Look for Updates:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
                <widget class="QLabel" name="label_21">
                 <property name="text">
                  <string>Show GraphDonkey Info:</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QKeySequenceEdit" name="ks_graphDonkey"/>
-              </item>
               <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_updates"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_23">
-                <property name="text">
-                 <string>Show Qt Info:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QKeySequenceEdit" name="ks_graphviz"/>
-              </item>
-              <item row="3" column="1">
-               <widget class="QKeySequenceEdit" name="ks_qt"/>
+               <widget class="QKeySequenceEdit" name="ks_graphDonkey"/>
               </item>
              </layout>
             </widget>

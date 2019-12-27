@@ -216,7 +216,8 @@ class Preferences(QtWidgets.QDialog):
             self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.autocomplete", "CTRL+SPACE")))
             self.ks_toggleCodeEditor.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.toggle_editor", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
-            self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
+            self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.snippets", "F2")))
+            # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
             self.ks_graphDonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphDonkey", "")))
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphviz", "")))
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.qt", "")))
@@ -304,8 +305,9 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.find", self.ks_find.keySequence().toString())
             self.preferences.setValue("ks.autocomplete", self.ks_autocomplete.keySequence().toString())
             self.preferences.setValue("ks.toggle_editor", self.ks_toggleCodeEditor.keySequence().toString())
+            self.preferences.setValue("ks.snippets", self.ks_snippets.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
-            self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
+            # self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
             self.preferences.setValue("ks.graphDonkey", self.ks_graphDonkey.keySequence().toString())
             self.preferences.setValue("ks.graphviz", self.ks_graphviz.keySequence().toString())
             self.preferences.setValue("ks.qt", self.ks_qt.keySequence().toString())
@@ -320,12 +322,12 @@ class Preferences(QtWidgets.QDialog):
             "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
             "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
-            "Render"
+            "Snippets", "Render"
         ]
         for action in actions:
             getattr(self.parent(), "action_" + action).setShortcut(getattr(self, "ks_" + action.lower()).keySequence())
         self.parent().action_ShowCode.setShortcut(self.ks_toggleCodeEditor.keySequence())
-        self.parent().action_CheckUpdates.setShortcut(self.ks_updates.keySequence())
+        # self.parent().action_CheckUpdates.setShortcut(self.ks_updates.keySequence())
         self.parent().action_AboutGraphDonkey.setShortcut(self.ks_graphDonkey.keySequence())
         self.parent().action_AboutGraphviz.setShortcut(self.ks_graphviz.keySequence())
         self.parent().action_AboutQt.setShortcut(self.ks_qt.keySequence())
