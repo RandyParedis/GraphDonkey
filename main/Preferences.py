@@ -123,12 +123,20 @@ class Preferences(QtWidgets.QDialog):
         # GENERAL
         if True:
             self.check_rememberLayout.setChecked(bool(self.preferences.value("rememberLayout", True)))
-            if self.preferences.value("restore", 0) == 0:
+            self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
+            restore = int(self.preferences.value("restore", 0))
+            if restore == 0:
                 self.radio_ws_openempty.setChecked(True)
                 self.radio_ws_restore.setChecked(False)
-            else:
+                self.radio_ws_none.setChecked(False)
+            elif restore == 1:
                 self.radio_ws_openempty.setChecked(False)
                 self.radio_ws_restore.setChecked(True)
+                self.radio_ws_none.setChecked(False)
+            else:
+                self.radio_ws_openempty.setChecked(False)
+                self.radio_ws_restore.setChecked(False)
+                self.radio_ws_none.setChecked(True)
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
             self.combo_encoding.setCurrentText(self.preferences.value("encoding", "UTF-8").upper())
             self.combo_lineEndings.setCurrentIndex(int(self.preferences.value("endings",
@@ -199,6 +207,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_export.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.export", "CTRL+E")))
             self.ks_clear_recents.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.clear_recents", "")))
             self.ks_preferences.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.preferences", "CTRL+P")))
+            self.ks_close_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.close_file", "CTRL+W")))
             self.ks_exit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.exit", "CTRL+Q")))
             self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.undo", "CTRL+Z")))
             self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.redo", "CTRL+SHIFT+Z")))
@@ -226,10 +235,13 @@ class Preferences(QtWidgets.QDialog):
         # GENERAL
         if True:
             self.preferences.setValue("rememberLayout", self.check_rememberLayout.isChecked())
+            self.preferences.setValue("autohide", self.check_autohide.isChecked())
             if self.radio_ws_openempty.isChecked():
                 self.preferences.setValue("restore", 0)
-            else:
+            elif self.radio_ws_restore.isChecked():
                 self.preferences.setValue("restore", 1)
+            else:
+                self.preferences.setValue("restore", 2)
             self.preferences.setValue("recents", self.num_recents.value())
             self.preferences.setValue("encoding", self.combo_encoding.currentText())
             self.preferences.setValue("endings", self.combo_lineEndings.currentIndex())
@@ -289,6 +301,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.export", self.ks_export.keySequence().toString())
             self.preferences.setValue("ks.clear_recents", self.ks_clear_recents.keySequence().toString())
             self.preferences.setValue("ks.preferences", self.ks_preferences.keySequence().toString())
+            self.preferences.setValue("ks.close_file", self.ks_close_file.keySequence().toString())
             self.preferences.setValue("ks.exit", self.ks_exit.keySequence().toString())
             self.preferences.setValue("ks.undo", self.ks_undo.keySequence().toString())
             self.preferences.setValue("ks.redo", self.ks_redo.keySequence().toString())
@@ -319,7 +332,7 @@ class Preferences(QtWidgets.QDialog):
 
     def applyShortcuts(self):
         actions = [
-            "New", "Open", "Save", "Save_As", "Export", "Preferences", "Exit",
+            "New", "Open", "Save", "Save_As", "Export", "Preferences", "Close_File", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
             "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
             "Show_Render_Area", "Snippets", "Render"
@@ -352,6 +365,7 @@ class Preferences(QtWidgets.QDialog):
         app.setPalette(palette)
 
     def applyEditor(self):
+        self.parent().files.setTabBarAutoHide(self.check_autohide.isChecked())
         editor = self.parent().editor()
         if editor is not None:
             font = QtGui.QFont()

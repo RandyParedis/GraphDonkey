@@ -56,17 +56,24 @@
              <string>Workspace</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="1" column="0">
+             <item row="2" column="0">
               <widget class="QRadioButton" name="radio_ws_restore">
                <property name="text">
                 <string>Restore Last Session</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QRadioButton" name="radio_ws_openempty">
                <property name="text">
                 <string>Open Empty File</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radio_ws_none">
+               <property name="text">
+                <string>Open Empty Workspace</string>
                </property>
               </widget>
              </item>
@@ -82,7 +89,7 @@
           <string>Other</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,0">
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QSpinBox" name="num_recents">
             <property name="suffix">
              <string/>
@@ -92,28 +99,28 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Limit Recent Files Menu to</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
+          <item row="1" column="2">
            <widget class="QLabel" name="label_2">
             <property name="text">
              <string>entries.</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="label_65">
             <property name="text">
              <string>File Encoding:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" colspan="2">
+          <item row="2" column="1" colspan="2">
            <widget class="QComboBox" name="combo_encoding">
             <item>
              <property name="text">
@@ -127,7 +134,7 @@
             </item>
            </widget>
           </item>
-          <item row="2" column="1" colspan="2">
+          <item row="3" column="1" colspan="2">
            <widget class="QComboBox" name="combo_lineEndings">
             <item>
              <property name="text">
@@ -146,10 +153,17 @@
             </item>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_66">
             <property name="text">
              <string>Line Endings:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_autohide">
+            <property name="text">
+             <string>Automatically hide tabs when it contains less than 2 tabs</string>
             </property>
            </widget>
           </item>
@@ -625,9 +639,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-599</y>
+            <y>0</y>
             <width>629</width>
-            <height>1056</height>
+            <height>1087</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -825,7 +839,10 @@
               <string>File Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_9">
-              <item row="7" column="0">
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_save_as"/>
+              </item>
+              <item row="8" column="0">
                <widget class="QLabel" name="label_9">
                 <property name="text">
                  <string>Exit</string>
@@ -869,9 +886,6 @@
               <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_save"/>
               </item>
-              <item row="3" column="1">
-               <widget class="QKeySequenceEdit" name="ks_save_as"/>
-              </item>
               <item row="3" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
@@ -892,7 +906,7 @@
               <item row="6" column="1">
                <widget class="QKeySequenceEdit" name="ks_preferences"/>
               </item>
-              <item row="7" column="1">
+              <item row="8" column="1">
                <widget class="QKeySequenceEdit" name="ks_exit"/>
               </item>
               <item row="4" column="0">
@@ -904,6 +918,16 @@
               </item>
               <item row="4" column="1">
                <widget class="QKeySequenceEdit" name="ks_export"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>Close File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QKeySequenceEdit" name="ks_close_file"/>
               </item>
              </layout>
             </widget>

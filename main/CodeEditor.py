@@ -63,7 +63,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def isSaved(self):
         """Returns True if the file was saved."""
-        return self.toPlainText() == self.filecontents
+        return self.filename != "" and self.toPlainText() == self.filecontents
 
     def save(self):
         self.filecontents = self.toPlainText()
@@ -312,23 +312,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             return state, line
 
         self.lines(indentLine, indent)
-
-    def nextOccurrence(self):
-        cursor = self.textCursor()
-        txt = cursor.selectedText()
-        if txt == "":
-            cursor.select(QtGui.QTextCursor.WordUnderCursor)
-            self.setTextCursor(cursor)
-        else:
-            next = self.document().find(txt, cursor, QtGui.QTextDocument.FindCaseSensitively)
-            self.extraCursors.add(next)
-            selections = self.extraSelections()
-            selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(QtGui.QColor(Config.value("col.highlight")))
-            selection.format.setForeground(QtGui.QColor(Config.value("col.highlightedText")))
-            selection.cursor = next
-            selections.append(selection)
-            self.setExtraSelections(selections)
 
     def complete(self):
         # TODO: identify context-specific actions

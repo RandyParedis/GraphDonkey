@@ -8,7 +8,6 @@ Date:   16/12/2019
 import graphviz
 
 from main.extra.IOHandler import IOHandler
-from main.extra import Graphviz, Constants
 from lark import Lark, Tree, Token
 from lark.exceptions import UnexpectedCharacters, UnexpectedToken, UnexpectedEOF
 
@@ -17,7 +16,7 @@ class Parser:
         self.grammar = ""
         with open(IOHandler.dir_grammars("graphviz.lark"), "r") as file:
             self.grammar = file.read()
-        self.parser = Lark(self.grammar)
+        self.parser = Lark(self.grammar, parser="lalr")
 
         self.errors = []
 

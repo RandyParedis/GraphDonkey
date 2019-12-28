@@ -10,7 +10,7 @@ from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
-from main.extra import Constants
+from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz
@@ -39,6 +39,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
 
         self.files.clear()
+        self.files.tabBar().setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectPreviousTab)
+        self.files.currentChanged.connect(self.tabChanged)
+        self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
 
         self.preferences = Preferences(self)
@@ -57,12 +60,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Save_As.triggered.connect(self.saveAs)
         self.action_Export.triggered.connect(self.export)
         self.action_Preferences.triggered.connect(lambda: self.preferences.exec_())
-        self.action_Exit.triggered.connect(lambda: self.editor().close) # TODO: Check for saved
-        self.action_Undo.triggered.connect(lambda: self.editor().undo)
-        self.action_Redo.triggered.connect(lambda: self.editor().redo)
-        self.action_Select_All.triggered.connect(lambda: self.editor().selectAll)
+        self.action_Close_File.triggered.connect(lambda: self.closeFile())
+        self.action_Exit.triggered.connect(self.close)
+        self.action_Undo.triggered.connect(lambda: self.editor().undo())
+        self.action_Redo.triggered.connect(lambda: self.editor().redo())
+        self.action_Select_All.triggered.connect(lambda: self.editor().selectAll())
         self.action_Delete.triggered.connect(lambda x: self.editor().insertPlainText(""))
-        self.action_Copy.triggered.connect(lambda: self.editor().copy)
+        self.action_Copy.triggered.connect(lambda: self.editor().copy())
         self.action_Paste.triggered.connect(lambda: self.editor().paste())
         self.action_Cut.triggered.connect(lambda: self.editor().cut())
         self.action_Duplicate.triggered.connect(lambda: self.editor().duplicate())
@@ -72,7 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Auto_Indent.triggered.connect(lambda: self.editor().autoIndent())
         self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(lambda: self.editor().complete())
-        self.viewDock.closeEvent = self.gdDockCloseEvent
+        self.viewDock.closeEvent = self.viewDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.displayGraph)
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
@@ -94,11 +98,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRender.triggered.connect(self.displayGraph)
         self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
 
-    def editor(self):
-        idx = self.files.currentIndex()
+    def editor(self, idx=-1):
+        if idx == -1:
+            idx = self.files.currentIndex()
         if idx > -1:
             return self.files.widget(idx)
         return None
+
+    def tabChanged(self, index):
+        self.updateTitle()
+        self.editor(index).highlighter.rehighlight()
+
+    def updateTabs(self):
+        names = []
+        for t in range(self.files.count()):
+            editor = self.editor(t)
+            fname = editor.filename
+            if fname == '':
+                fname = 'undefined'
+            if not editor.isSaved():
+                fname += '*'
+            names.append(fname)
+        names = tabPathnames(names)
+
+        for i in range(len(names)):
+            self.files.setTabText(i, names[i])
         
     def updateTitle(self):
         if self.editor() is not None:
@@ -108,6 +132,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if not self.editor().isSaved():
                 rest += "*"
             self.setWindowTitle(" " + rest)
+
+            self.updateTabs()
 
     def updateStatus(self, text):
         self.statusMessage.setText(text)
@@ -119,9 +145,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.setCurrentIndex(self.files.count() - 1)
         self.preferences.applyEditor()
 
-    def gdDockCloseEvent(self, event):
+    def viewDockCloseEvent(self, event):
         self.action_Show_Render_Area.setChecked(False)
-        self.graphvizDataDock.setVisible(False)
+        self.viewDock.setVisible(False)
 
     def restore(self):
         # Restore layout from memory iff needs be/possible
@@ -133,20 +159,46 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.restoreState(settings.value("windowState"))
             if settings.value("recents", None) is not None:
                 self.recents = settings.value("recents")
-        if int(Config.value("restore", 0)) == 1:
-            self.openFile(settings.value("open", ""))
+        restore = int(Config.value("restore", 0))
+        if restore == 0:
+            self.new()
+        elif restore == 1:
+            files = settings.value("open", list())
+            active = int(settings.value("active", 0))
+            if files is None:
+                files = []
+            for file in files:
+                self.openFile(file)
+            self.files.setCurrentIndex(active)
         self.updateRecents()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
-        settings = IOHandler.get_settings()
-        if bool(Config.value("rememberLayout", True)):
-            settings.setValue("geometry", self.saveGeometry())
-            settings.setValue("windowState", self.saveState())
-            settings.setValue("recents", self.recents)
-        if int(Config.value("restore", 0)) == 1:
-            settings.setValue("open", self.editor().filename)
+        saved = True
+        for tab in range(self.files.count()):
+            self.files.setCurrentIndex(tab)
+            if not self.editor().isSaved():
+                saved = False
+                break
+        if not saved:
+            saved = self.question("Unsaved Changes", "It appears there are some unchanged changes.\n"
+                                                     "Are you sure you want quit? All changes will be lost.")
 
-        QtWidgets.QMainWindow.closeEvent(self, event)
+        if saved:
+            settings = IOHandler.get_settings()
+            if bool(Config.value("rememberLayout", True)):
+                settings.setValue("geometry", self.saveGeometry())
+                settings.setValue("windowState", self.saveState())
+                settings.setValue("recents", self.recents)
+            if int(Config.value("restore", 0)) == 1:
+                files = list()
+                for tab in range(self.files.count()):
+                    files.append(self.editor(tab).filename)
+                settings.setValue("open", files)
+                settings.setValue("active", self.files.currentIndex())
+
+            QtWidgets.QMainWindow.closeEvent(self, event)
+        else:
+            event.ignore()
 
     def textChangedEvent(self):
         self.updateTitle()
@@ -188,22 +240,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateTitle()
 
     def openFile(self, fileName):
-        if fileName:
+        if fileName and fileName != "":
             ext = fileName.split(".")[-1]
             if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
-                self.newTab(fileName)
-                with open(fileName, "rb") as myfile:
-                    data = myfile.read()
-                    # TODO: On decoding crash => find actual encoding?
-                    data = data.decode(Config.value("encoding"))
+                try:
+                    with open(fileName, "rb") as myfile:
+                        data = myfile.read()
+                        # TODO: On decoding crash => find actual encoding?
+                        data = data.decode(Config.value("encoding"))
+                    self.newTab(fileName)
                     self.editor().setText(data)
-
-                self.updateRecents(fileName)
-                self.editor().filename = fileName
-                self.editor().filecontents = data
+                    self.updateRecents(fileName)
+                    self.editor().filename = fileName
+                    self.editor().filecontents = data
+                except IOError:
+                    self.warn("File not found", "You're trying to open a file that does not exist. Please retry.")
                 self.updateTitle()
             else:
                 self.warn("Invalid File", "It looks like this file cannot be opened.")
+        else:
+            self.new()
 
     def open(self):
         options = QtWidgets.QFileDialog.Options()
@@ -275,6 +331,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 except Exception as e:
                     self.error("Uh oh!", "It looks as if something went wrong whilst trying to save this file.\n" +
                                str(e))
+
+    def closeFile(self, idx=-1):
+        old = self.files.currentIndex()
+        if idx == -1:
+            idx = old
+        else:
+            self.files.setCurrentIndex(idx)
+        close = True
+        if not self.editor().isSaved():
+            close = self.question("Unsaved Changes", "It appears there are some unchanged changes in this file.\n"
+                                                     "Are you sure you want to close it? All changes will be lost.")
+        if close:
+            self.files.removeTab(idx)
+        self.files.setCurrentIndex(old)
 
     def displayGraph(self):
         self.scene.clear()

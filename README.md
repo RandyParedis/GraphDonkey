@@ -95,6 +95,7 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
+* [0.1.3] Changed layout to allow for opening of multiple files
 * [0.1.2] Better file 'saved' detection
 * [0.1.2] Added options to Preferences>Editor:
   * Font family
