@@ -1,0 +1,3 @@
+[submodule "vendor/icons/qtango"]
+	path = vendor/icons/qtango
+	url = https://github.com/ppinard/qtango.git

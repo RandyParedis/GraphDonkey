@@ -203,6 +203,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_new.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.new", "CTRL+N")))
             self.ks_open.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.open", "CTRL+O")))
             self.ks_save.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save", "CTRL+S")))
+            self.ks_save_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save_all", "")))
             self.ks_save_as.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save_as", "CTRL+SHIFT+S")))
             self.ks_export.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.export", "CTRL+E")))
             self.ks_clear_recents.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.clear_recents", "")))
@@ -297,6 +298,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.new", self.ks_new.keySequence().toString())
             self.preferences.setValue("ks.open", self.ks_open.keySequence().toString())
             self.preferences.setValue("ks.save", self.ks_save.keySequence().toString())
+            self.preferences.setValue("ks.save_all", self.ks_save_all.keySequence().toString())
             self.preferences.setValue("ks.save_as", self.ks_save_as.keySequence().toString())
             self.preferences.setValue("ks.export", self.ks_export.keySequence().toString())
             self.preferences.setValue("ks.clear_recents", self.ks_clear_recents.keySequence().toString())
@@ -332,7 +334,7 @@ class Preferences(QtWidgets.QDialog):
 
     def applyShortcuts(self):
         actions = [
-            "New", "Open", "Save", "Save_As", "Export", "Preferences", "Close_File", "Exit",
+            "New", "Open", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
             "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
             "Show_Render_Area", "Snippets", "Render"

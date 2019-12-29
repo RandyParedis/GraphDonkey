@@ -12,12 +12,6 @@ APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
 ICON_GRAPHVIZ = QImage(IOHandler.dir_icons("graphviz.png"))
-ICON_UNDO = QImage(IOHandler.dir_icons("undo.png"))
-ICON_REDO = QImage(IOHandler.dir_icons("redo.png"))
-ICON_NEW = QImage(IOHandler.dir_icons("new.png"))
-ICON_OPEN = QImage(IOHandler.dir_icons("open.png"))
-ICON_SAVE = QImage(IOHandler.dir_icons("save.png"))
-ICON_RENDER = QImage(IOHandler.dir_icons("render.png"))
 
 LINE_ENDING = "\u2029"  # Qt Handles all line endings internally => only need to replace on save
 ENDINGS = ['\n', '\r', '\r\n']

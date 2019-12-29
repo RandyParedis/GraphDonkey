@@ -10,7 +10,7 @@ from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
-from main.extra import Constants, tabPathnames
+from main.extra import Constants, tabPathnames, tango
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz
@@ -57,15 +57,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_New.triggered.connect(self.new)
         self.action_Open.triggered.connect(self.open)
         self.action_Save.triggered.connect(self.save)
+        self.action_Save_All.triggered.connect(self.saveAll)
         self.action_Save_As.triggered.connect(self.saveAs)
         self.action_Export.triggered.connect(self.export)
-        self.action_Preferences.triggered.connect(lambda: self.preferences.exec_())
-        self.action_Close_File.triggered.connect(lambda: self.closeFile())
+        self.action_Preferences.triggered.connect(self.preferences.exec_)
+        self.action_Close_File.triggered.connect(self.closeFile)
         self.action_Exit.triggered.connect(self.close)
         self.action_Undo.triggered.connect(lambda: self.editor().undo())
         self.action_Redo.triggered.connect(lambda: self.editor().redo())
         self.action_Select_All.triggered.connect(lambda: self.editor().selectAll())
-        self.action_Delete.triggered.connect(lambda x: self.editor().insertPlainText(""))
+        self.action_Delete.triggered.connect(lambda: self.editor().insertPlainText(""))
         self.action_Copy.triggered.connect(lambda: self.editor().copy())
         self.action_Paste.triggered.connect(lambda: self.editor().paste())
         self.action_Cut.triggered.connect(lambda: self.editor().cut())
@@ -86,17 +87,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set Toolbar
         self.actionUndo.triggered.connect(lambda: self.editor().undo())
-        self.actionUndo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_UNDO)))
         self.actionRedo.triggered.connect(lambda: self.editor().redo())
-        self.actionRedo.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_REDO)))
         self.actionNew.triggered.connect(self.new)
-        self.actionNew.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_NEW)))
         self.actionOpen.triggered.connect(self.open)
-        self.actionOpen.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_OPEN)))
         self.actionSave.triggered.connect(self.save)
-        self.actionSave.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_SAVE)))
+        self.actionClose.triggered.connect(self.closeFile)
         self.actionRender.triggered.connect(self.displayGraph)
-        self.actionRender.setIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_RENDER)))
+        self.actionSnippets.triggered.connect(self.openSnippets)
+        self.actionFind.triggered.connect(self.findReplace)
+        self.actionPreferences.triggered.connect(self.preferences.exec_)
 
     def editor(self, idx=-1):
         if idx == -1:
@@ -107,7 +106,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def tabChanged(self, index):
         self.updateTitle()
-        self.editor(index).highlighter.rehighlight()
+        edit = self.editor(index)
+        if edit is not None:
+            edit.highlighter.rehighlight()
+            if edit.filename == "":
+                self.displayGraph()
 
     def updateTabs(self):
         names = []
@@ -174,11 +177,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         saved = True
+        old = self.files.currentIndex()
         for tab in range(self.files.count()):
             self.files.setCurrentIndex(tab)
             if not self.editor().isSaved():
                 saved = False
                 break
+        self.files.setCurrentIndex(old)
         if not saved:
             saved = self.question("Unsaved Changes", "It appears there are some unchanged changes.\n"
                                                      "Are you sure you want quit? All changes will be lost.")
@@ -267,20 +272,29 @@ class MainWindow(QtWidgets.QMainWindow):
         fileName, _ = QtWidgets.QFileDialog\
             .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
                              options=options)
-        self.openFile(fileName)
+        if fileName != "":
+            self.openFile(fileName)
 
     def save(self):
-        if self.editor() is not None and self.editor().filename == "":
+        editor = self.editor()
+        if editor is not None and editor.filename == "":
             self.saveAs()
         else:
-            contents = self.editor().toPlainText()
+            contents = editor.toPlainText()
             contents = contents.replace("\n", Constants.ENDINGS[int(Config.value("endings"))])
             bc = bytes(contents, Config.value("encoding"))
             # TODO: error on invalid encoding
-            with open(self.editor().filename, 'wb') as myfile:
+            with open(editor.filename, 'wb') as myfile:
                 myfile.write(bc)
-            self.editor().save()
+            editor.save()
             self.updateTitle()
+
+    def saveAll(self):
+        old = self.files.currentIndex()
+        for idx in range(self.files.count()):
+            self.files.setCurrentIndex(idx)
+            self.save()
+        self.files.setCurrentIndex(old)
 
     def saveAs(self):
         options = QtWidgets.QFileDialog.Options()
@@ -334,7 +348,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeFile(self, idx=-1):
         old = self.files.currentIndex()
-        if idx == -1:
+        if idx == -1 or idx is False:
             idx = old
         else:
             self.files.setCurrentIndex(idx)

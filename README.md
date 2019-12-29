@@ -88,14 +88,16 @@ clipboard.
 It's important to list your sources if you're working on a project. One does not
 have to reinvent the wheel, but rather list the blueprint that was used in
 creating it.
-* Icons for the GUI were made by [GlyphLab](https://glyphlab.com/).
-(https://www.iconfinder.com/iconsets/common-toolbar)
+* Icons for the GUI came from the [qtango GitHub project](
+https://github.com/ppinard/qtango)
 * The `GraphDonkey` icon itself was custom-made by me. If you want to use it
 elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
-* [0.1.3] Changed layout to allow for opening of multiple files
+* [0.1.3] Changed layout
+  * Allowed opening of multiple files
+  * Changed Icons
 * [0.1.2] Better file 'saved' detection
 * [0.1.2] Added options to Preferences>Editor:
   * Font family
@@ -180,3 +182,4 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * How? Run python script and use all captured output as input for graphviz.
 * [1.3.0] Multiple Languages
 * [1.3.0] Automatic install of updates via app
+* [1.3.0] Style/Theme Finder
