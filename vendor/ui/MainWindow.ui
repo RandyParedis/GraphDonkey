@@ -60,6 +60,10 @@
      <property name="title">
       <string>Open &amp;Recent</string>
      </property>
+     <property name="icon">
+      <iconset resource="../icons/tango.qrc">
+       <normaloff>:/icons/tango/appointment-new.png</normaloff>:/icons/tango/appointment-new.png</iconset>
+     </property>
     </widget>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>

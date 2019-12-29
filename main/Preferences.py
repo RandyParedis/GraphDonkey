@@ -153,6 +153,7 @@ class Preferences(QtWidgets.QDialog):
             self.check_parentheses.setChecked(bool(self.preferences.value("parentheses", True)))
             self.check_spaceTabs.setChecked(bool(self.preferences.value("spacesOverTabs", False)))
             self.check_monospace.setChecked(bool(self.preferences.value("monospace", True)))
+            self.check_showWhitespace.setChecked(bool(self.preferences.value("showWhitespace", False)))
             self.check_syntax.setChecked(bool(self.preferences.value("syntaxHighlighting", True)))
             self.check_parse.setChecked(bool(self.preferences.value("useParser", True)))
             self.check_autorender.setChecked(bool(self.preferences.value("autorender", True)))
@@ -257,6 +258,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("spacesOverTabs", self.check_spaceTabs.isChecked())
             self.preferences.setValue("parentheses", self.check_parentheses.isChecked())
             self.preferences.setValue("monospace", self.check_monospace.isChecked())
+            self.preferences.setValue("showWhitespace", self.check_showWhitespace.isChecked())
             self.preferences.setValue("tabwidth", self.num_tabwidth.value())
             self.preferences.setValue("useParser", self.check_parse.isChecked())
             self.preferences.setValue("autorender", self.check_autorender.isChecked())
@@ -368,21 +370,36 @@ class Preferences(QtWidgets.QDialog):
 
     def applyEditor(self):
         self.parent().files.setTabBarAutoHide(self.check_autohide.isChecked())
-        editor = self.parent().editor()
-        if editor is not None:
+        for index in range(self.parent().files.count()):
+            editor = self.parent().editor(index)
+
+            # SHOW WHITESPACES
+            option = editor.document().defaultTextOption()
+            if self.check_showWhitespace.isChecked():
+                option.setFlags(option.flags() | QtGui.QTextOption.ShowTabsAndSpaces | QtGui.QTextOption.ShowLineAndParagraphSeparators)
+            else:
+                option.setFlags(option.flags() & ~QtGui.QTextOption.ShowTabsAndSpaces & ~QtGui.QTextOption.ShowLineAndParagraphSeparators)
+            editor.document().setDefaultTextOption(option)
+
+            # FONT
             font = QtGui.QFont()
             font.setFamily(self.font_editor.currentFont().family())
             font.setFixedPitch(self.check_monospace.isChecked())
             font.setPointSize(self.num_font.value())
             editor.setFont(font)
+
+            # TAB WIDTH
             fontWidth = QtGui.QFontMetrics(font).averageCharWidth()
             editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
-            editor.updateLineNumberArea(None)
+
+            # FIX DISPLAY
+            editor.updateLineNumberArea()
             editor.highlighter.rehighlight()
 
             self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " +
                                                self.combo_encoding.currentText())
 
+            # TURN TABS TO SPACES AND VICE VERSA
             cursor = editor.textCursor()
             seltxt = cursor.selectedText()
             cstart = cursor.selectionStart()

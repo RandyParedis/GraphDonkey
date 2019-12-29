@@ -28,15 +28,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
 
-        font = QtGui.QFont(Config.value("font"))
-
-        fontWidth = QtGui.QFontMetrics(self.currentCharFormat().font()).averageCharWidth()
-        self.setTabStopWidth(4 * fontWidth)
-
         self.document().blockCountChanged.connect(self.updateLineNumberAreaWidth)
-        self.verticalScrollBar().valueChanged.connect(self.updateLineNumberAreaScroll)
-        self.textChanged.connect(self.updateLineNumberAreaText)
-        self.cursorPositionChanged.connect(self.updateLineNumberAreaText)
+        self.verticalScrollBar().valueChanged.connect(lambda x: self.updateLineNumberArea())
+        self.textChanged.connect(self.updateLineNumberArea)
+        self.cursorPositionChanged.connect(self.updateLineNumberArea)
 
         self.updateLineNumberAreaWidth(0)
         self.highlightCurrentLine()
@@ -44,7 +39,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.matches = []
         self.errors = []
-        self.extraCursors = set()
 
         self.setMouseTracking(True)
 
@@ -438,9 +432,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             selections.append(selection)
         self.setExtraSelections(selections)
 
-    def insertFromMimeData(self, QMimeData):
-        self.insertPlainText(QMimeData.text())
-
     def highlightCurrentLine(self):
         selections = []
         if not self.isReadOnly():
@@ -543,13 +534,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
     def updateLineNumberAreaWidth(self, newBlockCount):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)
 
-    def updateLineNumberArea(self, rect):
-        self.updateLineNumberAreaText()
-
-    def updateLineNumberAreaScroll(self, dy):
-        self.updateLineNumberAreaText()
-
-    def updateLineNumberAreaText(self):
+    def updateLineNumberArea(self):
         if bool(Config.value("highlightCurrentLine")):
             self.highlightCurrentLine()
         if bool(Config.value("parentheses")):

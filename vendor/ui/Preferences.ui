@@ -177,40 +177,7 @@
        <string>&amp;Editor</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="5" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="title">
-          <string>Parser</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="check_autorender">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Automatically render the graph if valid</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="check_parse">
-            <property name="text">
-             <string>Use parser for validity checking</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="check_syntax">
-            <property name="text">
-             <string>Use Syntax Highlighting</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
+       <item row="0" column="0" rowspan="3">
         <widget class="QGroupBox" name="groupBox_9">
          <property name="title">
           <string>Presentation</string>
@@ -251,32 +218,6 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Tab size:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="4">
-           <widget class="QSpinBox" name="num_tabwidth">
-            <property name="suffix">
-             <string> chars</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>32</number>
-            </property>
-            <property name="value">
-             <number>4</number>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0" colspan="2">
            <widget class="QCheckBox" name="check_lineNumbers">
             <property name="text">
@@ -307,13 +248,76 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="5" column="0" colspan="5">
+           <widget class="QCheckBox" name="check_showWhitespace">
+            <property name="text">
+             <string>Show whitespace characters</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QSpinBox" name="num_tabwidth">
+            <property name="suffix">
+             <string> chars</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>32</number>
+            </property>
+            <property name="value">
+             <number>4</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Tab size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="2">
            <widget class="QFontComboBox" name="font_editor">
             <property name="currentFont">
              <font>
               <pointsize>12</pointsize>
               <stylestrategy>PreferDefault</stylestrategy>
              </font>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" rowspan="2">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>Parser</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="check_autorender">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Automatically render the graph if valid</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="check_parse">
+            <property name="text">
+             <string>Use parser for validity checking</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="check_syntax">
+            <property name="text">
+             <string>Use Syntax Highlighting</string>
             </property>
            </widget>
           </item>
@@ -337,7 +341,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>366</width>
             <height>881</height>
            </rect>
           </property>
@@ -640,7 +644,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>271</width>
             <height>1118</height>
            </rect>
           </property>

@@ -158,7 +158,7 @@ class FindReplace(QtWidgets.QDialog):
             self.replaceMatch(self.editor.matches[self.idx])
         self.findChanged()
         self.findText()
-        self.editor.updateLineNumberAreaText()
+        self.editor.updateLineNumberArea()
 
     def replaceAll(self):
         self.findText()

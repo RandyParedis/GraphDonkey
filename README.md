@@ -95,6 +95,8 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
+* [0.1.3] Selections/Cursors are now being remembered on startup
+* [0.1.3] Added 'Show Whitespace' option to preferences
 * [0.1.3] Changed layout
   * Allowed opening of multiple files
   * Changed Icons

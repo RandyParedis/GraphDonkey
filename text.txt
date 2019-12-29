@@ -9,15 +9,12 @@ Creating resource file (that can be used):
 
 TODO FUTURE [0.1.3]
     - Additional configuration possibilities for graphviz
-    - Allow undo of insert of snippet
     - Smart File Encoding detection
-    - Remember last cursor position on startup
+            ==> Document-specific properties
     - Opening from as many file types as possible
     - Scope closing/collapsing
             ==> i.e. a plus and minus sign next to the line numbers will allow a user to collapse whole sections
     - Automatic bracket insert
-    - Display whitespaces option
-        ==> https://www.qtcentre.org/threads/27245-Printing-white-spaces-in-QPlainTextEdit-the-QtCreator-way
     - Force autocompleter to suggest context-specific items
     - For DEBUG only: Open parse tree of dotfile as dotfile
     - Fix most TODOs

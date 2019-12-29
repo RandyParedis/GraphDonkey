@@ -112,6 +112,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if edit.filename == "":
                 self.displayGraph()
 
+    def changeTab(self, index):
+        self.files.setCurrentIndex(index)
+        self.editor().setFocus(True)
+
     def updateTabs(self):
         names = []
         for t in range(self.files.count()):
@@ -137,6 +141,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle(" " + rest)
 
             self.updateTabs()
+        else:
+            self.setWindowTitle("")
 
     def updateStatus(self, text):
         self.statusMessage.setText(text)
@@ -145,7 +151,7 @@ class MainWindow(QtWidgets.QMainWindow):
         editor = CodeEditor(self)
         editor.textChanged.connect(self.textChangedEvent)
         self.files.addTab(editor, label)
-        self.files.setCurrentIndex(self.files.count() - 1)
+        self.changeTab(self.files.count() - 1)
         self.preferences.applyEditor()
 
     def viewDockCloseEvent(self, event):
@@ -160,6 +166,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.restoreGeometry(settings.value("geometry"))
             if settings.contains("windowState"):
                 self.restoreState(settings.value("windowState"))
+            if self.isMaximized():
+                # WORKAROUND FOR INVALID RESTORE OF STATE/GEOMETRY
+                #   https://bugreports.qt.io/browse/QTBUG-46620
+                self.setGeometry(QtWidgets.QApplication.desktop().availableGeometry(self))
             if settings.value("recents", None) is not None:
                 self.recents = settings.value("recents")
         restore = int(Config.value("restore", 0))
@@ -167,23 +177,31 @@ class MainWindow(QtWidgets.QMainWindow):
             self.new()
         elif restore == 1:
             files = settings.value("open", list())
+            cursors = settings.value("cursors", list())
             active = int(settings.value("active", 0))
             if files is None:
                 files = []
-            for file in files:
-                self.openFile(file)
-            self.files.setCurrentIndex(active)
+            if cursors is None:
+                cursors = []
+            for file in range(len(files)):
+                self.openFile(files[file])
+                if file < len(cursors):
+                    curs = self.editor().textCursor()
+                    curs.setPosition(cursors[file][0])
+                    curs.setPosition(cursors[file][1], QtGui.QTextCursor.KeepAnchor)
+                    self.editor().setTextCursor(curs)
+            self.changeTab(active)
         self.updateRecents()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
         saved = True
         old = self.files.currentIndex()
         for tab in range(self.files.count()):
-            self.files.setCurrentIndex(tab)
+            self.changeTab(tab)
             if not self.editor().isSaved():
                 saved = False
                 break
-        self.files.setCurrentIndex(old)
+        self.changeTab(old)
         if not saved:
             saved = self.question("Unsaved Changes", "It appears there are some unchanged changes.\n"
                                                      "Are you sure you want quit? All changes will be lost.")
@@ -192,13 +210,19 @@ class MainWindow(QtWidgets.QMainWindow):
             settings = IOHandler.get_settings()
             if bool(Config.value("rememberLayout", True)):
                 settings.setValue("geometry", self.saveGeometry())
-                settings.setValue("windowState", self.saveState())
+                state = self.saveState()
+                settings.setValue("windowState", state)
                 settings.setValue("recents", self.recents)
             if int(Config.value("restore", 0)) == 1:
                 files = list()
+                cursors = list()
                 for tab in range(self.files.count()):
-                    files.append(self.editor(tab).filename)
+                    editor = self.editor(tab)
+                    files.append(editor.filename)
+                    curs = editor.textCursor()
+                    cursors.append((curs.selectionStart(), curs.selectionEnd()))
                 settings.setValue("open", files)
+                settings.setValue("cursors", cursors)
                 settings.setValue("active", self.files.currentIndex())
 
             QtWidgets.QMainWindow.closeEvent(self, event)
@@ -292,9 +316,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def saveAll(self):
         old = self.files.currentIndex()
         for idx in range(self.files.count()):
-            self.files.setCurrentIndex(idx)
+            self.changeTab(idx)
             self.save()
-        self.files.setCurrentIndex(old)
+        self.changeTab(old)
 
     def saveAs(self):
         options = QtWidgets.QFileDialog.Options()
@@ -351,14 +375,15 @@ class MainWindow(QtWidgets.QMainWindow):
         if idx == -1 or idx is False:
             idx = old
         else:
-            self.files.setCurrentIndex(idx)
+            self.changeTab(idx)
         close = True
         if not self.editor().isSaved():
             close = self.question("Unsaved Changes", "It appears there are some unchanged changes in this file.\n"
                                                      "Are you sure you want to close it? All changes will be lost.")
         if close:
             self.files.removeTab(idx)
-        self.files.setCurrentIndex(old)
+        self.changeTab(old)
+        self.updateTitle()
 
     def displayGraph(self):
         self.scene.clear()
