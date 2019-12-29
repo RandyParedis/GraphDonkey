@@ -341,7 +341,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>366</width>
+            <width>629</width>
             <height>881</height>
            </rect>
           </property>
@@ -644,7 +644,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>271</width>
+            <width>629</width>
             <height>1118</height>
            </rect>
           </property>
@@ -980,7 +980,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_graphDonkey"/>
+               <widget class="QKeySequenceEdit" name="ks_graphdonkey"/>
               </item>
              </layout>
             </widget>

@@ -91,9 +91,9 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="action_AboutGraphDonkey"/>
-    <addaction name="action_AboutGraphviz"/>
-    <addaction name="action_AboutQt"/>
+    <addaction name="action_GraphDonkey"/>
+    <addaction name="action_Graphviz"/>
+    <addaction name="action_Qt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -292,12 +292,12 @@
     <string>Save &amp;As</string>
    </property>
   </action>
-  <action name="action_AboutGraphviz">
+  <action name="action_Graphviz">
    <property name="text">
     <string>About &amp;Graphviz</string>
    </property>
   </action>
-  <action name="action_AboutQt">
+  <action name="action_Qt">
    <property name="text">
     <string>About &amp;Qt</string>
    </property>
@@ -375,7 +375,7 @@
     <string>Redo</string>
    </property>
   </action>
-  <action name="action_AboutGraphDonkey">
+  <action name="action_GraphDonkey">
    <property name="text">
     <string>About Graph&amp;Donkey</string>
    </property>

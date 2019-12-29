@@ -66,7 +66,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Undo.triggered.connect(lambda: self.editor().undo())
         self.action_Redo.triggered.connect(lambda: self.editor().redo())
         self.action_Select_All.triggered.connect(lambda: self.editor().selectAll())
-        self.action_Delete.triggered.connect(lambda: self.editor().insertPlainText(""))
+        self.action_Delete.triggered.connect(lambda: self.editor().delete())
         self.action_Copy.triggered.connect(lambda: self.editor().copy())
         self.action_Paste.triggered.connect(lambda: self.editor().paste())
         self.action_Cut.triggered.connect(lambda: self.editor().cut())
@@ -81,9 +81,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.displayGraph)
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
-        self.action_AboutGraphviz.triggered.connect(self.aboutGraphviz)
-        self.action_AboutQt.triggered.connect(self.aboutQt)
-        self.action_AboutGraphDonkey.triggered.connect(self.aboutGraphDonkey)
+        self.action_Graphviz.triggered.connect(self.aboutGraphviz)
+        self.action_Qt.triggered.connect(self.aboutQt)
+        self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
         # Set Toolbar
         self.actionUndo.triggered.connect(lambda: self.editor().undo())

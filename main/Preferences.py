@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   17/12/2019
 """
-from PyQt5 import QtWidgets, QtGui, uic
+from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from main.extra.IOHandler import IOHandler
 from main.extra import Constants
 import configparser
@@ -25,6 +25,7 @@ class Preferences(QtWidgets.QDialog):
         uic.loadUi(IOHandler.dir_ui("Preferences.ui"), self)
         self.buttonBox.clicked.connect(self.restoreDefaults)
         self.check_monospace.toggled.connect(self.setFontCombo)
+        self._setupKs()
 
         self.themes = []
         self.preferences = IOHandler.get_preferences()
@@ -118,6 +119,42 @@ class Preferences(QtWidgets.QDialog):
         name = self.combo_theme.currentText()
         theme = [x for x in self.themes if x.name == name][0]
         return theme.color(identifier)
+
+    def _setupKs(self):
+        self.shortcuts = [
+            "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File", "Exit",
+            "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
+            "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
+            "Show_Render_Area", "Snippets", "Render", "GraphDonkey", "Graphviz", "Qt"
+        ]
+        for action in self.shortcuts:
+            ks = getattr(self, "ks_" + action.lower())
+            def pressEvent(kseq, event):
+                QtWidgets.QKeySequenceEdit.keyPressEvent(kseq, event)
+                kseq.setKeySequence(QtGui.QKeySequence.fromString(kseq.keySequence().toString().split(", ")[0]))
+                self.checkShortcuts()
+            ks.keyPressEvent = lambda e, k=ks: pressEvent(k, e)
+            # Bypass because Qt works weirdly:
+            ks.findChild(QtWidgets.QLineEdit).setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+
+    def checkShortcuts(self):
+        mapped = []
+        for sc in self.shortcuts:
+            ks = getattr(self, "ks_" + sc.lower())
+            scs = ks.keySequence().toString()
+
+            # TRUNCATE TO SINGLE SHORTCUT
+            if ", " in scs:
+                scs = scs.split(", ")[0]
+                ks.setKeySequence(QtGui.QKeySequence.fromString(scs))
+
+            if scs not in mapped or scs == "":
+                mapped.append(scs)
+                ks.setStyleSheet("background-color: rgb(255, 255, 255);")
+            else:
+                loc = mapped.index(scs)
+                ks.setStyleSheet("background-color: rgb(255, 0, 0);")
+                getattr(self, "ks_" + self.shortcuts[loc].lower()).setStyleSheet("background-color: rgb(255, 0, 0);")
 
     def rectify(self):
         # GENERAL
@@ -214,7 +251,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.undo", "CTRL+Z")))
             self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.redo", "CTRL+SHIFT+Z")))
             self.ks_select_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.select_all", "CTRL+A")))
-            self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.delete", "")))
+            self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.delete", "DELETE")))
             self.ks_copy.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.copy", "CTRL+C")))
             self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.cut", "CTRL+X")))
             self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.paste", "CTRL+V")))
@@ -229,7 +266,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.snippets", "F2")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
-            self.ks_graphDonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphDonkey", "")))
+            self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphdonkey", "")))
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphviz", "")))
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.qt", "")))
 
@@ -325,7 +362,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks.snippets", self.ks_snippets.keySequence().toString())
             self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
             # self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
-            self.preferences.setValue("ks.graphDonkey", self.ks_graphDonkey.keySequence().toString())
+            self.preferences.setValue("ks.graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks.graphviz", self.ks_graphviz.keySequence().toString())
             self.preferences.setValue("ks.qt", self.ks_qt.keySequence().toString())
 
@@ -335,18 +372,8 @@ class Preferences(QtWidgets.QDialog):
         self.applyShortcuts()
 
     def applyShortcuts(self):
-        actions = [
-            "New", "Open", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File", "Exit",
-            "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
-            "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
-            "Show_Render_Area", "Snippets", "Render"
-        ]
-        for action in actions:
+        for action in self.shortcuts:
             getattr(self.parent(), "action_" + action).setShortcut(getattr(self, "ks_" + action.lower()).keySequence())
-        # self.parent().action_CheckUpdates.setShortcut(self.ks_updates.keySequence())
-        self.parent().action_AboutGraphDonkey.setShortcut(self.ks_graphDonkey.keySequence())
-        self.parent().action_AboutGraphviz.setShortcut(self.ks_graphviz.keySequence())
-        self.parent().action_AboutQt.setShortcut(self.ks_qt.keySequence())
 
     def applyStyle(self):
         app = QtWidgets.QApplication.instance()

@@ -116,7 +116,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 cursor.setPosition(bsel)
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
-        else:
+        elif event.key() not in [QtCore.Qt.Key_Delete]:
             QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
 
     def event(self, event: QtCore.QEvent):
@@ -136,6 +136,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             if start <= tpos <= start + size:
                 QtWidgets.QToolTip.showText(event.globalPos(), msg, self)
         return QtWidgets.QPlainTextEdit.mouseMoveEvent(self, event)
+
+    def delete(self):
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        if txt == "":
+            cursor.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.setTextCursor(cursor)
+        self.insertPlainText("")
 
     def _cc(self):
         cursor = self.textCursor()
