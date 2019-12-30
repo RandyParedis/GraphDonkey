@@ -72,7 +72,7 @@ def file_list_open():
 def file_list_save():
     return ";;".join(["%s Files (*.%s)" % (x, " *.".join(FILE_TYPES_SAVE[x])) for x in FILE_TYPES_SAVE])
 
-def obtain_ext(category):
+def obtain_exts(category):
     if "." in category:
         i = 0
         for c in range(len(category)):
@@ -80,9 +80,9 @@ def obtain_ext(category):
                 i = c
                 break
         exts = category[i + 3:-1]
-        return exts.split(" *.")[0]
+        return exts.split(" *.")
     else:
-        return ""
+        return []
 
 def valid_ext(extension, group):
     for x in group:

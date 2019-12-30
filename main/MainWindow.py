@@ -13,7 +13,7 @@ from main.CodeEditor import CodeEditor
 from main.extra import Constants, tabPathnames, tango
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
-import graphviz
+import graphviz, subprocess
 
 Config = IOHandler.get_preferences()
 
@@ -25,6 +25,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.scene is None:
             self.scene = QtWidgets.QGraphicsScene(self.view)
             self.view.setScene(self.scene)
+
+        self.disableDisplay = []
+        self.lockDisplay(False)
 
         # Set Statusbar
         self.statusMessage = QtWidgets.QLabel("")
@@ -49,6 +52,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.recents = []
         self.restore()
+
+        self.releaseDisplay()
 
         self.find = FindReplace(self, self.editor())
         self.snippets = Snippets(self)
@@ -79,23 +84,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Autocomplete.triggered.connect(lambda: self.editor().complete())
         self.viewDock.closeEvent = self.viewDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
-        self.action_Render.triggered.connect(self.displayGraph)
+        self.action_Render.triggered.connect(self.forceDisplay)
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
-        # Set Toolbar
-        self.actionUndo.triggered.connect(lambda: self.editor().undo())
-        self.actionRedo.triggered.connect(lambda: self.editor().redo())
-        self.actionNew.triggered.connect(self.new)
-        self.actionOpen.triggered.connect(self.open)
-        self.actionSave.triggered.connect(self.save)
-        self.actionClose.triggered.connect(self.closeFile)
-        self.actionRender.triggered.connect(self.displayGraph)
-        self.actionSnippets.triggered.connect(self.openSnippets)
-        self.actionFind.triggered.connect(self.findReplace)
-        self.actionPreferences.triggered.connect(self.preferences.exec_)
+    def lockDisplay(self, disp=False):
+        if disp and self.canDisplay():
+            self.displayGraph()
+        self.disableDisplay.append(True)
+
+    def releaseDisplay(self):
+        if len(self.disableDisplay) > 0:
+            self.disableDisplay.pop()
+        if self.canDisplay():
+            self.displayGraph()
+
+    def canDisplay(self):
+        return len(self.disableDisplay) == 0
 
     def editor(self, idx=-1):
         if idx == -1:
@@ -245,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(self.recents) > 0:
             self.menuOpen_Recent.addSeparator()
         clear = self.menuOpen_Recent.addAction("Clear Recents")
-        clr = Config.value("ks.clear_recents")
+        clr = Config.value("ks/clear_recents")
         if clr != "":
             clear.setShortcuts(QtGui.QKeySequence(clr))
         clear.triggered.connect(lambda x: self.clearRecents())
@@ -327,15 +334,15 @@ class MainWindow(QtWidgets.QMainWindow):
             .getSaveFileName(self, "Save a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
                              options=options)
         if fileName:
-            ext = fileName.split(".")[-1]
-            rext = Constants.obtain_ext(t)
-            if len(fileName.split(".")) == 1:
+            spt = fileName.split(".")
+            ext = spt[-1]
+            rext = Constants.obtain_exts(t)
+            if len(spt) == 1 or len(rext) == 0:
                 ext = "dot"
-            if rext == "":
-                rext = ext
-            if ext is not rext:
-                fileName += "." + rext
-            if Constants.valid_ext(rext, Constants.FILE_TYPES_OPEN):
+            if ext not in rext:
+                ext = rext[0]
+                fileName += "." + ext
+            if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
                 self.editor().filename = fileName
                 self.save()
             else:
@@ -385,17 +392,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.changeTab(old)
         self.updateTitle()
 
+    def forceDisplay(self):
+        if self.canDisplay():
+            self.displayGraph()
+        else:
+            self.error("Cannot Render", "A process is currently trying to render the graph, please wait.")
+
     def displayGraph(self):
-        self.scene.clear()
-        try:
-            dot = Source(self.editor().toPlainText())
-            bdata = dot.pipe('jpg')
-            image = QtGui.QImage()
-            image.loadFromData(bdata)
-            pixmap = QtGui.QPixmap.fromImage(image)
-            self.scene.addPixmap(pixmap)
-        except graphviz.backend.CalledProcessError as e:
-            self.error("Error", e.stderr.decode("utf-8"))
+        if self.canDisplay() and self.editor() is not None:
+            self.scene.clear()
+            try:
+                dot = Source(self.editor().toPlainText(), engine=Config.value("graphviz/engine"))
+                bdata = dot.pipe(Config.value("graphviz/format"), Config.value("graphviz/renderer"),
+                                 Config.value("graphviz/formatter"))
+                image = QtGui.QImage()
+                image.loadFromData(bdata)
+                pixmap = QtGui.QPixmap.fromImage(image)
+                self.scene.addPixmap(pixmap)
+            except graphviz.backend.CalledProcessError as e:
+                self.error("Error", e.stderr.decode("utf-8"))
 
     def openSnippets(self):
         self.snippets.exec_()
@@ -412,6 +427,9 @@ class MainWindow(QtWidgets.QMainWindow):
         checker.exec_()
 
     def aboutGraphviz(self):
+        cmd = [Config.value("graphviz/engine"), "-V"]
+        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        version = " ".join(out.decode("utf-8").split(" ")[-2:])
         par = QtWidgets.QWidget(self)
         par.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_GRAPHVIZ)))
         QtWidgets\
@@ -424,7 +442,7 @@ class MainWindow(QtWidgets.QMainWindow):
                    " learning, and in visual interfaces for other technical domains.</p>"
                    "<p>Current installed version is <b>%s</b>.</p>"
                    "<p>More information on "
-                   "<a href='https://www.graphviz.org/'>www.graphviz.org</a>.</p>" % graphviz.__version__)
+                   "<a href='https://www.graphviz.org/'>www.graphviz.org</a>.</p>" % version)
 
     def aboutGraphDonkey(self):
         QtWidgets\

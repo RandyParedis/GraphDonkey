@@ -227,8 +227,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def indent(self):
         tab = '\t'
-        if bool(Config.value("spacesOverTabs")):
-            tab = ' ' * int(Config.value("tabwidth"))
+        if bool(Config.value("editor/spacesOverTabs")):
+            tab = ' ' * int(Config.value("editor/tabwidth"))
 
         def func(line, state):
             return state, tab + line
@@ -247,8 +247,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         # 4) reduce string length until length % tablength == 0;
         # 5) this is new whitespace length
         ws = (' ', '\t')
-        useSpaces = bool(Config.value("spacesOverTabs"))
-        tablength = int(Config.value("tabwidth"))
+        useSpaces = bool(Config.value("editor/spacesOverTabs"))
+        tablength = int(Config.value("editor/tabwidth"))
 
         def func(line, state):
             txt = line
@@ -272,8 +272,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.setPosition(posS)
         s = cursor.movePosition(QtGui.QTextCursor.Up)
         indent = 0
-        tw = int(Config.value("tabwidth"))
-        sot = bool(Config.value("spacesOverTabs"))
+        tw = int(Config.value("editor/tabwidth"))
+        sot = bool(Config.value("editor/spacesOverTabs"))
         if s:
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
@@ -400,8 +400,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def highlightParenthesis(self, pos):
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        selection.format.setBackground(QtGui.QColor(Config.value("col.clnb")))
-        selection.format.setForeground(QtGui.QColor(Config.value("col.clnf")))
+        selection.format.setBackground(QtGui.QColor(Config.value("col/clnb")))
+        selection.format.setForeground(QtGui.QColor(Config.value("col/clnf")))
 
         curs = self.textCursor()
         curs.setPosition(pos)
@@ -417,7 +417,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         for start, end, _ in self.matches:
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(QtGui.QColor(Config.value("col.find")))
+            selection.format.setBackground(QtGui.QColor(Config.value("col/find")))
 
             curs = self.textCursor()
             curs.setPosition(start)
@@ -444,7 +444,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         selections = []
         if not self.isReadOnly():
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format.setBackground(QtGui.QColor(Config.value("col.cline")))
+            selection.format.setBackground(QtGui.QColor(Config.value("col/cline")))
             selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -487,16 +487,16 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
 
-        col_1 = QtGui.QColor(Config.value("col.clnf"))
-        col_0 = QtGui.QColor(Config.value("col.lnf"))
+        col_1 = QtGui.QColor(Config.value("col/clnf"))
+        col_0 = QtGui.QColor(Config.value("col/lnf"))
 
         old = block, top, bottom, blockNumber
 
-        painter.fillRect(event.rect(), QtGui.QColor(Config.value("col.lnb")))
+        painter.fillRect(event.rect(), QtGui.QColor(Config.value("col/lnb")))
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top() and self.textCursor().blockNumber() == blockNumber:
                 painter.fillRect(QtCore.QRect(event.rect().x(), top, event.rect().width(), self.fontMetrics().height()),
-                                 QtGui.QColor(Config.value("col.clnb")))
+                                 QtGui.QColor(Config.value("col/clnb")))
             block = block.next()
             top = bottom
             bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
@@ -516,7 +516,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             blockNumber += 1
 
     def lineNumberAreaWidth(self):
-        if not bool(Config.value("showLineNumbers", True)):
+        if not bool(Config.value("editor/showLineNumbers", True)):
             return 0
         digits = 1
         _max = max(1, self.document().blockCount())
@@ -543,11 +543,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)
 
     def updateLineNumberArea(self):
-        if bool(Config.value("highlightCurrentLine")):
+        if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
-        if bool(Config.value("parentheses")):
+        if bool(Config.value("editor/parentheses")):
             self.matchParenthesis()
-        if bool(Config.value("useParser", True)):
+        if bool(Config.value("editor/useParser", True)):
             self.highlightErrors()
         self.highlightMatches()
 

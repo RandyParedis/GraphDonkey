@@ -326,6 +326,94 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_graphviz">
+      <attribute name="title">
+       <string>Graph&amp;viz</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_20" rowstretch="1,0,0,0">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_68">
+         <property name="text">
+          <string>Output Render Format (for view):</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_69">
+         <property name="text">
+          <string>Renderer:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="combo_format"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="combo_engine">
+         <item>
+          <property name="text">
+           <string>dot</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>neato</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>twopi</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>circo</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>fdp</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>sfdp</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>patchwork</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>osage</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_70">
+         <property name="text">
+          <string>Formatter:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="combo_renderer"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_71">
+         <property name="text">
+          <string>Engine:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="combo_formatter"/>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab_appearance">
       <attribute name="title">
        <string>&amp;Theme and Colors</string>
@@ -1006,8 +1094,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -1022,8 +1110,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -1038,12 +1126,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>342</x>
-     <y>230</y>
+     <x>365</x>
+     <y>436</y>
     </hint>
     <hint type="destinationlabel">
-     <x>342</x>
-     <y>370</y>
+     <x>365</x>
+     <y>479</y>
     </hint>
    </hints>
   </connection>

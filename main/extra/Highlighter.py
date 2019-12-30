@@ -123,7 +123,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
-            if bool(Config.value("autorender")):
+            if bool(Config.value("editor/autorender")):
                 self.editor.mainwindow.displayGraph()
 
     def highlightRules(self, text, rules):
@@ -149,7 +149,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.storeParenthesis(text)
         self.storeErrors()
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
-        sh = bool(Config.value("syntaxHighlighting", True))
+        sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
             self.highlightRules(text, self.highlightingRules)
             self.highlightMultilineStrings(text)
@@ -159,61 +159,61 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     @staticmethod
     def format_keyword():
         keywordFormat = QtGui.QTextCharFormat()
-        keywordFormat.setForeground(QtGui.QColor(Config.value("col.keyword")))
+        keywordFormat.setForeground(QtGui.QColor(Config.value("col/keyword")))
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
         return keywordFormat
 
     @staticmethod
     def format_attribute():
         attributeFormat = QtGui.QTextCharFormat()
-        attributeFormat.setForeground(QtGui.QColor(Config.value("col.attribute")))
+        attributeFormat.setForeground(QtGui.QColor(Config.value("col/attribute")))
         attributeFormat.setFontWeight(QtGui.QFont.Bold)
         return attributeFormat
 
     @staticmethod
     def format_comment_hash():
         hashCommentFormat = QtGui.QTextCharFormat()
-        hashCommentFormat.setForeground(QtGui.QColor(Config.value("col.hash")))
+        hashCommentFormat.setForeground(QtGui.QColor(Config.value("col/hash")))
         hashCommentFormat.setFontItalic(True)
         return hashCommentFormat
 
     @staticmethod
     def format_comment_single():
         singleLineCommentFormat = QtGui.QTextCharFormat()
-        singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
+        singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col/comment")))
         singleLineCommentFormat.setFontItalic(True)
         return singleLineCommentFormat
 
     @staticmethod
     def format_comment_multi():
         multiLineCommentFormat = QtGui.QTextCharFormat()
-        multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col.comment")))
+        multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col/comment")))
         multiLineCommentFormat.setFontItalic(True)
         return multiLineCommentFormat
 
     @staticmethod
     def format_number():
         numberFormat = QtGui.QTextCharFormat()
-        numberFormat.setForeground(QtGui.QColor(Config.value("col.number")))
+        numberFormat.setForeground(QtGui.QColor(Config.value("col/number")))
         return numberFormat
 
     @staticmethod
     def format_string():
         quotedStringFormat = QtGui.QTextCharFormat()
-        quotedStringFormat.setForeground(QtGui.QColor(Config.value("col.string")))
+        quotedStringFormat.setForeground(QtGui.QColor(Config.value("col/string")))
         return quotedStringFormat
 
     @staticmethod
     def format_html():
         htmlStringFormat = QtGui.QTextCharFormat()
-        htmlStringFormat.setForeground(QtGui.QColor(Config.value("col.html")))
+        htmlStringFormat.setForeground(QtGui.QColor(Config.value("col/html")))
         return htmlStringFormat
 
     @staticmethod
     def format_error(tooltip=""):
         errorFormat = QtGui.QTextCharFormat()
         errorFormat.setFontUnderline(True)
-        errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col.error")))
+        errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col/error")))
         errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
         errorFormat.setToolTip(tooltip)
         return errorFormat

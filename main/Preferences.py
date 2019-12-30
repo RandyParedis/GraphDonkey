@@ -10,6 +10,7 @@ import configparser
 import glob
 import re
 import os
+import subprocess
 
 
 def bool(name: str):
@@ -26,6 +27,7 @@ class Preferences(QtWidgets.QDialog):
         self.buttonBox.clicked.connect(self.restoreDefaults)
         self.check_monospace.toggled.connect(self.setFontCombo)
         self._setupKs()
+        self.setupGraphviz()
 
         self.themes = []
         self.preferences = IOHandler.get_preferences()
@@ -53,6 +55,48 @@ class Preferences(QtWidgets.QDialog):
     def setFontCombo(self, on):
         f = QtWidgets.QFontComboBox.MonospacedFonts if on else QtWidgets.QFontComboBox.AllFonts
         self.font_editor.setFontFilters(f)
+
+    def setupGraphviz(self):
+        self.combo_engine.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
+        self.combo_format.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
+        self.combo_renderer.currentTextChanged.connect(lambda x: self.setGraphvizFormatter())
+        cmd = [self.combo_engine.currentText(), "-T:"]
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            self.combo_format.clear()
+            fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: ":" not recognized. Use one of: '):]\
+                .split(" ")
+            fmts = [f.split(":")[0] for f in fmts]
+            for f in ["gif", "jpe", "jpeg", "jpg", "png", "svg", "svgz", "wbmp"]:
+                if f in fmts:
+                    self.combo_format.addItem(f)
+            self.setGraphvizRenderer()
+
+    def setGraphvizRenderer(self):
+        fmt = self.combo_format.currentText()
+        cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            self._setGraphviz(e, fmt, 1, self.combo_renderer)
+            self.setGraphvizFormatter()
+
+    def setGraphvizFormatter(self):
+        fmt = self.combo_format.currentText()
+        cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            self._setGraphviz(e, fmt, 2, self.combo_formatter, lambda f: f.split(":")[1] == self.combo_renderer.currentText())
+
+    def _setGraphviz(self, e, fmt, idx, field, cond=lambda x: True):
+        fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: "%s:" not recognized. Use one of: ' % fmt):] \
+            .split(" ")
+        fmts = sorted(list(set(f.split(":")[idx] for f in fmts if cond(f))))
+        field.clear()
+        for fmt in fmts:
+            field.addItem(fmt)
 
     def _setColorPickers(self):
         self.names_general = [
@@ -127,15 +171,19 @@ class Preferences(QtWidgets.QDialog):
             "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
             "Show_Render_Area", "Snippets", "Render", "GraphDonkey", "Graphviz", "Qt"
         ]
+
+        def pressEvent(kseq, event):
+            QtWidgets.QKeySequenceEdit.keyPressEvent(kseq, event)
+            kseq.setKeySequence(QtGui.QKeySequence.fromString(kseq.keySequence().toString().split(", ")[0]))
+            self.checkShortcuts()
+
         for action in self.shortcuts:
             ks = getattr(self, "ks_" + action.lower())
-            def pressEvent(kseq, event):
-                QtWidgets.QKeySequenceEdit.keyPressEvent(kseq, event)
-                kseq.setKeySequence(QtGui.QKeySequence.fromString(kseq.keySequence().toString().split(", ")[0]))
-                self.checkShortcuts()
             ks.keyPressEvent = lambda e, k=ks: pressEvent(k, e)
+
             # Bypass because Qt works weirdly:
-            ks.findChild(QtWidgets.QLineEdit).setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+            le = ks.findChild(QtWidgets.QLineEdit)
+            le.setClearButtonEnabled(True)
 
     def checkShortcuts(self):
         mapped = []
@@ -182,24 +230,31 @@ class Preferences(QtWidgets.QDialog):
         # EDITOR
         if True:
             defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
-            self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("font", defFont.family())))
-            self.num_font.setValue(int(self.preferences.value("fontsize", 12)))
-            self.num_tabwidth.setValue(int(self.preferences.value("tabwidth", 4)))
-            self.check_lineNumbers.setChecked(bool(self.preferences.value("showLineNumbers", True)))
-            self.check_highlightLine.setChecked(bool(self.preferences.value("highlightCurrentLine", True)))
-            self.check_parentheses.setChecked(bool(self.preferences.value("parentheses", True)))
-            self.check_spaceTabs.setChecked(bool(self.preferences.value("spacesOverTabs", False)))
-            self.check_monospace.setChecked(bool(self.preferences.value("monospace", True)))
-            self.check_showWhitespace.setChecked(bool(self.preferences.value("showWhitespace", False)))
-            self.check_syntax.setChecked(bool(self.preferences.value("syntaxHighlighting", True)))
-            self.check_parse.setChecked(bool(self.preferences.value("useParser", True)))
-            self.check_autorender.setChecked(bool(self.preferences.value("autorender", True)))
+            self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("editor/font", defFont.family())))
+            self.num_font.setValue(int(self.preferences.value("editor/fontsize", 12)))
+            self.num_tabwidth.setValue(int(self.preferences.value("editor/tabwidth", 4)))
+            self.check_lineNumbers.setChecked(bool(self.preferences.value("editor/showLineNumbers", True)))
+            self.check_highlightLine.setChecked(bool(self.preferences.value("editor/highlightCurrentLine", True)))
+            self.check_parentheses.setChecked(bool(self.preferences.value("editor/parentheses", True)))
+            self.check_spaceTabs.setChecked(bool(self.preferences.value("editor/spacesOverTabs", False)))
+            self.check_monospace.setChecked(bool(self.preferences.value("editor/monospace", True)))
+            self.check_showWhitespace.setChecked(bool(self.preferences.value("editor/showWhitespace", False)))
+            self.check_syntax.setChecked(bool(self.preferences.value("editor/syntaxHighlighting", True)))
+            self.check_parse.setChecked(bool(self.preferences.value("editor/useParser", True)))
+            self.check_autorender.setChecked(bool(self.preferences.value("editor/autorender", True)))
             self.parseDisable(self.check_parse.isChecked())
+
+        # GRAPHVIZ
+        if True:
+            self.combo_engine.setCurrentText(self.preferences.value("graphviz/engine", "dot"))
+            self.combo_format.setCurrentText(self.preferences.value("graphviz/format", "svg"))
+            self.combo_renderer.setCurrentText(self.preferences.value("graphviz/renderer", "svg"))
+            self.combo_formatter.setCurrentText(self.preferences.value("graphviz/formatter", "core"))
 
         # APPEARANCE
         if True:
-            self.combo_style.setCurrentIndex(int(self.preferences.value("style", 0)))
-            self.combo_theme.setCurrentText(self.preferences.value("theme", "Light Lucy"))
+            self.combo_style.setCurrentIndex(int(self.preferences.value("col/style", 0)))
+            self.combo_theme.setCurrentText(self.preferences.value("col/theme", "Light Lucy"))
             # lst = self.names_general + self.names_editor + self.names_syntax
             # for i in range(len(lst)):
             #     name = lst[i]
@@ -207,68 +262,68 @@ class Preferences(QtWidgets.QDialog):
             #     getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
 
             # BUILTIN STANDARD THEME IN CASE SOMEONE MESSES WITH THE FILES:
-            self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col.foreground", "#000000")))
-            self.col_window.setColor(QtGui.QColor(self.preferences.value("col.window", "#efefef")))
-            self.col_base.setColor(QtGui.QColor(self.preferences.value("col.base", "#ffffff")))
-            self.col_alternateBase.setColor(QtGui.QColor(self.preferences.value("col.alternateBase", "#f7f7f7")))
-            self.col_tooltipBase.setColor(QtGui.QColor(self.preferences.value("col.tooltipBase", "#ffffdc")))
-            self.col_tooltipText.setColor(QtGui.QColor(self.preferences.value("col.tooltipText", "#000000")))
-            self.col_text.setColor(QtGui.QColor(self.preferences.value("col.text", "#000000")))
-            self.col_button.setColor(QtGui.QColor(self.preferences.value("col.button", "#efefef")))
-            self.col_buttonText.setColor(QtGui.QColor(self.preferences.value("col.buttonText", "#000000")))
-            self.col_brightText.setColor(QtGui.QColor(self.preferences.value("col.brightText", "#dcdcff")))
-            self.col_highlight.setColor(QtGui.QColor(self.preferences.value("col.highlight", "#30acc6")))
-            self.col_highlightedText.setColor(QtGui.QColor(self.preferences.value("col.highlightedText", "#ffffff")))
-            self.col_link.setColor(QtGui.QColor(self.preferences.value("col.link", "#8be9fd")))
-            self.col_visitedLink.setColor(QtGui.QColor(self.preferences.value("col.visitedLink", "#253fe8")))
-            self.col_cline.setColor(QtGui.QColor(self.preferences.value("col.cline", "#fffeb5")))
-            self.col_lnf.setColor(QtGui.QColor(self.preferences.value("col.lnf", "#000000")))
-            self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col.lnb", "#f7f7f7")))
-            self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col.clnf", "#ffffff")))
-            self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col.clnb", "#30acc6")))
-            self.col_find.setColor(QtGui.QColor(self.preferences.value("col.find", "#8be9fd")))
-            self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col.keyword", "#800000")))
-            self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col.attribute", "#000080")))
-            self.col_number.setColor(QtGui.QColor(self.preferences.value("col.number", "#ff00ff")))
-            self.col_string.setColor(QtGui.QColor(self.preferences.value("col.string", "#158724")))
-            self.col_html.setColor(QtGui.QColor(self.preferences.value("col.html", "#158724")))
-            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col.comment", "#0000ff")))
-            self.col_hash.setColor(QtGui.QColor(self.preferences.value("col.hash", "#0000ff")))
-            self.col_error.setColor(QtGui.QColor(self.preferences.value("col.error", "#ff0000")))
+            self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col/foreground", "#000000")))
+            self.col_window.setColor(QtGui.QColor(self.preferences.value("col/window", "#efefef")))
+            self.col_base.setColor(QtGui.QColor(self.preferences.value("col/base", "#ffffff")))
+            self.col_alternateBase.setColor(QtGui.QColor(self.preferences.value("col/alternateBase", "#f7f7f7")))
+            self.col_tooltipBase.setColor(QtGui.QColor(self.preferences.value("col/tooltipBase", "#ffffdc")))
+            self.col_tooltipText.setColor(QtGui.QColor(self.preferences.value("col/tooltipText", "#000000")))
+            self.col_text.setColor(QtGui.QColor(self.preferences.value("col/text", "#000000")))
+            self.col_button.setColor(QtGui.QColor(self.preferences.value("col/button", "#efefef")))
+            self.col_buttonText.setColor(QtGui.QColor(self.preferences.value("col/buttonText", "#000000")))
+            self.col_brightText.setColor(QtGui.QColor(self.preferences.value("col/brightText", "#dcdcff")))
+            self.col_highlight.setColor(QtGui.QColor(self.preferences.value("col/highlight", "#30acc6")))
+            self.col_highlightedText.setColor(QtGui.QColor(self.preferences.value("col/highlightedText", "#ffffff")))
+            self.col_link.setColor(QtGui.QColor(self.preferences.value("col/link", "#0000ff")))
+            self.col_visitedLink.setColor(QtGui.QColor(self.preferences.value("col/visitedLink", "#5500ff")))
+            self.col_cline.setColor(QtGui.QColor(self.preferences.value("col/cline", "#fffeb5")))
+            self.col_lnf.setColor(QtGui.QColor(self.preferences.value("col/lnf", "#000000")))
+            self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col/lnb", "#f7f7f7")))
+            self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col/clnf", "#ffffff")))
+            self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col/clnb", "#30acc6")))
+            self.col_find.setColor(QtGui.QColor(self.preferences.value("col/find", "#8be9fd")))
+            self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col/keyword", "#800000")))
+            self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col/attribute", "#000080")))
+            self.col_number.setColor(QtGui.QColor(self.preferences.value("col/number", "#ff00ff")))
+            self.col_string.setColor(QtGui.QColor(self.preferences.value("col/string", "#158724")))
+            self.col_html.setColor(QtGui.QColor(self.preferences.value("col/html", "#158724")))
+            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col/comment", "#0000ff")))
+            self.col_hash.setColor(QtGui.QColor(self.preferences.value("col/hash", "#0000ff")))
+            self.col_error.setColor(QtGui.QColor(self.preferences.value("col/error", "#ff0000")))
 
         # SHORTCUTS
         if True:
-            self.ks_new.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.new", "CTRL+N")))
-            self.ks_open.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.open", "CTRL+O")))
-            self.ks_save.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save", "CTRL+S")))
-            self.ks_save_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save_all", "")))
-            self.ks_save_as.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.save_as", "CTRL+SHIFT+S")))
-            self.ks_export.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.export", "CTRL+E")))
-            self.ks_clear_recents.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.clear_recents", "")))
-            self.ks_preferences.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.preferences", "CTRL+P")))
-            self.ks_close_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.close_file", "CTRL+W")))
-            self.ks_exit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.exit", "CTRL+Q")))
-            self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.undo", "CTRL+Z")))
-            self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.redo", "CTRL+SHIFT+Z")))
-            self.ks_select_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.select_all", "CTRL+A")))
-            self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.delete", "DELETE")))
-            self.ks_copy.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.copy", "CTRL+C")))
-            self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.cut", "CTRL+X")))
-            self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.paste", "CTRL+V")))
-            self.ks_duplicate.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.duplicate", "CTRL+D")))
-            self.ks_comment.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.comment", "CTRL+/")))
-            self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.indent", "TAB")))
-            self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.unindent", "SHIFT+TAB")))
-            self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.auto_indent", "CTRL+SHIFT+I")))
-            self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.find", "CTRL+F")))
-            self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.autocomplete", "CTRL+SPACE")))
-            self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.show_render_area", "")))
-            self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.render", "CTRL+R")))
-            self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.snippets", "F2")))
-            # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.updates", "")))
-            self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphdonkey", "")))
-            self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.graphviz", "")))
-            self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks.qt", "")))
+            self.ks_new.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/new", "CTRL+N")))
+            self.ks_open.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/open", "CTRL+O")))
+            self.ks_save.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save", "CTRL+S")))
+            self.ks_save_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_all", "")))
+            self.ks_save_as.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_as", "CTRL+SHIFT+S")))
+            self.ks_export.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/export", "CTRL+E")))
+            self.ks_clear_recents.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/clear_recents", "")))
+            self.ks_preferences.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/preferences", "CTRL+P")))
+            self.ks_close_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/close_file", "CTRL+W")))
+            self.ks_exit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/exit", "CTRL+Q")))
+            self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/undo", "CTRL+Z")))
+            self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/redo", "CTRL+SHIFT+Z")))
+            self.ks_select_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/select_all", "CTRL+A")))
+            self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/delete", "DELETE")))
+            self.ks_copy.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/copy", "CTRL+C")))
+            self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/cut", "CTRL+X")))
+            self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/paste", "CTRL+V")))
+            self.ks_duplicate.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/duplicate", "CTRL+D")))
+            self.ks_comment.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/comment", "CTRL+/")))
+            self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/indent", "TAB")))
+            self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/unindent", "SHIFT+TAB")))
+            self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/auto_indent", "CTRL+SHIFT+I")))
+            self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/find", "CTRL+F")))
+            self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/autocomplete", "CTRL+SPACE")))
+            self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
+            self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
+            self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
+            # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
+            self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
+            self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
+            self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
     def apply(self):
         # GENERAL
@@ -287,89 +342,99 @@ class Preferences(QtWidgets.QDialog):
 
         # EDITOR
         if True:
-            self.preferences.setValue("font", self.font_editor.currentFont().family())
-            self.preferences.setValue("fontsize", self.num_font.value())
-            self.preferences.setValue("showLineNumbers", self.check_lineNumbers.isChecked())
-            self.preferences.setValue("highlightCurrentLine", self.check_highlightLine.isChecked())
-            self.preferences.setValue("syntaxHighlighting", self.check_syntax.isChecked())
-            self.preferences.setValue("spacesOverTabs", self.check_spaceTabs.isChecked())
-            self.preferences.setValue("parentheses", self.check_parentheses.isChecked())
-            self.preferences.setValue("monospace", self.check_monospace.isChecked())
-            self.preferences.setValue("showWhitespace", self.check_showWhitespace.isChecked())
-            self.preferences.setValue("tabwidth", self.num_tabwidth.value())
-            self.preferences.setValue("useParser", self.check_parse.isChecked())
-            self.preferences.setValue("autorender", self.check_autorender.isChecked())
+            self.preferences.setValue("editor/font", self.font_editor.currentFont().family())
+            self.preferences.setValue("editor/fontsize", self.num_font.value())
+            self.preferences.setValue("editor/showLineNumbers", self.check_lineNumbers.isChecked())
+            self.preferences.setValue("editor/highlightCurrentLine", self.check_highlightLine.isChecked())
+            self.preferences.setValue("editor/syntaxHighlighting", self.check_syntax.isChecked())
+            self.preferences.setValue("editor/spacesOverTabs", self.check_spaceTabs.isChecked())
+            self.preferences.setValue("editor/parentheses", self.check_parentheses.isChecked())
+            self.preferences.setValue("editor/monospace", self.check_monospace.isChecked())
+            self.preferences.setValue("editor/showWhitespace", self.check_showWhitespace.isChecked())
+            self.preferences.setValue("editor/tabwidth", self.num_tabwidth.value())
+            self.preferences.setValue("editor/useParser", self.check_parse.isChecked())
+            self.preferences.setValue("editor/autorender", self.check_autorender.isChecked())
+
+        # GRAPHVIZ
+        if True:
+            self.preferences.setValue("graphviz/format", self.combo_format.currentText())
+            self.preferences.setValue("graphviz/engine", self.combo_engine.currentText())
+            self.preferences.setValue("graphviz/renderer", self.combo_renderer.currentText())
+            self.preferences.setValue("graphviz/formatter", self.combo_formatter.currentText())
 
         # APPEARANCE
         if True:
-            self.preferences.setValue("style", self.combo_style.currentIndex())
-            self.preferences.setValue("theme", self.combo_theme.currentText())
-            self.preferences.setValue("col.foreground", self.col_foreground.colorName())
-            self.preferences.setValue("col.window", self.col_window.colorName())
-            self.preferences.setValue("col.base", self.col_base.colorName())
-            self.preferences.setValue("col.alternateBase", self.col_alternateBase.colorName())
-            self.preferences.setValue("col.tooltipBase", self.col_tooltipBase.colorName())
-            self.preferences.setValue("col.tooltipText", self.col_tooltipText.colorName())
-            self.preferences.setValue("col.text", self.col_text.colorName())
-            self.preferences.setValue("col.button", self.col_button.colorName())
-            self.preferences.setValue("col.buttonText", self.col_buttonText.colorName())
-            self.preferences.setValue("col.brightText", self.col_brightText.colorName())
-            self.preferences.setValue("col.highlight", self.col_highlight.colorName())
-            self.preferences.setValue("col.link", self.col_link.colorName())
-            self.preferences.setValue("col.visitedLink", self.col_visitedLink.colorName())
-            self.preferences.setValue("col.cline", self.col_cline.colorName())
-            self.preferences.setValue("col.lnf", self.col_lnf.colorName())
-            self.preferences.setValue("col.lnb", self.col_lnb.colorName())
-            self.preferences.setValue("col.clnf", self.col_clnf.colorName())
-            self.preferences.setValue("col.clnb", self.col_clnb.colorName())
-            self.preferences.setValue("col.find", self.col_find.colorName())
-            self.preferences.setValue("col.keyword", self.col_keyword.colorName())
-            self.preferences.setValue("col.attribute", self.col_attribute.colorName())
-            self.preferences.setValue("col.number", self.col_number.colorName())
-            self.preferences.setValue("col.string", self.col_string.colorName())
-            self.preferences.setValue("col.html", self.col_html.colorName())
-            self.preferences.setValue("col.comment", self.col_comment.colorName())
-            self.preferences.setValue("col.hash", self.col_hash.colorName())
-            self.preferences.setValue("col.error", self.col_error.colorName())
+            self.preferences.setValue("col/style", self.combo_style.currentIndex())
+            self.preferences.setValue("col/theme", self.combo_theme.currentText())
+            self.preferences.setValue("col/foreground", self.col_foreground.colorName())
+            self.preferences.setValue("col/window", self.col_window.colorName())
+            self.preferences.setValue("col/base", self.col_base.colorName())
+            self.preferences.setValue("col/alternateBase", self.col_alternateBase.colorName())
+            self.preferences.setValue("col/tooltipBase", self.col_tooltipBase.colorName())
+            self.preferences.setValue("col/tooltipText", self.col_tooltipText.colorName())
+            self.preferences.setValue("col/text", self.col_text.colorName())
+            self.preferences.setValue("col/button", self.col_button.colorName())
+            self.preferences.setValue("col/buttonText", self.col_buttonText.colorName())
+            self.preferences.setValue("col/brightText", self.col_brightText.colorName())
+            self.preferences.setValue("col/highlight", self.col_highlight.colorName())
+            self.preferences.setValue("col/link", self.col_link.colorName())
+            self.preferences.setValue("col/visitedLink", self.col_visitedLink.colorName())
+            self.preferences.setValue("col/cline", self.col_cline.colorName())
+            self.preferences.setValue("col/lnf", self.col_lnf.colorName())
+            self.preferences.setValue("col/lnb", self.col_lnb.colorName())
+            self.preferences.setValue("col/clnf", self.col_clnf.colorName())
+            self.preferences.setValue("col/clnb", self.col_clnb.colorName())
+            self.preferences.setValue("col/find", self.col_find.colorName())
+            self.preferences.setValue("col/keyword", self.col_keyword.colorName())
+            self.preferences.setValue("col/attribute", self.col_attribute.colorName())
+            self.preferences.setValue("col/number", self.col_number.colorName())
+            self.preferences.setValue("col/string", self.col_string.colorName())
+            self.preferences.setValue("col/html", self.col_html.colorName())
+            self.preferences.setValue("col/comment", self.col_comment.colorName())
+            self.preferences.setValue("col/hash", self.col_hash.colorName())
+            self.preferences.setValue("col/error", self.col_error.colorName())
 
         # SHORTCUTS
         if True:
-            self.preferences.setValue("ks.new", self.ks_new.keySequence().toString())
-            self.preferences.setValue("ks.open", self.ks_open.keySequence().toString())
-            self.preferences.setValue("ks.save", self.ks_save.keySequence().toString())
-            self.preferences.setValue("ks.save_all", self.ks_save_all.keySequence().toString())
-            self.preferences.setValue("ks.save_as", self.ks_save_as.keySequence().toString())
-            self.preferences.setValue("ks.export", self.ks_export.keySequence().toString())
-            self.preferences.setValue("ks.clear_recents", self.ks_clear_recents.keySequence().toString())
-            self.preferences.setValue("ks.preferences", self.ks_preferences.keySequence().toString())
-            self.preferences.setValue("ks.close_file", self.ks_close_file.keySequence().toString())
-            self.preferences.setValue("ks.exit", self.ks_exit.keySequence().toString())
-            self.preferences.setValue("ks.undo", self.ks_undo.keySequence().toString())
-            self.preferences.setValue("ks.redo", self.ks_redo.keySequence().toString())
-            self.preferences.setValue("ks.select_all", self.ks_select_all.keySequence().toString())
-            self.preferences.setValue("ks.delete", self.ks_delete.keySequence().toString())
-            self.preferences.setValue("ks.copy", self.ks_copy.keySequence().toString())
-            self.preferences.setValue("ks.cut", self.ks_cut.keySequence().toString())
-            self.preferences.setValue("ks.paste", self.ks_paste.keySequence().toString())
-            self.preferences.setValue("ks.duplicate", self.ks_duplicate.keySequence().toString())
-            self.preferences.setValue("ks.comment", self.ks_comment.keySequence().toString())
-            self.preferences.setValue("ks.indent", self.ks_indent.keySequence().toString())
-            self.preferences.setValue("ks.unindent", self.ks_unindent.keySequence().toString())
-            self.preferences.setValue("ks.auto_indent", self.ks_auto_indent.keySequence().toString())
-            self.preferences.setValue("ks.find", self.ks_find.keySequence().toString())
-            self.preferences.setValue("ks.autocomplete", self.ks_autocomplete.keySequence().toString())
-            self.preferences.setValue("ks.show_render_area", self.ks_show_render_area.keySequence().toString())
-            self.preferences.setValue("ks.snippets", self.ks_snippets.keySequence().toString())
-            self.preferences.setValue("ks.render", self.ks_render.keySequence().toString())
-            # self.preferences.setValue("ks.updates", self.ks_updates.keySequence().toString())
-            self.preferences.setValue("ks.graphdonkey", self.ks_graphdonkey.keySequence().toString())
-            self.preferences.setValue("ks.graphviz", self.ks_graphviz.keySequence().toString())
-            self.preferences.setValue("ks.qt", self.ks_qt.keySequence().toString())
+            self.preferences.setValue("ks/new", self.ks_new.keySequence().toString())
+            self.preferences.setValue("ks/open", self.ks_open.keySequence().toString())
+            self.preferences.setValue("ks/save", self.ks_save.keySequence().toString())
+            self.preferences.setValue("ks/save_all", self.ks_save_all.keySequence().toString())
+            self.preferences.setValue("ks/save_as", self.ks_save_as.keySequence().toString())
+            self.preferences.setValue("ks/export", self.ks_export.keySequence().toString())
+            self.preferences.setValue("ks/clear_recents", self.ks_clear_recents.keySequence().toString())
+            self.preferences.setValue("ks/preferences", self.ks_preferences.keySequence().toString())
+            self.preferences.setValue("ks/close_file", self.ks_close_file.keySequence().toString())
+            self.preferences.setValue("ks/exit", self.ks_exit.keySequence().toString())
+            self.preferences.setValue("ks/undo", self.ks_undo.keySequence().toString())
+            self.preferences.setValue("ks/redo", self.ks_redo.keySequence().toString())
+            self.preferences.setValue("ks/select_all", self.ks_select_all.keySequence().toString())
+            self.preferences.setValue("ks/delete", self.ks_delete.keySequence().toString())
+            self.preferences.setValue("ks/copy", self.ks_copy.keySequence().toString())
+            self.preferences.setValue("ks/cut", self.ks_cut.keySequence().toString())
+            self.preferences.setValue("ks/paste", self.ks_paste.keySequence().toString())
+            self.preferences.setValue("ks/duplicate", self.ks_duplicate.keySequence().toString())
+            self.preferences.setValue("ks/comment", self.ks_comment.keySequence().toString())
+            self.preferences.setValue("ks/indent", self.ks_indent.keySequence().toString())
+            self.preferences.setValue("ks/unindent", self.ks_unindent.keySequence().toString())
+            self.preferences.setValue("ks/auto_indent", self.ks_auto_indent.keySequence().toString())
+            self.preferences.setValue("ks/find", self.ks_find.keySequence().toString())
+            self.preferences.setValue("ks/autocomplete", self.ks_autocomplete.keySequence().toString())
+            self.preferences.setValue("ks/show_render_area", self.ks_show_render_area.keySequence().toString())
+            self.preferences.setValue("ks/snippets", self.ks_snippets.keySequence().toString())
+            self.preferences.setValue("ks/render", self.ks_render.keySequence().toString())
+            # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
+            self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
+            self.preferences.setValue("ks/graphviz", self.ks_graphviz.keySequence().toString())
+            self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 
         self.preferences.sync()
+
+        self.parent().lockDisplay()
         self.applyEditor()
         self.applyStyle()
         self.applyShortcuts()
+        self.parent().releaseDisplay()
 
     def applyShortcuts(self):
         for action in self.shortcuts:

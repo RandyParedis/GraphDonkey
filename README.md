@@ -95,6 +95,7 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
+* [0.1.3] Added additional Graphviz configurations
 * [0.1.3] Selections/Cursors are now being remembered on startup
 * [0.1.3] Added 'Show Whitespace' option to preferences
 * [0.1.3] Changed layout
@@ -172,6 +173,7 @@ https://github.com/RandyParedis/GraphDonkey/issues)
   * Onclick of node: edit features
   * Quick connections
   * Should make Editor only useful for advanced features
+  * [Layers?](https://graphviz.gitlab.io/faq/#FaqOverlays)
 * [1.0.0] Add mouse control section to 'Shortcuts' in the Preferences
   * Rename 'Shortcuts' to 'Controls'
 * [1.1.0] Add all different node and edge types in interactive mode
