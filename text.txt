@@ -19,6 +19,7 @@ TODO FUTURE [0.1.3]
     - Opening and closing seems to take a while (splash)
             - Loading screen / window (with progress bar?)
             - Closing screen / window (with progress bar?)
+            ==> https://stackoverflow.com/questions/12682888/qt-c-aligning-qprogressbar-inside-a-qsplashscreen/12686191
     - Fix most TODOs
 
 Version 1.0.0 name ideas:

@@ -428,7 +428,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-324</y>
             <width>629</width>
             <height>881</height>
            </rect>
@@ -591,7 +591,7 @@
               <item row="4" column="0">
                <widget class="QLabel" name="label_35">
                 <property name="text">
-                 <string>Highlight Foreground:</string>
+                 <string>Highlight Background:</string>
                 </property>
                </widget>
               </item>
