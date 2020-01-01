@@ -28,12 +28,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
 
-        self.document().blockCountChanged.connect(self.updateLineNumberAreaWidth)
-        self.verticalScrollBar().valueChanged.connect(lambda x: self.updateLineNumberArea())
-        self.textChanged.connect(self.updateLineNumberArea)
-        self.cursorPositionChanged.connect(self.updateLineNumberArea)
+        self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
+        # self.updateRequest.connect(self.updateLineNumberArea)
+        self.cursorPositionChanged.connect(self.positionChangedSlot)
 
-        self.updateLineNumberAreaWidth(0)
+        self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
         self.highlighter = Highlighter(self.document(), self)
 
@@ -47,6 +46,16 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.completer = None
         self.setCompleter()
+
+    def positionChangedSlot(self):
+        if bool(Config.value("editor/highlightCurrentLine")):
+            self.highlightCurrentLine()
+        if bool(Config.value("editor/parentheses")):
+            self.matchParenthesis()
+        if bool(Config.value("editor/useParser", True)):
+            self.highlightErrors()
+        self.highlightMatches()
+        self.updateIndicator()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
         menu = QtWidgets.QMenu(self)
@@ -346,7 +355,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 info = infos[i]
                 curPos = curs.positionInBlock()
                 if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_OPEN:
-                    if self.matchOpenParenthesis(Constants.INDENT_OPEN.index(info.char), curs.block(), i+1):
+                    if self.matchOpenParenthesis(Constants.INDENT_OPEN.index(info.char), curs.block(), i + 1):
                         self.highlightParenthesis(pos + info.pos)
                 if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_CLOSE:
                     if self.matchCloseParenthesis(Constants.INDENT_CLOSE.index(info.char), curs.block(), i - 1):
@@ -358,15 +367,16 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         docPos = block.position()
         for j in range(i, len(infos)):
-            info = infos[i]
+            info = infos[j]
 
             if info.char == Constants.INDENT_OPEN[cidx]:
                 num += 1
                 continue
-            if info.char == Constants.INDENT_CLOSE[cidx] and num == 0:
-                self.highlightParenthesis(docPos + info.pos)
-                return True
-            num -= 1
+            if info.char == Constants.INDENT_CLOSE[cidx]:
+                if num == 0:
+                    self.highlightParenthesis(docPos + info.pos)
+                    return True
+                num -= 1
 
         block = block.next()
         if block.isValid():
@@ -382,15 +392,16 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         for j in range(i, -1, -1):
             if len(infos) == 0:
                 break
-            info = infos[i]
+            info = infos[j]
 
             if info.char == Constants.INDENT_CLOSE[cidx]:
                 num += 1
                 continue
-            if info.char == Constants.INDENT_OPEN[cidx] and num == 0:
-                self.highlightParenthesis(docPos + info.pos)
-                return True
-            num -= 1
+            if info.char == Constants.INDENT_OPEN[cidx]:
+                if num == 0:
+                    self.highlightParenthesis(docPos + info.pos)
+                    return True
+                num -= 1
 
         block = block.previous()
         if block.isValid():
@@ -452,67 +463,33 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.setExtraSelections(selections)
 
-    def getFirstVisibleBlockId(self):
-        curs = QtGui.QTextCursor(self.document())
-        curs.movePosition(QtGui.QTextCursor.Start)
-        for i in range(self.document().blockCount()):
-            block = curs.block()
-            r1 = self.viewport().geometry()
-            r2 = self.document().documentLayout().blockBoundingRect(block).\
-                translated(self.viewport().geometry().x(),
-                           self.viewport().geometry().y() - self.verticalScrollBar().sliderPosition()).toRect()
-
-            if r1.contains(r2, True): return i
-
-            curs.movePosition(QtGui.QTextCursor.NextBlock)
-        return 0
-
     def lineNumberAreaPaintEvent(self, event):
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().sliderPosition())
         painter = QtGui.QPainter(self.lineNumberArea)
-        blockNumber = self.getFirstVisibleBlockId()
-
-        block = self.document().findBlockByNumber(blockNumber)
-        prev_block = self.document().findBlockByNumber(blockNumber - 1) if blockNumber > 0 else block
-        translate_y = -self.verticalScrollBar().sliderPosition() if blockNumber > 0 else 0
-
-        top = self.viewport().geometry().top()
-        if blockNumber == 0:
-            additionalMargin = self.document().documentMargin() - 1 - self.verticalScrollBar().sliderPosition()
-        else:
-            additionalMargin = self.document().documentLayout().blockBoundingRect(prev_block). \
-                translated(0, translate_y).intersect(self.viewport().geometry()).height()
-
-        top += additionalMargin
-
-        bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
-
-        col_1 = QtGui.QColor(Config.value("col/clnf"))
-        col_0 = QtGui.QColor(Config.value("col/lnf"))
-
-        old = block, top, bottom, blockNumber
-
         painter.fillRect(event.rect(), QtGui.QColor(Config.value("col/lnb")))
-        while block.isValid() and top <= event.rect().bottom():
-            if block.isVisible() and bottom >= event.rect().top() and self.textCursor().blockNumber() == blockNumber:
-                painter.fillRect(QtCore.QRect(event.rect().x(), top, event.rect().width(), self.fontMetrics().height()),
-                                 QtGui.QColor(Config.value("col/clnb")))
-            block = block.next()
-            top = bottom
-            bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
-            blockNumber += 1
 
-        block, top, bottom, blockNumber = old
+        block = self.firstVisibleBlock()
+        blockNumber = block.blockNumber()
+        top = round(self.blockBoundingGeometry(block).translated(self.contentOffset()).top())
+        bottom = top + round(self.blockBoundingRect(block).height())
+
+        currentBlockNumber = self.textCursor().block().blockNumber()
+
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top():
                 number = str(blockNumber + 1)
-                painter.setPen(col_1 if self.textCursor().blockNumber() == blockNumber else col_0)
-                painter.drawText(-5, top, self.lineNumberArea.width(), self.fontMetrics().height(),
-                                 QtCore.Qt.AlignRight, number)
+                if currentBlockNumber == blockNumber:
+                    painter.fillRect(QtCore.QRect(0, top, self.lineNumberArea.width(), self.fontMetrics().height()),
+                                     QtGui.QColor(Config.value("col/clnb")))
+                    painter.setPen(QtGui.QColor(Config.value("col/clnf")))
+                else:
+                    painter.setPen(QtGui.QColor(Config.value("col/lnf")))
+                painter.drawText(0, top, self.lineNumberArea.width(), self.fontMetrics().height(), QtCore.Qt.AlignRight,
+                                 number)
 
             block = block.next()
             top = bottom
-            bottom = top + self.document().documentLayout().blockBoundingRect(block).height()
+            bottom = top + round(self.blockBoundingRect(block).height())
             blockNumber += 1
 
     def lineNumberAreaWidth(self):
@@ -539,33 +516,19 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.mainwindow.positionIndicator\
             .setText("%s      %i:%i" % (text, cursor.blockNumber() + 1, cursor.columnNumber() + 1))
 
-    def updateLineNumberAreaWidth(self, newBlockCount):
+    def updateLineNumberAreaWidth(self, newBlockCount=0):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)
 
-    def updateLineNumberArea(self):
-        if bool(Config.value("editor/highlightCurrentLine")):
-            self.highlightCurrentLine()
-        if bool(Config.value("editor/parentheses")):
-            self.matchParenthesis()
-        if bool(Config.value("editor/useParser", True)):
-            self.highlightErrors()
-        self.highlightMatches()
-
-        self.updateIndicator()
-
+    def updateLineNumberArea(self, rect, dy):
         self.verticalScrollBar().setSliderPosition(self.verticalScrollBar().sliderPosition())
 
-        rect = self.contentsRect()
-        self.lineNumberArea.update(0, rect.y(), self.lineNumberArea.width(), rect.height())
-        self.updateLineNumberAreaWidth(0)
-
-        dy = self.verticalScrollBar().sliderPosition()
-        if dy > -1:
+        if dy:
             self.lineNumberArea.scroll(0, dy)
+        else:
+            self.lineNumberArea.update(0, rect.y(), self.lineNumberArea.width(), rect.height())
 
-        first_block_id = self.getFirstVisibleBlockId()
-        if first_block_id == 0 or self.textCursor().block().blockNumber() == first_block_id - 1:
-            self.verticalScrollBar().setSliderPosition(dy - self.document().documentMargin())
+        if rect.contains(self.viewport().rect()):
+            self.updateLineNumberAreaWidth()
 
 
 class LineNumberArea(QtWidgets.QWidget):

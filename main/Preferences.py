@@ -485,7 +485,7 @@ class Preferences(QtWidgets.QDialog):
             editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
 
             # FIX DISPLAY
-            editor.updateLineNumberArea()
+            editor.positionChangedSlot()
             editor.highlighter.rehighlight()
 
             self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " +

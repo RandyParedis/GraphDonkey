@@ -24,6 +24,9 @@ class ParenthesisInfo:
         self.char = char
         self.pos = pos
 
+    def __repr__(self):
+        return "ParenthesisInfo <%s, %i>" % (self.char, self.pos)
+
 class TextBlockData(QtGui.QTextBlockUserData):
     def __init__(self):
         super(TextBlockData, self).__init__()
@@ -138,11 +141,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
     def storeParenthesis(self, text:str):
         data = TextBlockData()
         for c in Constants.INDENT_OPEN + Constants.INDENT_CLOSE:
-            leftpos = text.index(c) if c in text else -1
+            leftpos = text.find(c)
             while leftpos != -1:
                 info = ParenthesisInfo(c, leftpos)
                 data.insert(info)
-                leftpos = text[leftpos+1:].index(c) if c in text[leftpos+1:] else -1
+                leftpos = text.find(c, leftpos + 1)
         self.setCurrentBlockUserData(data)
 
     def highlightBlock(self, text):
