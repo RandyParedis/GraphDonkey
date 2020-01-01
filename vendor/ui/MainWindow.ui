@@ -106,6 +106,9 @@
     <addaction name="action_Show_Render_Area"/>
     <addaction name="action_Snippets"/>
     <addaction name="separator"/>
+    <addaction name="action_Next_File"/>
+    <addaction name="action_Previous_File"/>
+    <addaction name="separator"/>
     <addaction name="action_Render"/>
     <addaction name="action_View_Parse_Tree"/>
    </widget>
@@ -125,6 +128,7 @@
     <addaction name="action_Redo"/>
     <addaction name="separator"/>
     <addaction name="action_Select_All"/>
+    <addaction name="action_Clear"/>
     <addaction name="action_Delete"/>
     <addaction name="separator"/>
     <addaction name="action_Copy"/>
@@ -586,6 +590,25 @@
   <action name="action_View_Parse_Tree">
    <property name="text">
     <string>View &amp;Parse Tree</string>
+   </property>
+  </action>
+  <action name="action_Clear">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/edit-clear.png</normaloff>:/icons/tango/edit-clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>C&amp;lear</string>
+   </property>
+  </action>
+  <action name="action_Next_File">
+   <property name="text">
+    <string>&amp;Next File</string>
+   </property>
+  </action>
+  <action name="action_Previous_File">
+   <property name="text">
+    <string>Pr&amp;evious File</string>
    </property>
   </action>
  </widget>

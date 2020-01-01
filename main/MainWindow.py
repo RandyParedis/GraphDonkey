@@ -21,6 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
+        self.files.installEventFilter(TabPressEater())
         self.scene = self.view.scene()
         if self.scene is None:
             self.scene = QtWidgets.QGraphicsScene(self.view)
@@ -68,28 +69,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Preferences.triggered.connect(self.preferences.exec_)
         self.action_Close_File.triggered.connect(self.closeFile)
         self.action_Exit.triggered.connect(self.close)
-        self.action_Undo.triggered.connect(lambda: self.editor().undo())
-        self.action_Redo.triggered.connect(lambda: self.editor().redo())
-        self.action_Select_All.triggered.connect(lambda: self.editor().selectAll())
-        self.action_Delete.triggered.connect(lambda: self.editor().delete())
-        self.action_Copy.triggered.connect(lambda: self.editor().copy())
-        self.action_Paste.triggered.connect(lambda: self.editor().paste())
-        self.action_Cut.triggered.connect(lambda: self.editor().cut())
-        self.action_Duplicate.triggered.connect(lambda: self.editor().duplicate())
-        self.action_Comment.triggered.connect(lambda: self.editor().comment())
-        self.action_Indent.triggered.connect(lambda: self.editor().indent())
-        self.action_Unindent.triggered.connect(lambda: self.editor().unindent())
-        self.action_Auto_Indent.triggered.connect(lambda: self.editor().autoIndent())
+        self.action_Undo.triggered.connect(lambda: self.editorEvent("undo"))
+        self.action_Redo.triggered.connect(lambda: self.editorEvent("redo"))
+        self.action_Select_All.triggered.connect(lambda: self.editorEvent("selectAll"))
+        self.action_Clear.triggered.connect(lambda: self.editorEvent("clearContents"))
+        self.action_Delete.triggered.connect(lambda: self.editorEvent("delete"))
+        self.action_Copy.triggered.connect(lambda: self.editorEvent("copy"))
+        self.action_Paste.triggered.connect(lambda: self.editorEvent("paste"))
+        self.action_Cut.triggered.connect(lambda: self.editorEvent("cut"))
+        self.action_Duplicate.triggered.connect(lambda: self.editorEvent("duplicate"))
+        self.action_Comment.triggered.connect(lambda: self.editorEvent("comment"))
+        self.action_Indent.triggered.connect(lambda: self.editorEvent("indent"))
+        self.action_Unindent.triggered.connect(lambda: self.editorEvent("unindent"))
+        self.action_Auto_Indent.triggered.connect(lambda: self.editorEvent("autoIndent"))
         self.action_Find.triggered.connect(self.findReplace)
-        self.action_Autocomplete.triggered.connect(lambda: self.editor().complete())
+        self.action_Autocomplete.triggered.connect(lambda: self.editorEvent("complete"))
         self.viewDock.closeEvent = self.viewDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
+        self.action_Next_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() + 1))
+        self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
         self.action_Render.triggered.connect(self.forceDisplay)
-        self.action_View_Parse_Tree.triggered.connect(lambda: self.editor().viewParseTree())
+        self.action_View_Parse_Tree.triggered.connect(lambda: self.editorEvent("viewParseTree"))
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
+
+    def editorEvent(self, name):
+        edit = self.editor()
+        if edit is not None:
+            getattr(edit, name)()
 
     def lockDisplay(self, disp=False):
         if disp and self.canDisplay():
@@ -121,8 +130,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.displayGraph()
 
     def changeTab(self, index):
+        index %= self.files.count()
         self.files.setCurrentIndex(index)
-        self.editor().setFocus(True)
+        edit = self.editor()
+        if edit is not None:
+            edit.setFocus(True)
 
     def updateTabs(self):
         names = []
@@ -456,3 +468,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def aboutQt(self):
         QtWidgets.QMessageBox.aboutQt(self)
+
+class TabPressEater(QtCore.QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress and \
+            event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
+            return True
+        return QtCore.QObject.eventFilter(self, obj, event)

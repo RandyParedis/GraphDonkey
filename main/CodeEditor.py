@@ -76,6 +76,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if self.treeView is not None and self.treeView.isVisible():
             self.viewParseTree(False)
 
+    def clearContents(self):
+        self.selectAll()
+        self.insertPlainText("")
+
     def clearFile(self):
         self.filename = ""
         self.filecontents = ""

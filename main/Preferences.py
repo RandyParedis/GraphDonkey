@@ -166,10 +166,10 @@ class Preferences(QtWidgets.QDialog):
 
     def _setupKs(self):
         self.shortcuts = [
-            "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File", "Exit",
-            "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
-            "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
-            "Show_Render_Area", "Snippets", "Render", "View_Parse_Tree", "GraphDonkey", "Graphviz", "Qt"
+            "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File",
+            "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
+            "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
+            "Previous_File", "Render", "View_Parse_Tree", "GraphDonkey", "Graphviz", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -307,6 +307,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/undo", "CTRL+Z")))
             self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/redo", "CTRL+SHIFT+Z")))
             self.ks_select_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/select_all", "CTRL+A")))
+            self.ks_clear.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/clear", "")))
             self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/delete", "DELETE")))
             self.ks_copy.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/copy", "CTRL+C")))
             self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/cut", "CTRL+X")))
@@ -322,6 +323,8 @@ class Preferences(QtWidgets.QDialog):
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
             self.ks_view_parse_tree.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/view_parse_tree", "CTRL+T")))
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
+            self.ks_next_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/next_file", "CTRL+TAB")))
+            self.ks_previous_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/previous_file", "CTRL+SHIFT+TAB")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
@@ -411,6 +414,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/undo", self.ks_undo.keySequence().toString())
             self.preferences.setValue("ks/redo", self.ks_redo.keySequence().toString())
             self.preferences.setValue("ks/select_all", self.ks_select_all.keySequence().toString())
+            self.preferences.setValue("ks/clear", self.ks_clear.keySequence().toString())
             self.preferences.setValue("ks/delete", self.ks_delete.keySequence().toString())
             self.preferences.setValue("ks/copy", self.ks_copy.keySequence().toString())
             self.preferences.setValue("ks/cut", self.ks_cut.keySequence().toString())
@@ -424,6 +428,8 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/autocomplete", self.ks_autocomplete.keySequence().toString())
             self.preferences.setValue("ks/show_render_area", self.ks_show_render_area.keySequence().toString())
             self.preferences.setValue("ks/snippets", self.ks_snippets.keySequence().toString())
+            self.preferences.setValue("ks/next_file", self.ks_next_file.keySequence().toString())
+            self.preferences.setValue("ks/previous_file", self.ks_previous_file.keySequence().toString())
             self.preferences.setValue("ks/render", self.ks_render.keySequence().toString())
             self.preferences.setValue("ks/view_parse_tree", self.ks_view_parse_tree.keySequence().toString())
             # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())

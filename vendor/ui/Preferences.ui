@@ -428,8 +428,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>366</width>
+            <y>-424</y>
+            <width>629</width>
             <height>881</height>
            </rect>
           </property>
@@ -731,9 +731,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-661</y>
+            <y>-723</y>
             <width>629</width>
-            <height>1149</height>
+            <height>1242</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -743,47 +743,80 @@
               <string>Edit Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_11">
+              <item row="11" column="0">
+               <widget class="QLabel" name="label_58">
                 <property name="text">
-                 <string>Undo:</string>
+                 <string>Unindent Selection:</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_undo"/>
+              <item row="10" column="1">
+               <widget class="QKeySequenceEdit" name="ks_indent"/>
+              </item>
+              <item row="11" column="1">
+               <widget class="QKeySequenceEdit" name="ks_unindent"/>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_60">
+                <property name="text">
+                 <string>Find and Replace:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QKeySequenceEdit" name="ks_find"/>
+              </item>
+              <item row="14" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="text">
+                 <string>Autocomplete:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <widget class="QKeySequenceEdit" name="ks_autocomplete"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Cut Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QKeySequenceEdit" name="ks_cut"/>
+              </item>
+              <item row="12" column="1">
+               <widget class="QKeySequenceEdit" name="ks_auto_indent"/>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="label_56">
+                <property name="text">
+                 <string>Auto Indent:</string>
+                </property>
+               </widget>
               </item>
               <item row="8" column="1">
-               <widget class="QKeySequenceEdit" name="ks_comment"/>
+               <widget class="QKeySequenceEdit" name="ks_duplicate"/>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>Duplicate Selection:</string>
+                </property>
+               </widget>
               </item>
               <item row="9" column="0">
-               <widget class="QLabel" name="label_57">
+               <widget class="QLabel" name="label_55">
                 <property name="text">
-                 <string>Indent Selection:</string>
+                 <string>Toggle Comments:</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>Redo:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QKeySequenceEdit" name="ks_copy"/>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Paste Selection:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
+              <item row="6" column="1">
                <widget class="QKeySequenceEdit" name="ks_paste"/>
               </item>
-              <item row="4" column="0">
+              <item row="5" column="0">
                <widget class="QLabel" name="label_15">
                 <property name="text">
                  <string>Copy Selection:</string>
@@ -803,85 +836,62 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QLabel" name="label_14">
                 <property name="text">
                  <string>Delete Selection:</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="4" column="1">
                <widget class="QKeySequenceEdit" name="ks_delete"/>
               </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label_17">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_11">
                 <property name="text">
-                 <string>Cut Selection:</string>
+                 <string>Undo:</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
-               <widget class="QKeySequenceEdit" name="ks_cut"/>
-              </item>
-              <item row="11" column="1">
-               <widget class="QKeySequenceEdit" name="ks_auto_indent"/>
-              </item>
-              <item row="11" column="0">
-               <widget class="QLabel" name="label_56">
-                <property name="text">
-                 <string>Auto Indent:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QKeySequenceEdit" name="ks_duplicate"/>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="label_54">
-                <property name="text">
-                 <string>Duplicate Selection:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="label_55">
-                <property name="text">
-                 <string>Toggle Comments:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="0">
-               <widget class="QLabel" name="label_58">
-                <property name="text">
-                 <string>Unindent Selection:</string>
-                </property>
-               </widget>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_undo"/>
               </item>
               <item row="9" column="1">
-               <widget class="QKeySequenceEdit" name="ks_indent"/>
+               <widget class="QKeySequenceEdit" name="ks_comment"/>
               </item>
-              <item row="10" column="1">
-               <widget class="QKeySequenceEdit" name="ks_unindent"/>
-              </item>
-              <item row="12" column="0">
-               <widget class="QLabel" name="label_60">
+              <item row="10" column="0">
+               <widget class="QLabel" name="label_57">
                 <property name="text">
-                 <string>Find and Replace:</string>
+                 <string>Indent Selection:</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="1">
-               <widget class="QKeySequenceEdit" name="ks_find"/>
-              </item>
-              <item row="13" column="0">
-               <widget class="QLabel" name="label_67">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_12">
                 <property name="text">
-                 <string>Autocomplete:</string>
+                 <string>Redo:</string>
                 </property>
                </widget>
               </item>
-              <item row="13" column="1">
-               <widget class="QKeySequenceEdit" name="ks_autocomplete"/>
+              <item row="5" column="1">
+               <widget class="QKeySequenceEdit" name="ks_copy"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Paste Selection:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_73">
+                <property name="text">
+                 <string>Clear File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_clear"/>
               </item>
              </layout>
             </widget>
@@ -895,6 +905,9 @@
               <item row="0" column="1">
                <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
               </item>
+              <item row="5" column="1">
+               <widget class="QKeySequenceEdit" name="ks_view_parse_tree"/>
+              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_18">
                 <property name="text">
@@ -902,14 +915,14 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item row="4" column="0">
                <widget class="QLabel" name="label_19">
                 <property name="text">
                  <string>Render the Graph:</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
+              <item row="4" column="1">
                <widget class="QKeySequenceEdit" name="ks_render"/>
               </item>
               <item row="1" column="0">
@@ -922,15 +935,32 @@
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_snippets"/>
               </item>
-              <item row="3" column="0">
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_74">
+                <property name="text">
+                 <string>Activate Next File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
                <widget class="QLabel" name="label_72">
                 <property name="text">
                  <string>View Parse Tree:</string>
                 </property>
                </widget>
               </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_75">
+                <property name="text">
+                 <string>Activate Previous File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_next_file"/>
+              </item>
               <item row="3" column="1">
-               <widget class="QKeySequenceEdit" name="ks_view_parse_tree"/>
+               <widget class="QKeySequenceEdit" name="ks_previous_file"/>
               </item>
              </layout>
             </widget>
