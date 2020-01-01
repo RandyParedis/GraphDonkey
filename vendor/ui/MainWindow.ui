@@ -107,6 +107,7 @@
     <addaction name="action_Snippets"/>
     <addaction name="separator"/>
     <addaction name="action_Render"/>
+    <addaction name="action_View_Parse_Tree"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -580,6 +581,11 @@
    </property>
    <property name="toolTip">
     <string>Paste</string>
+   </property>
+  </action>
+  <action name="action_View_Parse_Tree">
+   <property name="text">
+    <string>View &amp;Parse Tree</string>
    </property>
   </action>
  </widget>

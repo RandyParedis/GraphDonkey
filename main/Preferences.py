@@ -169,7 +169,7 @@ class Preferences(QtWidgets.QDialog):
             "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File", "Exit",
             "Undo", "Redo", "Select_All", "Delete", "Copy", "Cut", "Paste", "Duplicate",
             "Comment", "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete",
-            "Show_Render_Area", "Snippets", "Render", "GraphDonkey", "Graphviz", "Qt"
+            "Show_Render_Area", "Snippets", "Render", "View_Parse_Tree", "GraphDonkey", "Graphviz", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -183,6 +183,7 @@ class Preferences(QtWidgets.QDialog):
 
             # Bypass because Qt works weirdly:
             le = ks.findChild(QtWidgets.QLineEdit)
+            le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
             le.setClearButtonEnabled(True)
 
     def checkShortcuts(self):
@@ -319,6 +320,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/autocomplete", "CTRL+SPACE")))
             self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
+            self.ks_view_parse_tree.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/view_parse_tree", "CTRL+T")))
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
@@ -423,6 +425,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/show_render_area", self.ks_show_render_area.keySequence().toString())
             self.preferences.setValue("ks/snippets", self.ks_snippets.keySequence().toString())
             self.preferences.setValue("ks/render", self.ks_render.keySequence().toString())
+            self.preferences.setValue("ks/view_parse_tree", self.ks_view_parse_tree.keySequence().toString())
             # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/graphviz", self.ks_graphviz.keySequence().toString())

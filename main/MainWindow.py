@@ -10,7 +10,7 @@ from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
-from main.extra import Constants, tabPathnames, tango
+from main.extra import Constants, tabPathnames, dotToQPixmap, tango
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz, subprocess
@@ -85,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.viewDock.closeEvent = self.viewDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.forceDisplay)
+        self.action_View_Parse_Tree.triggered.connect(lambda: self.editor().viewParseTree())
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
@@ -337,7 +338,9 @@ class MainWindow(QtWidgets.QMainWindow):
             spt = fileName.split(".")
             ext = spt[-1]
             rext = Constants.obtain_exts(t)
-            if len(spt) == 1 or len(rext) == 0:
+            if len(rext) == 0:
+                rext = Constants.FILE_TYPES_OPEN["DOT"]
+            if len(spt) == 1:
                 ext = "dot"
             if ext not in rext:
                 ext = rext[0]
@@ -403,11 +406,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.scene.clear()
             try:
                 dot = Source(self.editor().toPlainText(), engine=Config.value("graphviz/engine"))
-                bdata = dot.pipe(Config.value("graphviz/format"), Config.value("graphviz/renderer"),
+                pixmap = dotToQPixmap(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
                                  Config.value("graphviz/formatter"))
-                image = QtGui.QImage()
-                image.loadFromData(bdata)
-                pixmap = QtGui.QPixmap.fromImage(image)
                 self.scene.addPixmap(pixmap)
             except graphviz.backend.CalledProcessError as e:
                 self.error("Error", e.stderr.decode("utf-8"))

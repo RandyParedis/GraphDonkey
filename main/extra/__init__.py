@@ -12,6 +12,15 @@ def left(string, seq=(' ', '\t', '\r', '\n')):
 def right(string, seq=(' ', '\t', '\r', '\n')):
     return left(reversed(string), seq)
 
+from graphviz import Source
+from PyQt5 import QtGui
+
+def dotToQPixmap(dot: Source, format: str, renderer: str, formatter: str):
+    bdata = dot.pipe(format, renderer, formatter)
+    image = QtGui.QImage()
+    image.loadFromData(bdata)
+    return QtGui.QPixmap.fromImage(image)
+
 import os
 
 def tabPathnames(names: list, skip=('undefined',)):

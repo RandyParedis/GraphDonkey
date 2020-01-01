@@ -11,15 +11,11 @@ TODO FUTURE [0.1.3]
     - Opening from as many file types as possible
     - Smart File Encoding detection
             ==> Document-specific properties
-    - For DEBUG only: Open parse tree of dotfile as dotfile
     - Force autocompleter to suggest context-specific items
     - Automatic bracket insert
+    - Shortcuts for tab change
     - Scope closing/collapsing
             ==> i.e. a plus and minus sign next to the line numbers will allow a user to collapse whole sections
-    - Opening and closing seems to take a while (splash)
-            - Loading screen / window (with progress bar?)
-            - Closing screen / window (with progress bar?)
-            ==> https://stackoverflow.com/questions/12682888/qt-c-aligning-qprogressbar-inside-a-qsplashscreen/12686191
     - Fix most TODOs
 
 Version 1.0.0 name ideas:

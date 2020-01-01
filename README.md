@@ -95,6 +95,7 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
+* [0.1.3] Added possibility to show the AST of the current file.
 * [0.1.3] Added additional Graphviz configurations
 * [0.1.3] Selections/Cursors are now being remembered on startup
 * [0.1.3] Added 'Show Whitespace' option to preferences

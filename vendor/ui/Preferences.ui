@@ -428,8 +428,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-324</y>
-            <width>629</width>
+            <y>0</y>
+            <width>366</width>
             <height>881</height>
            </rect>
           </property>
@@ -731,9 +731,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-661</y>
             <width>629</width>
-            <height>1118</height>
+            <height>1149</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -892,15 +892,15 @@
               <string>View Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
+              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_18">
                 <property name="text">
                  <string>Toggle Render Area:</string>
                 </property>
                </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_19">
@@ -921,6 +921,16 @@
               </item>
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_snippets"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_72">
+                <property name="text">
+                 <string>View Parse Tree:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_view_parse_tree"/>
               </item>
              </layout>
             </widget>

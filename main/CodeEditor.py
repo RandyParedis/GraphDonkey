@@ -15,7 +15,8 @@ Date:   12/14/2019
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-from main.extra import Constants, left
+from main.extra import Constants, left, dotToQPixmap
+from main.extra.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
 from main.extra.Highlighter import Highlighter
 from main.Preferences import bool
@@ -47,6 +48,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.completer = None
         self.setCompleter()
 
+        self.treeView = None
+
     def positionChangedSlot(self):
         if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
@@ -70,6 +73,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def save(self):
         self.filecontents = self.toPlainText()
+        if self.treeView is not None and self.treeView.isVisible():
+            self.viewParseTree(False)
 
     def clearFile(self):
         self.filename = ""
@@ -529,6 +534,35 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         if rect.contains(self.viewport().rect()):
             self.updateLineNumberAreaWidth()
+
+
+    def viewParseTree(self, focus=True):
+        txt = self.toPlainText()
+        T = self.highlighter.parser.parse(txt)
+        if T is not None:
+            dot = DotVisitor()
+            dot.visit(T)
+            pixmap = dotToQPixmap(dot.root, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
+                                  Config.value("graphviz/formatter"))
+
+            if self.treeView is None:
+                self.treeView = QtWidgets.QDialog(self.parent())
+                layout = QtWidgets.QGridLayout()
+                lbl = QtWidgets.QLabel()
+                layout.addWidget(lbl)
+                self.treeView.setLayout(layout)
+            self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
+            self.treeView.layout().itemAtPosition(0, 0).widget().setPixmap(pixmap)
+            if not self.treeView.isVisible():
+                self.treeView.show()
+            if focus:
+                self.treeView.activateWindow()
+                self.treeView.raise_()
+                self.treeView.setFocus()
+        else:
+            self.mainwindow.warn("Warning!", "It looks like your file contains some errors. Impossible to render AST.")
+            if self.treeView is not None and self.treeView.isVisible():
+                self.treeView.close()
 
 
 class LineNumberArea(QtWidgets.QWidget):

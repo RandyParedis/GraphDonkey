@@ -115,7 +115,8 @@ class DotVisitor:
             elif isinstance(child, Token): # TOKENS
                 self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + child.value,
                                                        color="blue", fontcolor="blue", shape="box")
-            self.root.edge("node_%i" % id(tree), "node_%i" % id(child))
+            if id(tree) in self.nodes and id(child) in self.nodes:
+                self.root.edge("node_%i" % id(tree), "node_%i" % id(child))
 
     def show(self):
         self.root.view()
