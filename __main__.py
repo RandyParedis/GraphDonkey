@@ -24,5 +24,5 @@ app.setApplicationDisplayName(Constants.APP_NAME + " [" + Constants.APP_VERSION_
 app.setWindowIcon(Constants.APP_ICON)
 
 mainwindow = MainWindow()
-mainwindow.showMaximized()
+mainwindow.show()
 code = app.exec_()

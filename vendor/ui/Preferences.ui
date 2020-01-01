@@ -733,7 +733,7 @@
             <x>0</x>
             <y>-723</y>
             <width>629</width>
-            <height>1242</height>
+            <height>1335</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -908,6 +908,19 @@
               <item row="5" column="1">
                <widget class="QKeySequenceEdit" name="ks_view_parse_tree"/>
               </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_76">
+                <property name="text">
+                 <string>Zoom In:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QKeySequenceEdit" name="ks_next_file"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QKeySequenceEdit" name="ks_previous_file"/>
+              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_18">
                 <property name="text">
@@ -935,6 +948,13 @@
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_snippets"/>
               </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="label_77">
+                <property name="text">
+                 <string>Zoom Out:</string>
+                </property>
+               </widget>
+              </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_74">
                 <property name="text">
@@ -956,11 +976,21 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
-               <widget class="QKeySequenceEdit" name="ks_next_file"/>
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_78">
+                <property name="text">
+                 <string>Reset Zoom:</string>
+                </property>
+               </widget>
               </item>
-              <item row="3" column="1">
-               <widget class="QKeySequenceEdit" name="ks_previous_file"/>
+              <item row="6" column="1">
+               <widget class="QKeySequenceEdit" name="ks_zoom_in"/>
+              </item>
+              <item row="7" column="1">
+               <widget class="QKeySequenceEdit" name="ks_zoom_out"/>
+              </item>
+              <item row="8" column="1">
+               <widget class="QKeySequenceEdit" name="ks_reset_zoom"/>
               </item>
              </layout>
             </widget>

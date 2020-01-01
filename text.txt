@@ -4,13 +4,13 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 Creating a package:
     pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
-Creating resource file (that can be used):
+Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO FUTURE [0.1.3]
     - Opening from as many file types as possible
     - Smart File Encoding detection
-            ==> Document-specific properties
+            ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
     - Automatic bracket insert
     - Scope closing/collapsing

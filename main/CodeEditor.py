@@ -19,6 +19,7 @@ from main.extra import Constants, left, dotToQPixmap
 from main.extra.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
 from main.extra.Highlighter import Highlighter
+from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
@@ -30,7 +31,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lineNumberArea = LineNumberArea(self)
 
         self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
-        # self.updateRequest.connect(self.updateLineNumberArea)
+        self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
 
         self.updateLineNumberAreaWidth()
@@ -544,19 +545,26 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         txt = self.toPlainText()
         T = self.highlighter.parser.parse(txt)
         if T is not None:
+            if self.treeView is None:
+                self.treeView = QtWidgets.QDialog(self.parent(), flags=QtCore.Qt.Window)
+                layout = QtWidgets.QGridLayout()
+                view = GraphicsView()
+                layout.addWidget(view, 0, 0, 1, 4)
+                layout.addWidget(QtWidgets.QLabel("Zoomfactor: 100%"), 1, 0, 1, 3)
+                button_reset = QtWidgets.QPushButton("Reset Zoom")
+                button_reset.clicked.connect(lambda x: view.resetZoom())
+                layout.addWidget(button_reset, 1, 3)
+                self.treeView.setLayout(layout)
+                view.zoomed.connect(lambda z: self.treeView.layout().itemAtPosition(1, 0).widget()
+                                    .setText("Zoomfactor: %s%%" % (z * 100)))
+            self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
+            view = self.treeView.layout().itemAtPosition(0, 0).widget()
+            view.clear()
+
             dot = DotVisitor()
             dot.visit(T)
-            pixmap = dotToQPixmap(dot.root, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
-                                  Config.value("graphviz/formatter"))
-
-            if self.treeView is None:
-                self.treeView = QtWidgets.QDialog(self.parent())
-                layout = QtWidgets.QGridLayout()
-                lbl = QtWidgets.QLabel()
-                layout.addWidget(lbl)
-                self.treeView.setLayout(layout)
-            self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
-            self.treeView.layout().itemAtPosition(0, 0).widget().setPixmap(pixmap)
+            view.addDot(dot.root, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
+                        Config.value("graphviz/formatter"))
             if not self.treeView.isVisible():
                 self.treeView.show()
             if focus:

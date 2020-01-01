@@ -169,7 +169,8 @@ class Preferences(QtWidgets.QDialog):
             "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File",
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
-            "Previous_File", "Render", "View_Parse_Tree", "GraphDonkey", "Graphviz", "Qt"
+            "Previous_File", "Render", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom", "GraphDonkey",
+            "Graphviz", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -325,6 +326,9 @@ class Preferences(QtWidgets.QDialog):
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
             self.ks_next_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/next_file", "CTRL+TAB")))
             self.ks_previous_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/previous_file", "CTRL+SHIFT+TAB")))
+            self.ks_zoom_in.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_in", "CTRL++")))
+            self.ks_zoom_out.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_out", "CTRL+-")))
+            self.ks_reset_zoom.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/reset_zoom", "CTRL+0")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
@@ -432,6 +436,9 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/previous_file", self.ks_previous_file.keySequence().toString())
             self.preferences.setValue("ks/render", self.ks_render.keySequence().toString())
             self.preferences.setValue("ks/view_parse_tree", self.ks_view_parse_tree.keySequence().toString())
+            self.preferences.setValue("ks/zoom_in", self.ks_zoom_in.keySequence().toString())
+            self.preferences.setValue("ks/zoom_out", self.ks_zoom_out.keySequence().toString())
+            self.preferences.setValue("ks/reset_zoom", self.ks_reset_zoom.keySequence().toString())
             # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/graphviz", self.ks_graphviz.keySequence().toString())

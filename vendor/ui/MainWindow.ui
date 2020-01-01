@@ -50,16 +50,86 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout">
+   <widget class="QWidget" name="viewDockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
      <property name="topMargin">
       <number>0</number>
      </property>
      <property name="bottomMargin">
       <number>0</number>
      </property>
-     <item row="0" column="0">
+     <item row="1" column="4">
+      <widget class="QPushButton" name="pb_zoom_reset">
+       <property name="toolTip">
+        <string>Reset Zoom</string>
+       </property>
+       <property name="text">
+        <string>Reset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="lb_zoom">
+       <property name="text">
+        <string>100%</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSlider" name="slider_zoom">
+       <property name="minimum">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <number>450</number>
+       </property>
+       <property name="singleStep">
+        <number>5</number>
+       </property>
+       <property name="pageStep">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>100</number>
+       </property>
+       <property name="sliderPosition">
+        <number>100</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBothSides</enum>
+       </property>
+       <property name="tickInterval">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pb_zoom_out">
+       <property name="toolTip">
+        <string>Zoom In</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../icons/tango.qrc">
+         <normaloff>:/icons/tango/list-remove.png</normaloff>:/icons/tango/list-remove.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="5">
       <widget class="QGraphicsView" name="view"/>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="pb_zoom_in">
+       <property name="toolTip">
+        <string>Zoom Out</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../icons/tango.qrc">
+         <normaloff>:/icons/tango/list-add.png</normaloff>:/icons/tango/list-add.png</iconset>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -111,6 +181,10 @@
     <addaction name="separator"/>
     <addaction name="action_Render"/>
     <addaction name="action_View_Parse_Tree"/>
+    <addaction name="separator"/>
+    <addaction name="action_Zoom_In"/>
+    <addaction name="action_Zoom_Out"/>
+    <addaction name="action_Reset_Zoom"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -609,6 +683,29 @@
   <action name="action_Previous_File">
    <property name="text">
     <string>Pr&amp;evious File</string>
+   </property>
+  </action>
+  <action name="action_Zoom_In">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/list-add.png</normaloff>:/icons/tango/list-add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;In</string>
+   </property>
+  </action>
+  <action name="action_Zoom_Out">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/list-remove.png</normaloff>:/icons/tango/list-remove.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;Out</string>
+   </property>
+  </action>
+  <action name="action_Reset_Zoom">
+   <property name="text">
+    <string>Reset &amp;Zoom</string>
    </property>
   </action>
  </widget>

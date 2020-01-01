@@ -10,7 +10,8 @@ from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.CodeEditor import CodeEditor
-from main.extra import Constants, tabPathnames, dotToQPixmap, tango
+from main.extra.GraphicsView import GraphicsView
+from main.extra import Constants, tabPathnames, tango
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz, subprocess
@@ -22,10 +23,14 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
         self.files.installEventFilter(TabPressEater())
-        self.scene = self.view.scene()
-        if self.scene is None:
-            self.scene = QtWidgets.QGraphicsScene(self.view)
-            self.view.setScene(self.scene)
+        self.view.deleteLater()
+        self.view = GraphicsView(self.viewDock)
+        self.viewDockWidgetContents.layout().addWidget(self.view, 0, 0, 1, -1)
+        self.pb_zoom_in.clicked.connect(lambda x: self.view.zoom(2))
+        self.pb_zoom_out.clicked.connect(lambda x: self.view.zoom(0.5))
+        self.pb_zoom_reset.clicked.connect(self.view.resetZoom)
+        self.slider_zoom.sliderMoved.connect(lambda x: self.view.zoomTo(float(x) / 100))
+        self.view.zoomed.connect(self.zoomed)
 
         self.disableDisplay = []
         self.lockDisplay(False)
@@ -90,10 +95,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
         self.action_Render.triggered.connect(self.forceDisplay)
         self.action_View_Parse_Tree.triggered.connect(lambda: self.editorEvent("viewParseTree"))
+        self.action_Zoom_In.triggered.connect(lambda: self.pb_zoom_in.click())
+        self.action_Zoom_Out.triggered.connect(lambda: self.pb_zoom_out.click())
+        self.action_Reset_Zoom.triggered.connect(lambda: self.pb_zoom_reset.click())
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
+
+    def zoomed(self, zoomlevel):
+        self.slider_zoom.setValue(zoomlevel * 100)
+        self.lb_zoom.setText("%6.2f%%" % (zoomlevel * 100))
 
     def editorEvent(self, name):
         edit = self.editor()
@@ -190,8 +202,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 # WORKAROUND FOR INVALID RESTORE OF STATE/GEOMETRY
                 #   https://bugreports.qt.io/browse/QTBUG-46620
                 self.setGeometry(QtWidgets.QApplication.desktop().availableGeometry(self))
-            if settings.value("recents", None) is not None:
+            if settings.contains("recents"):
                 self.recents = settings.value("recents")
+            if settings.contains("zoomlevel"):
+                self.view.zoomTo(float(settings.value("zoomlevel")))
         restore = int(Config.value("restore", 0))
         if restore == 0:
             self.new()
@@ -233,6 +247,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 state = self.saveState()
                 settings.setValue("windowState", state)
                 settings.setValue("recents", self.recents)
+                settings.setValue("zoomlevel", self.view.zoomlevel)
             if int(Config.value("restore", 0)) == 1:
                 files = list()
                 cursors = list()
@@ -415,12 +430,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
-            self.scene.clear()
+            self.view.clear()
             try:
                 dot = Source(self.editor().toPlainText(), engine=Config.value("graphviz/engine"))
-                pixmap = dotToQPixmap(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
+                self.view.addDot(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
                                  Config.value("graphviz/formatter"))
-                self.scene.addPixmap(pixmap)
             except graphviz.backend.CalledProcessError as e:
                 self.error("Error", e.stderr.decode("utf-8"))
 
