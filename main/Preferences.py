@@ -169,8 +169,8 @@ class Preferences(QtWidgets.QDialog):
             "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File",
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
-            "Previous_File", "Render", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom", "GraphDonkey",
-            "Graphviz", "Qt"
+            "Previous_File", "Render", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom", "Zoom_To_Fit",
+            "GraphDonkey", "Graphviz", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -246,12 +246,16 @@ class Preferences(QtWidgets.QDialog):
             self.check_autorender.setChecked(bool(self.preferences.value("editor/autorender", True)))
             self.parseDisable(self.check_parse.isChecked())
 
-        # GRAPHVIZ
+        # VIEW
         if True:
-            self.combo_engine.setCurrentText(self.preferences.value("graphviz/engine", "dot"))
-            self.combo_format.setCurrentText(self.preferences.value("graphviz/format", "svg"))
-            self.combo_renderer.setCurrentText(self.preferences.value("graphviz/renderer", "svg"))
-            self.combo_formatter.setCurrentText(self.preferences.value("graphviz/formatter", "core"))
+            self.combo_engine.setCurrentText(self.preferences.value("view/engine", "dot"))
+            self.combo_format.setCurrentText(self.preferences.value("view/format", "svg"))
+            self.combo_renderer.setCurrentText(self.preferences.value("view/renderer", "svg"))
+            self.combo_formatter.setCurrentText(self.preferences.value("view/formatter", "core"))
+            self.check_view_controls.setChecked(bool(self.preferences.value("view/controls", True)))
+            self.num_zoom_level_min.setValue(int(self.preferences.value("view/zoomMin", 10)))
+            self.num_zoom_level_max.setValue(int(self.preferences.value("view/zoomMax", 450)))
+            self.num_zoom_factor.setValue(float(self.preferences.value("view/zoomFactor", 2.0)))
 
         # APPEARANCE
         if True:
@@ -329,6 +333,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_zoom_in.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_in", "CTRL++")))
             self.ks_zoom_out.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_out", "CTRL+-")))
             self.ks_reset_zoom.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/reset_zoom", "CTRL+0")))
+            self.ks_zoom_to_fit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_to_fit", "")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
@@ -364,12 +369,16 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("editor/useParser", self.check_parse.isChecked())
             self.preferences.setValue("editor/autorender", self.check_autorender.isChecked())
 
-        # GRAPHVIZ
+        # VIEW
         if True:
-            self.preferences.setValue("graphviz/format", self.combo_format.currentText())
-            self.preferences.setValue("graphviz/engine", self.combo_engine.currentText())
-            self.preferences.setValue("graphviz/renderer", self.combo_renderer.currentText())
-            self.preferences.setValue("graphviz/formatter", self.combo_formatter.currentText())
+            self.preferences.setValue("view/format", self.combo_format.currentText())
+            self.preferences.setValue("view/engine", self.combo_engine.currentText())
+            self.preferences.setValue("view/renderer", self.combo_renderer.currentText())
+            self.preferences.setValue("view/formatter", self.combo_formatter.currentText())
+            self.preferences.setValue("view/controls", self.check_view_controls.isChecked())
+            self.preferences.setValue("view/zoomMin", self.num_zoom_level_min.value())
+            self.preferences.setValue("view/zoomMax", self.num_zoom_level_max.value())
+            self.preferences.setValue("view/zoomFactor", self.num_zoom_factor.value())
 
         # APPEARANCE
         if True:
@@ -439,6 +448,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/zoom_in", self.ks_zoom_in.keySequence().toString())
             self.preferences.setValue("ks/zoom_out", self.ks_zoom_out.keySequence().toString())
             self.preferences.setValue("ks/reset_zoom", self.ks_reset_zoom.keySequence().toString())
+            self.preferences.setValue("ks/zoom_to_fit", self.ks_zoom_to_fit.keySequence().toString())
             # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/graphviz", self.ks_graphviz.keySequence().toString())
@@ -448,6 +458,7 @@ class Preferences(QtWidgets.QDialog):
 
         self.parent().lockDisplay()
         self.applyEditor()
+        self.applyView()
         self.applyStyle()
         self.applyShortcuts()
         self.parent().releaseDisplay()
@@ -475,6 +486,13 @@ class Preferences(QtWidgets.QDialog):
         palette.setColor(QtGui.QPalette.Link, self.col_link.color())
         palette.setColor(QtGui.QPalette.LinkVisited, self.col_visitedLink.color())
         app.setPalette(palette)
+
+    def applyView(self):
+        view = self.parent().view
+        view.setControls(self.check_view_controls.isChecked())
+        view.setMinZoomLevel(float(self.num_zoom_level_min.value()) / 100)
+        view.setMaxZoomLevel(float(self.num_zoom_level_max.value()) / 100)
+        view.setZoomFactorBase(self.num_zoom_factor.value())
 
     def applyEditor(self):
         self.parent().files.setTabBarAutoHide(self.check_autohide.isChecked())

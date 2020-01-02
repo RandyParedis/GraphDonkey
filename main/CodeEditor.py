@@ -494,8 +494,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                     painter.setPen(QtGui.QColor(Config.value("col/clnf")))
                 else:
                     painter.setPen(QtGui.QColor(Config.value("col/lnf")))
-                painter.drawText(0, top, self.lineNumberArea.width(), self.fontMetrics().height(), QtCore.Qt.AlignRight,
-                                 number)
+                painter.drawText(0, top, self.lineNumberArea.textWidth(), self.fontMetrics().height(),
+                                 QtCore.Qt.AlignRight, number)
 
             block = block.next()
             top = bottom
@@ -511,7 +511,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             _max /= 10
             digits += 1
 
-        return 13 + self.fontMetrics().width('9') * digits
+        return 13 + self.fontMetrics().width('9') * digits + self.lineNumberArea.offset
 
     def resizeEvent(self, event):
         QtWidgets.QPlainTextEdit.resizeEvent(self, event)
@@ -540,7 +540,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if rect.contains(self.viewport().rect()):
             self.updateLineNumberAreaWidth()
 
-
     def viewParseTree(self, focus=True):
         txt = self.toPlainText()
         T = self.highlighter.parser.parse(txt)
@@ -548,17 +547,15 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             if self.treeView is None:
                 self.treeView = QtWidgets.QDialog(self.parent(), flags=QtCore.Qt.Window)
                 layout = QtWidgets.QGridLayout()
-                view = GraphicsView()
-                layout.addWidget(view, 0, 0, 1, 4)
-                layout.addWidget(QtWidgets.QLabel("Zoomfactor: 100%"), 1, 0, 1, 3)
-                button_reset = QtWidgets.QPushButton("Reset Zoom")
-                button_reset.clicked.connect(lambda x: view.resetZoom())
-                layout.addWidget(button_reset, 1, 3)
+                view = GraphicsView(self.parent())
+                layout.addWidget(view)
                 self.treeView.setLayout(layout)
-                view.zoomed.connect(lambda z: self.treeView.layout().itemAtPosition(1, 0).widget()
-                                    .setText("Zoomfactor: %s%%" % (z * 100)))
             self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
             view = self.treeView.layout().itemAtPosition(0, 0).widget()
+            view.setControls(bool(Config.value("view/controls")))
+            view.setMinZoomLevel(float(Config.value("view/zoomMin")) / 100)
+            view.setMaxZoomLevel(float(Config.value("view/zoomMax")) / 100)
+            view.setZoomFactorBase(float(Config.value("view/zoomFactor")))
             view.clear()
 
             dot = DotVisitor()
@@ -581,6 +578,10 @@ class LineNumberArea(QtWidgets.QWidget):
     def __init__(self, editor):
         super(LineNumberArea, self).__init__(editor)
         self.editor = editor
+        self.offset = 10
+
+    def textWidth(self):
+        return self.width() - self.offset
 
     def sizeHint(self):
         return QtCore.QSize(self.editor.lineNumberAreaWidth(), 0)

@@ -38,6 +38,12 @@ class TextBlockData(QtGui.QTextBlockUserData):
             i += 1
         self.parenthesis.insert(i, info)
 
+    def isOpenFold(self):
+        return len(self.parenthesis) > 0 and self.parenthesis[-1].char in Constants.INDENT_OPEN
+
+    def isCloseFold(self):
+        return len(self.parenthesis) > 0 and self.parenthesis[0].char in Constants.INDENT_CLOSE
+
 class Highlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
         super(Highlighter, self).__init__(parent)

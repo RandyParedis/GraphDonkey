@@ -23,14 +23,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
         self.files.installEventFilter(TabPressEater())
-        self.view.deleteLater()
         self.view = GraphicsView(self.viewDock)
-        self.viewDockWidgetContents.layout().addWidget(self.view, 0, 0, 1, -1)
-        self.pb_zoom_in.clicked.connect(lambda x: self.view.zoom(2))
-        self.pb_zoom_out.clicked.connect(lambda x: self.view.zoom(0.5))
-        self.pb_zoom_reset.clicked.connect(self.view.resetZoom)
-        self.slider_zoom.sliderMoved.connect(lambda x: self.view.zoomTo(float(x) / 100))
-        self.view.zoomed.connect(self.zoomed)
+        self.viewDockWidgetContents.layout().addWidget(self.view)
 
         self.disableDisplay = []
         self.lockDisplay(False)
@@ -95,17 +89,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
         self.action_Render.triggered.connect(self.forceDisplay)
         self.action_View_Parse_Tree.triggered.connect(lambda: self.editorEvent("viewParseTree"))
-        self.action_Zoom_In.triggered.connect(lambda: self.pb_zoom_in.click())
-        self.action_Zoom_Out.triggered.connect(lambda: self.pb_zoom_out.click())
-        self.action_Reset_Zoom.triggered.connect(lambda: self.pb_zoom_reset.click())
+        self.action_Zoom_In.triggered.connect(self.view.zoomIn)
+        self.action_Zoom_Out.triggered.connect(self.view.zoomOut)
+        self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
+        self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
-
-    def zoomed(self, zoomlevel):
-        self.slider_zoom.setValue(zoomlevel * 100)
-        self.lb_zoom.setText("%6.2f%%" % (zoomlevel * 100))
 
     def editorEvent(self, name):
         edit = self.editor()
@@ -228,6 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateRecents()
 
     def closeEvent(self, event: QtGui.QCloseEvent):
+        self.lockDisplay()
         saved = True
         old = self.files.currentIndex()
         for tab in range(self.files.count()):
@@ -239,6 +231,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if not saved:
             saved = self.question("Unsaved Changes", "It appears there are some unchanged changes.\n"
                                                      "Are you sure you want quit? All changes will be lost.")
+
+        self.releaseDisplay()
 
         if saved:
             settings = IOHandler.get_settings()
