@@ -169,11 +169,6 @@ elsewhere, you **must** reference this project.
 Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
-* [0.1.3] Opening from as many file types as possible
-* [0.1.3] Additional configuration possibilities for graphviz
-* [0.1.3] Allow for multiple files via tabbed pane?
-* [0.1.3] Open parse tree of dotfile as dotfile?
-* **-- CONVERT TO SEMANTIC VERSIONING --**
 * [1.0.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
