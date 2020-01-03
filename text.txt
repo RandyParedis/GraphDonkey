@@ -8,7 +8,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO FUTURE [0.1.3]
-    - Opening from as many file types as possible
     - Smart File Encoding detection
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items

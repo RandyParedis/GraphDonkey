@@ -14,7 +14,7 @@ from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames, tango
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
-import graphviz, subprocess
+import graphviz, subprocess, os
 
 Config = IOHandler.get_preferences()
 
@@ -429,18 +429,23 @@ class MainWindow(QtWidgets.QMainWindow):
                              options=options)
         if fileName:
             ext = fileName.split(".")[-1]
-            rext = Constants.obtain_ext(t)
-            if len(fileName.split(".")) == 1:
-                ext = "plain"
-            if rext == "":
-                rext = ext
-            if ext is not rext:
-                fileName += "." + rext
-            if Constants.valid_ext(rext, Constants.FILE_TYPES_SAVE):
+            rext = Constants.obtain_exts(t)
+            if fileName == ext:
+                if len(rext) == 0:
+                    ext = "plain"
+                else:
+                    ext = rext[0]
+                    fileName += "." + ext
+                    if os.path.isfile(fileName):
+                        yes = self.question("File already exists!", "This file already exists. Are you sure, you want "
+                                                                    "to replace it?")
+                        if not yes:
+                            return self.export()
+            if Constants.valid_ext(ext, Constants.FILE_TYPES_SAVE):
                 try:
                     dot = Source(self.editor().toPlainText())
                     contents = dot.pipe(ext)
-                    with open(self.editor().filename, 'bw') as myfile:
+                    with open(fileName, 'bw') as myfile:
                         myfile.write(contents)
                 except graphviz.backend.CalledProcessError as e:
                     self.error("Uh oh!", "It looks like there are some errors in your dot file. Cannot export!\n" +
