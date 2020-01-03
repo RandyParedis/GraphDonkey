@@ -157,7 +157,6 @@ class GraphicsView(QtWidgets.QWidget):
         w = rect.width() / sceneRect.width()
         h = rect.height() / sceneRect.height()
         self.zoomTo(min(w, h))
-        # TODO: center on middle of scenerect?
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
         if self.controls:

@@ -9,9 +9,9 @@ from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
-from main.CodeEditor import CodeEditor
+from main.editors.DotEditor import DotEditor
 from main.extra.GraphicsView import GraphicsView
-from main.extra import Constants, tabPathnames, tango
+from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
 import graphviz, subprocess, os
@@ -219,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusMessage.setText(text)
 
     def newTab(self, label):
-        editor = CodeEditor(self)
+        editor = DotEditor(self)
         editor.textChanged.connect(self.textChangedEvent)
         self.files.addTab(editor, label)
         self.changeTab(self.files.count() - 1)
@@ -257,8 +257,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if cursors is None:
                 cursors = []
             for file in range(len(files)):
-                self.openFile(files[file])
-                if file < len(cursors):
+                succ = self.openFile(files[file])
+                if succ and file < len(cursors):
                     curs = self.editor().textCursor()
                     curs.setPosition(cursors[file][0])
                     curs.setPosition(cursors[file][1], QtGui.QTextCursor.KeepAnchor)
@@ -349,6 +349,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if fileName and fileName != "":
             ext = fileName.split(".")[-1]
             if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
+                valid = True
                 try:
                     with open(fileName, "rb") as myfile:
                         data = myfile.read()
@@ -360,12 +361,17 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.editor().filename = fileName
                     self.editor().filecontents = data
                 except IOError:
-                    self.warn("File not found", "You're trying to open a file that does not exist. Please retry.")
+                    self.warn("File not found", "You're trying to open a file that does not exist.\n"
+                                                "Please retry.\nFilename: %s" % fileName)
+                    valid = False
                 self.updateTitle()
+                return valid
             else:
                 self.warn("Invalid File", "It looks like this file cannot be opened.")
+                return False
         else:
             self.new()
+        return True
 
     def open(self):
         options = QtWidgets.QFileDialog.Options()
@@ -479,7 +485,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.canDisplay() and self.editor() is not None:
             self.view.clear()
             try:
-                dot = Source(self.editor().toPlainText(), engine=Config.value("graphviz/engine"))
+                dot = Source(self.editor().graphviz(), engine=Config.value("graphviz/engine"))
                 self.view.addDot(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
                                  Config.value("graphviz/formatter"))
             except graphviz.backend.CalledProcessError as e:

@@ -7,11 +7,13 @@ Creating a package:
 Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
-TODO FUTURE [0.1.3]
+TODO LIST
     - Smart File Encoding detection
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
-    - Fix most TODOs
+    - attribute checking
+    - Other file types
+    - Fix in-code TODOs
 
 Version 1.0.0 name ideas:
     - Wishing Table (ref to "the Wishing Table, Gold-Ass and the Cudgel in the Sack")

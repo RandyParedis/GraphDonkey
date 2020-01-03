@@ -15,17 +15,17 @@ Date:   12/14/2019
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-from main.extra import Constants, left, dotToQPixmap
-from main.extra.Parser import DotVisitor
+from main.extra import Constants, left
+from main.parsers.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
-from main.extra.Highlighter import Highlighter
+from main.highlighters.Highlighter import Highlighter
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
 
 class CodeEditor(QtWidgets.QPlainTextEdit):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(CodeEditor, self).__init__(parent)
         self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
@@ -39,7 +39,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
-        self.highlighter = Highlighter(self.document(), self)
+        self.highlighter = Highlighter()
 
         self.matches = []
         self.errors = []
@@ -168,6 +168,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def setText(self, text):
         self.document().setPlainText(text)
+
+    def graphviz(self):
+        """Obtain the contents of the editor as graphviz data."""
+        raise NotImplementedError()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
         pos = event.pos()

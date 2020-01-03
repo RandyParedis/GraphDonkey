@@ -6,7 +6,7 @@ Date:   12/14/2019
 
 from PyQt5 import QtGui, QtCore
 from main.extra import Constants
-from main.extra.Parser import Parser, EOFToken
+from main.parsers.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
 from main.Preferences import bool
 
@@ -53,27 +53,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.parser = Parser()
 
     def _setPatterns(self):
-        keywordPatterns = ["\\b%s\\b" % x for x in Constants.STRICT_KEYWORDS]
-        self.highlightingRules = [(QtCore.QRegExp(pattern, QtCore.Qt.CaseInsensitive), self.format_keyword)
-                                  for pattern in keywordPatterns]
-
-        attributePatterns = "|".join(["(" + x + ")" for x in Constants.ATTRIBUTES])
-        attributePatterns = "(%s)(?=\\s*[=])" % attributePatterns
-        self.highlightingRules.append((QtCore.QRegExp("(%s)(?=\\s*[=])" % attributePatterns), self.format_attribute))
-        for a in Constants.SPECIAL_ATTRIBUTES:
-            self.highlightingRules.append((QtCore.QRegExp("\\b%s\\b" % a), self.format_attribute))
-
-        self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
-
-        self.highlightingRules.append((QtCore.QRegExp("^#[^%s]*$" % Constants.LINE_ENDING), self.format_comment_hash))
-        self.highlightingRules.append((QtCore.QRegExp("//[^%s]*" % Constants.LINE_ENDING), self.format_comment_single))
-
-        self.commentStartExpression = QtCore.QRegExp("/\\*")
-        self.commentEndExpression = QtCore.QRegExp("\\*/")
-        self.stringExpression = QtCore.QRegExp('"')
-        self.htmlStartExpression = QtCore.QRegExp('<')
-        self.htmlEndExpression = QtCore.QRegExp('>')
-        self.htmlTag = QtCore.QRegExp("</?[^<>/%s]*>" % Constants.LINE_ENDING)
+        pass
 
     def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
@@ -96,18 +76,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
             self.setFormat(startIndex, length, format)
             startIndex = startexp.indexIn(text, startIndex + length)
-
-    def highlightMultilineComments(self, text):
-        self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, BLOCKSTATE_COMMENT,
-                                  self.format_comment_multi())
-
-    def highlightMultilineStrings(self, text):
-        self.multilineHighlighter(text, self.stringExpression, self.stringExpression, BLOCKSTATE_STRING,
-                                  self.format_string())
-
-    def highlightMultilineHtml(self, text):
-        self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, BLOCKSTATE_HTML,
-                                  self.format_html(), self.htmlTag)
 
     def storeErrors(self):
         self.editor.errors = []
@@ -161,9 +129,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
             self.highlightRules(text, self.highlightingRules)
-            self.highlightMultilineStrings(text)
-            self.highlightMultilineHtml(text)
-            self.highlightMultilineComments(text)
 
     @staticmethod
     def format_keyword():
