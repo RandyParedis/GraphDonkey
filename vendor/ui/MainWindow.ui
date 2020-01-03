@@ -130,8 +130,8 @@
     <addaction name="action_Redo"/>
     <addaction name="separator"/>
     <addaction name="action_Select_All"/>
-    <addaction name="action_Clear"/>
     <addaction name="action_Delete"/>
+    <addaction name="action_Clear"/>
     <addaction name="separator"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Cut"/>
@@ -324,10 +324,6 @@
    </property>
   </action>
   <action name="action_Select_All">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-select-all.png</normaloff>:/icons/tango/edit-select-all.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Select All</string>
    </property>
@@ -360,10 +356,6 @@
    </property>
   </action>
   <action name="action_Delete">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-delete.png</normaloff>:/icons/tango/edit-delete.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Delete</string>
    </property>
@@ -448,10 +440,6 @@
    </property>
   </action>
   <action name="action_Comment">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/internet-group-chat.png</normaloff>:/icons/tango/internet-group-chat.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Toggle Comment</string>
    </property>

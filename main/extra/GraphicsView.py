@@ -94,6 +94,14 @@ class GraphicsView(QtWidgets.QWidget):
         if self.controls:
             self.slider_zoom.setValue(zoomlevel * 100)
             self.lb_zoom.setText("%6.2f%%" % (zoomlevel * 100))
+        self.pb_zoom_in.setDisabled(self.isMaximalZoomed())
+        self.pb_zoom_out.setDisabled(self.isMinimalZoomed())
+
+    def isMinimalZoomed(self):
+        return self.zoom_level_min == self.zoomlevel
+
+    def isMaximalZoomed(self):
+        return self.zoom_level_max == self.zoomlevel
 
     def clear(self):
         self._scene.clear()

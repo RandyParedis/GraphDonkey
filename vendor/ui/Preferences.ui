@@ -248,13 +248,6 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="5">
-           <widget class="QCheckBox" name="check_showWhitespace">
-            <property name="text">
-             <string>Show whitespace characters</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="4">
            <widget class="QSpinBox" name="num_tabwidth">
             <property name="suffix">
@@ -285,6 +278,20 @@
               <pointsize>12</pointsize>
               <stylestrategy>PreferDefault</stylestrategy>
              </font>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_showWhitespace">
+            <property name="text">
+             <string>Show whitespace characters</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3" colspan="2">
+           <widget class="QCheckBox" name="check_pairedBrackets">
+            <property name="text">
+             <string>Use paired brackets {} [] &quot;&quot;</string>
             </property>
            </widget>
           </item>
@@ -330,7 +337,7 @@
       <attribute name="title">
        <string>&amp;View</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_20" rowstretch="0,0,0,0,0">
+      <layout class="QGridLayout" name="gridLayout_20" rowstretch="0,0">
        <item row="1" column="0">
         <widget class="QGroupBox" name="groupBox_11">
          <property name="title">
@@ -822,7 +829,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-878</y>
+            <y>0</y>
             <width>629</width>
             <height>1366</height>
            </rect>

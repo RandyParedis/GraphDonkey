@@ -25,6 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.installEventFilter(TabPressEater())
         self.view = GraphicsView(self.viewDock)
         self.viewDockWidgetContents.layout().addWidget(self.view)
+        self.view.zoomed.connect(self.zoomed)
 
         self.disableDisplay = []
         self.lockDisplay(False)
@@ -44,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.clear()
         self.files.tabBar().setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectPreviousTab)
         self.files.currentChanged.connect(self.tabChanged)
+        self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
 
@@ -103,6 +105,39 @@ class MainWindow(QtWidgets.QMainWindow):
         if edit is not None:
             getattr(edit, name)()
 
+    def zoomed(self, z):
+        self.action_Zoom_In.setDisabled(self.view.isMaximalZoomed())
+        self.action_Zoom_Out.setDisabled(self.view.isMinimalZoomed())
+
+    def setUndoEnabled(self, on):
+        self.action_Undo.setEnabled(on)
+        self.actionUndo.setEnabled(on)
+
+    def setRedoEnabled(self, on):
+        self.action_Redo.setEnabled(on)
+        self.actionRedo.setEnabled(on)
+
+    def setEditEnabled(self, on):
+        if on is False:
+            self.setUndoEnabled(on)
+            self.setRedoEnabled(on)
+        self.action_Select_All.setEnabled(on)
+        self.action_Clear.setEnabled(on)
+        self.action_Delete.setEnabled(on)
+        self.action_Copy.setEnabled(on)
+        self.action_Paste.setEnabled(on)
+        self.action_Cut.setEnabled(on)
+        self.actionCopy.setEnabled(on)
+        self.actionPaste.setEnabled(on)
+        self.actionCut.setEnabled(on)
+        self.action_Duplicate.setEnabled(on)
+        self.action_Comment.setEnabled(on)
+        self.action_Indent.setEnabled(on)
+        self.action_Unindent.setEnabled(on)
+        self.action_Auto_Indent.setEnabled(on)
+        self.action_Find.setEnabled(on)
+        self.action_Autocomplete.setEnabled(on)
+
     def lockDisplay(self, disp=False):
         if disp and self.canDisplay():
             self.displayGraph()
@@ -121,7 +156,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if idx == -1:
             idx = self.files.currentIndex()
         if idx > -1:
+            self.setEditEnabled(True)
+            self.actionClose.setEnabled(True)
+            self.action_Close_File.setEnabled(True)
+            self.action_Render.setEnabled(True)
+            self.actionRender.setEnabled(True)
             return self.files.widget(idx)
+        self.setEditEnabled(False)
+        self.actionClose.setEnabled(False)
+        self.action_Close_File.setEnabled(False)
+        self.action_Render.setEnabled(False)
+        self.actionRender.setEnabled(False)
         return None
 
     def tabChanged(self, index):
@@ -131,13 +176,16 @@ class MainWindow(QtWidgets.QMainWindow):
             edit.highlighter.rehighlight()
             if edit.filename == "":
                 self.displayGraph()
+            self.setUndoEnabled(edit.document().isUndoAvailable())
+            self.setRedoEnabled(edit.document().isRedoAvailable())
 
     def changeTab(self, index):
-        index %= self.files.count()
-        self.files.setCurrentIndex(index)
-        edit = self.editor()
-        if edit is not None:
-            edit.setFocus(True)
+        if self.files.count() > 0:
+            index %= self.files.count()
+            self.files.setCurrentIndex(index)
+            edit = self.editor()
+            if edit is not None:
+                edit.setFocus(True)
 
     def updateTabs(self):
         names = []

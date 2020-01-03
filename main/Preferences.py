@@ -244,6 +244,7 @@ class Preferences(QtWidgets.QDialog):
             self.check_syntax.setChecked(bool(self.preferences.value("editor/syntaxHighlighting", True)))
             self.check_parse.setChecked(bool(self.preferences.value("editor/useParser", True)))
             self.check_autorender.setChecked(bool(self.preferences.value("editor/autorender", True)))
+            self.check_pairedBrackets.setChecked(bool(self.preferences.value("editor/pairedBrackets", True)))
             self.parseDisable(self.check_parse.isChecked())
 
         # VIEW
@@ -368,6 +369,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("editor/tabwidth", self.num_tabwidth.value())
             self.preferences.setValue("editor/useParser", self.check_parse.isChecked())
             self.preferences.setValue("editor/autorender", self.check_autorender.isChecked())
+            self.preferences.setValue("editor/pairedBrackets", self.check_pairedBrackets.isChecked())
 
         # VIEW
         if True:

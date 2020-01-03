@@ -95,6 +95,7 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
+* [0.1.3] Added automatic pairing of brackets
 * [0.1.3] Added controls to view area (and AST-display)
   * Zoom in/out/reset
   * Dragging with mouse

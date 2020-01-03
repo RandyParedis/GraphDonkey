@@ -30,6 +30,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.mainwindow = parent
         self.lineNumberArea = LineNumberArea(self)
 
+        self.undoAvailable.connect(self.mainwindow.setUndoEnabled)
+        self.redoAvailable.connect(self.mainwindow.setRedoEnabled)
+
         self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
@@ -136,7 +139,27 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
         elif event.key() not in [QtCore.Qt.Key_Delete]:
-            QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
+            k = event.key()
+            keys = [QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft, QtCore.Qt.Key_QuoteDbl]
+            open = ["{", "[", '"']
+            close = ["}", "]", '"']
+            if k in keys and bool(Config.value("editor/pairedBrackets")):
+                curs = self.textCursor()
+                s = curs.selectionStart()
+                e = curs.selectionEnd()
+                curs.setPosition(s)
+                curs.beginEditBlock()
+                self.setTextCursor(curs)
+                self.insertPlainText(open[keys.index(k)])
+                curs.setPosition(e + 1)
+                self.setTextCursor(curs)
+                self.insertPlainText(close[keys.index(k)])
+                curs.endEditBlock()
+                curs.setPosition(s + 1)
+                curs.setPosition(e + 1, QtGui.QTextCursor.KeepAnchor)
+                self.setTextCursor(curs)
+            else:
+                QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
 
     def event(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.ShortcutOverride:
