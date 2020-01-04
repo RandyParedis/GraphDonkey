@@ -169,6 +169,18 @@ elsewhere, you **must** reference this project.
 Below, I've listed all features I'd like to see in future versions.
 [Feel free to suggest new ideas and features!](
 https://github.com/RandyParedis/GraphDonkey/issues)
+* [0.2.0] Allow other file types/extensions to be edited and converted to
+graphviz
+  * xdot
+  * plain/plain-ext
+  * pic
+  * _Python?_
+  * [_mermaid?_](https://mermaid-js.github.io/mermaid)
+  * _PlantUML?_
+* [0.2.1] Add graphviz html syntax highlighting + parsing
+* [0.3.0] Context Specific Checking
+  * Attribute Checking (currently discontinued)
+  * Autocomplete analyzes context
 * [1.0.0] Interactive view of DOT files
   * Similar to XDot
   * Onclick of node: edit features
@@ -178,8 +190,6 @@ https://github.com/RandyParedis/GraphDonkey/issues)
 * [1.0.0] Add mouse control section to 'Shortcuts' in the Preferences
   * Rename 'Shortcuts' to 'Controls'
 * [1.1.0] Add all different node and edge types in interactive mode
-* [1.1.1] Add graphviz html syntax highlighting + parsing
-* [1.1.2] Continue work on attribute checking (currently discontinued)
 * [1.2.0] Add Python scripting engine for live-showing of graph updates
   * This will allow container algorithms to be checked visually
   * Defaultly via 'open'?

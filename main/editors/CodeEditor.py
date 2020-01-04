@@ -19,10 +19,34 @@ from main.extra import Constants, left
 from main.parsers.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
 from main.highlighters.Highlighter import Highlighter
+from main.editors import EDITORTYPES
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 
 Config = IOHandler.get_preferences()
+
+class EditorWrapper(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(EditorWrapper, self).__init__(parent)
+        self._layout = QtWidgets.QGridLayout()
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self.editor = CodeEditor(parent)
+        self._layout.addWidget(self.editor, 0, 0)
+        self.filetype = QtWidgets.QComboBox()
+        self.filetype.currentIndexChanged.connect(self.alter)
+        self.setTypes()
+        self._layout.addWidget(self.filetype, 1, 0)
+        self.setLayout(self._layout)
+
+    def setTypes(self):
+        for type in EDITORTYPES:
+            name, klass = EDITORTYPES[type]
+            self.filetype.addItem(name, klass(self.editor.document(), self.editor))
+
+    def alter(self, idx):
+        data = self.filetype.itemData(idx)
+        self.editor.alter(data)
+        self.editor.highlighter.rehighlight()
 
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
@@ -39,7 +63,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
-        self.highlighter = Highlighter()
+        self.highlighter = Highlighter(self.document(), self)
 
         self.matches = []
         self.errors = []
@@ -53,6 +77,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.setCompleter()
 
         self.treeView = None
+
+    def alter(self, highlighter):
+        self.highlighter = highlighter
+
+    def graphviz(self):
+        return self.highlighter.parser.toGraphviz(self.toPlainText())
 
     def positionChangedSlot(self):
         if bool(Config.value("editor/highlightCurrentLine")):
@@ -168,10 +198,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def setText(self, text):
         self.document().setPlainText(text)
-
-    def graphviz(self):
-        """Obtain the contents of the editor as graphviz data."""
-        raise NotImplementedError()
 
     def mouseMoveEvent(self, event: QtGui.QMouseEvent):
         pos = event.pos()

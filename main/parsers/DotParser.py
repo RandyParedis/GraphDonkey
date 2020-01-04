@@ -14,6 +14,9 @@ class DotParser(Parser):
         super(DotParser, self).__init__(IOHandler.dir_grammars("graphviz.lark"))
         self.visitor = CheckDotVisitor(self)
 
+    def toGraphviz(self, text: str):
+        return text
+
 
 class CheckDotVisitor(CheckVisitor):
     """Helper class that makes sure additional conditions on rules are valid."""

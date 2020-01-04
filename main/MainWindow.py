@@ -9,7 +9,7 @@ from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
-from main.editors.DotEditor import DotEditor
+from main.editors.CodeEditor import EditorWrapper
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
@@ -161,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.action_Close_File.setEnabled(True)
             self.action_Render.setEnabled(True)
             self.actionRender.setEnabled(True)
-            return self.files.widget(idx)
+            return self.files.widget(idx).editor
         self.setEditEnabled(False)
         self.actionClose.setEnabled(False)
         self.action_Close_File.setEnabled(False)
@@ -219,9 +219,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusMessage.setText(text)
 
     def newTab(self, label):
-        editor = DotEditor(self)
-        editor.textChanged.connect(self.textChangedEvent)
+        editor = EditorWrapper(self)
         self.files.addTab(editor, label)
+
         self.changeTab(self.files.count() - 1)
         self.preferences.applyEditor()
 

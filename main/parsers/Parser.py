@@ -48,6 +48,9 @@ class Parser:
             return self.parser._terminals_dict[terminal_name]
         return None
 
+    def toGraphviz(self, text: str):
+        return text
+
 
 class EOFToken:
     """Helperclass for UnexpectedEOF errors."""
