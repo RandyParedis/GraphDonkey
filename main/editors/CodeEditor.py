@@ -48,6 +48,9 @@ class EditorWrapper(QtWidgets.QWidget):
         self.editor.alter(data)
         self.editor.highlighter.rehighlight()
 
+    def setType(self, type):
+        self.filetype.setCurrentText(EDITORTYPES[type][0])
+
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
         super(CodeEditor, self).__init__(parent)
@@ -93,6 +96,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.highlightErrors()
         self.highlightMatches()
         self.updateIndicator()
+        self.mainwindow.updateTitle()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
         menu = QtWidgets.QMenu(self)

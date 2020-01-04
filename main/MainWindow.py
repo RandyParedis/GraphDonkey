@@ -152,6 +152,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def canDisplay(self):
         return len(self.disableDisplay) == 0
 
+    def setEditorType(self, type):
+        idx = self.files.currentIndex()
+        if idx >= 0:
+            wrapper = self.files.widget(idx)
+            wrapper.setType(type)
+
     def editor(self, idx=-1):
         if idx == -1:
             idx = self.files.currentIndex()
@@ -360,9 +366,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.updateRecents(fileName)
                     self.editor().filename = fileName
                     self.editor().filecontents = data
-                except IOError:
-                    self.warn("File not found", "You're trying to open a file that does not exist.\n"
-                                                "Please retry.\nFilename: %s" % fileName)
+                    self.setEditorType(Constants.reverse(ext))
+                except IOError as e:
+                    self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
+                    self.close()
                     valid = False
                 self.updateTitle()
                 return valid

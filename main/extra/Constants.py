@@ -26,6 +26,7 @@ INDENT_CLOSE = ['}', ']']
 
 FILE_TYPES_OPEN = {
     "DOT": ["canon", "dot", "gv", "xdot", "xdot1.2", "xdot1.4"],
+    "Flowchart": ["code", "psc", "pseudo", "pseudocode", "flowchart", "fc"]
 }
 
 FILE_TYPES_SAVE = {
@@ -71,6 +72,12 @@ def file_list_open():
 
 def file_list_save():
     return ";;".join(["%s Files (*.%s)" % (x, " *.".join(FILE_TYPES_SAVE[x])) for x in FILE_TYPES_SAVE])
+
+def reverse(ext):
+    for k in FILE_TYPES_SAVE:
+        if ext in FILE_TYPES_SAVE[k]:
+            return k
+    return None
 
 def obtain_exts(category):
     if "." in category:
