@@ -14,7 +14,7 @@ from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
 from graphviz import Source
-import graphviz, subprocess, os
+import graphviz, subprocess, os, sys
 
 Config = IOHandler.get_preferences()
 
@@ -496,7 +496,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.view.addDot(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
                                  Config.value("graphviz/formatter"))
             except graphviz.backend.CalledProcessError as e:
-                self.error("Error", e.stderr.decode("utf-8"))
+                print(e.stderr.decode("utf-8"), file=sys.stderr)
+                # self.error("Error", e.stderr.decode("utf-8"))
 
     def openSnippets(self):
         self.snippets.exec_()

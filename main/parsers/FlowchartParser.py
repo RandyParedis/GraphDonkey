@@ -7,11 +7,8 @@ Date:   16/12/2019
 """
 from main.extra.IOHandler import IOHandler
 from main.parsers.Parser import Parser, CheckVisitor
-from lark import Lark, Tree, Token
+from lark import Tree, Token
 from graphviz import Digraph
-
-TRUE = "Yes"
-FALSE = "No"
 
 class FlowchartParser(Parser):
     def __init__(self):
@@ -22,6 +19,7 @@ class FlowchartParser(Parser):
         T = self.parse(text)
         vis = ConversionVisitor()
         vis.visit(T)
+        vis.graphviz.attr(splines=vis.splines)
         return vis.graphviz.source
 
 class CheckFlowchartVisitor(CheckVisitor):
@@ -45,9 +43,11 @@ class CheckFlowchartVisitor(CheckVisitor):
 class ConversionVisitor:
     def __init__(self):
         self.graphviz = Digraph()
-        self.graphviz.attr(splines="polyline")
         self.broken = []
         self.continued = []
+        self.true = "Yes"
+        self.false = "No"
+        self.splines = "polyline"
 
     def connect(self, prev, next):
         assert isinstance(prev, list)
@@ -84,7 +84,7 @@ class ConversionVisitor:
         if name == "stmts":
             for child in tree.children:
                 links = self.visit(child, links)
-                if self.isBroken():
+                if self.isBroken() or len(links) == 0:
                     break
             return links
         if name == "stmt":
@@ -98,12 +98,26 @@ class ConversionVisitor:
                 elif child.type == "CONTINUE":
                     self.continued[-1] = links
                     return []
+                elif len(links) == 0:
+                    return []
                 else:
                     node = "n%i" % id(child)
                     value = self.string(child)
                     self.graphviz.node(node, value, shape="box")
                     self.connect(links, node)
                     return [(node, "")]
+        if name == "pstmt":
+            attr = tree.children[1].value
+            value = self.string(tree.children[2])
+            if attr == "TRUE":
+                self.true = value
+            elif attr == "FALSE":
+                self.false = value
+            elif attr == "TF":
+                self.true, self.false = [x[1:-1] if (x[0] == '"' and x[-1] == '"') or (x[0] == "'" and x[-1] == "'")
+                                         else x for x in [x.strip() for x in value.split(",")]]
+            elif attr == "splines":
+                self.splines = value
         if name == "assign":
             t = []
             for child in tree.children:
@@ -141,30 +155,48 @@ class ConversionVisitor:
                         elifs.append(child)
                     elif child.data == "else":
                         _else = child.children[1]
-            res = self.visit(then, [(condition, TRUE)])
+            res = self.visit(then, [(condition, self.true)])
             if len(elifs) > 0:
                 p = condition
                 for e in elifs:
-                    con = self.visit(e.children[1], [(p, FALSE)])[0][0]
-                    res += self.visit(e.children[3], [(con, TRUE)])
+                    con = self.visit(e.children[1], [(p, self.false)])[0][0]
+                    res += self.visit(e.children[3], [(con, self.true)])
                     p = con
                 if _else is not None:
-                    res += self.visit(_else, [(p, FALSE)])
+                    res += self.visit(_else, [(p, self.false)])
             elif _else is not None:
-                res += self.visit(_else, [(condition, FALSE)])
+                res += self.visit(_else, [(condition, self.false)])
             else:
-                res.append((condition, FALSE))
+                res.append((condition, self.false))
             return res
         if name == "while":
             condition = self.visit(tree.children[1], links)[0][0]
             self.broken.append(None)
             self.continued.append([])
-            res = self.visit(tree.children[3], [(condition, TRUE)])
+            res = self.visit(tree.children[3], [(condition, self.true)])
             self.connect(res, condition)
             self.connect(self.continued.pop(), condition)
             broken = self.broken.pop()
             if broken is not None:
                 return broken
-            return [(condition, FALSE)]
+            return [(condition, self.false)]
+        if name == "io":
+            node = "n%i" % id(tree)
+            value = "<<b>%s</b>>" % tree.children[0].type.lower()
+            if len(tree.children) == 2:
+                v = self.string(tree.children[1])
+                v = v.replace("\\n", "<br/>")
+                value = "<<b>%s: </b> %s>" % (tree.children[0].type.lower(), v)
+            self.graphviz.node(node, value, shape="parallelogram")
+            self.connect(links, node)
+            return [(node, "")]
+        if name == "return":
+            node = "n%i" % id(tree)
+            value = "end"
+            if len(tree.children) == 2:
+                value = self.string(tree.children[1])
+            self.graphviz.node(node, value)
+            self.connect(links, node)
+            return []
 
         return links
