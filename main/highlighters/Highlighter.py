@@ -124,7 +124,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
     def highlightBlock(self, text):
         self.storeParenthesis(text)
-        self.storeErrors()
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:

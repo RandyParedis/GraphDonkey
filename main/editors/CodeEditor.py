@@ -63,6 +63,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
+        self.textChanged.connect(self.textChangedSlot)
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
@@ -86,6 +87,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def graphviz(self):
         return self.highlighter.parser.toGraphviz(self.toPlainText())
+
+    def textChangedSlot(self):
+        self.highlighter.storeErrors()
 
     def positionChangedSlot(self):
         if bool(Config.value("editor/highlightCurrentLine")):
@@ -599,7 +603,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def viewParseTree(self, focus=True):
         txt = self.toPlainText()
-        T = self.highlighter.parser.parse(txt)
+        T = self.highlighter.parser.parse(txt, True)
         if T is not None:
             if self.treeView is None:
                 self.treeView = QtWidgets.QDialog(self.parent(), flags=QtCore.Qt.Window)

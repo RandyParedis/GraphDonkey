@@ -23,14 +23,15 @@ class Parser:
 
         self.visitor = CheckVisitor(self)
 
-    def parse(self, text: str):
+    def parse(self, text: str, yld=False):
         self.errors = []
+        self.visitor.clear()
         try:
             if self.parser is not None:
                 tree = self.parser.parse(text)
                 self.visitor.visit(tree)
                 self.errors += self.visitor.errors
-                if len(self.errors) == 0:
+                if len(self.errors) == 0 or yld:
                     return tree
         except (UnexpectedCharacters, UnexpectedToken) as e:
             splt = str(e).split("\n")
@@ -80,6 +81,9 @@ class CheckVisitor:
     def tokenvisit(self, token: Token):
         pass
 
+    def postvisit(self, tree: Tree):
+        pass
+
     def visit(self, tree: Tree):
         self.previsit(tree)
         for child in tree.children:
@@ -87,6 +91,10 @@ class CheckVisitor:
                 self.visit(child)
             else: # TOKENS
                 self.tokenvisit(child)
+        self.postvisit(tree)
+
+    def clear(self):
+        self.errors.clear()
 
 
 class DotVisitor:

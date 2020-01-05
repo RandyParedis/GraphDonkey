@@ -13,17 +13,26 @@ WS: /[ \t\f\r\n]/+
 
 start: stmts
 stmts: stmt*
-stmt: ifthenelse | state | assign
-ifthenelse: IF condition THEN SEP? stmts elif* else? (FI | ENDIF | (END IF?))
-condition: state
-elif: (ELIF | ELSEIF | (ELSE IF)) condition THEN SEP? stmts
+stmt: (state SEP?) | assign | ifthenelse | while
+assign: (NAME (ASSIGN operation)+ SEP?) | ((INC | DEC | OPA) state) | (state OPA)
+operation: state ((OP | MOD) state)*
+?state: NAME | NUMERAL | string | BREAK | CONTINUE
+?string: STRINGD | STRINGS
+ifthenelse: IF condition THEN SEP? stmts elif* else? (FI | (END IF?))
+// iftype: "[" (string | NAME) "," (string | NAME) "]"
+condition: state ((TEST | IS | IN | AND | OR) state)* QM?
+elif: (ELIF | (ELSE IF)) condition THEN SEP? stmts
 else: ELSE stmts
-assign: NAME ASSIGN state
-?state: (NAME | NUMERAL | STRINGD | STRINGS) SEP?
+while: WHILE condition DO SEP? stmts (DONE | (END WHILE?))
 
+
+TEST: "<>" | "<=" | ">=" | "<" | ">" | "==" | "!=" | "&&" | "||"
+OP: "+" | "-" | "*" | "/" | "%"
+OPA: "++" | "--"
 
 SEP: ";"
-ASSIGN: "=" | "<-" | ":="
+QM: "?"
+ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/="
 IF: "if"i
 THEN: "then"i
 ELIF: "elif"i
@@ -32,6 +41,18 @@ ELSE: "else"i
 FI: "fi"i
 ENDIF: "endif"i
 END: "end"i
+WHILE: "while"i
+DO: "do"i
+DONE: "done"i
+IS: "is"i
+IN: "in"i
+AND: "and"i
+OR: "or"i
+MOD: "mod"i
+INC: "inc"i | "increment"i
+DEC: "dec"i | "decrement"i
+BREAK: "break"i
+CONTINUE: "continue"i
 
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 STRINGD: "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""

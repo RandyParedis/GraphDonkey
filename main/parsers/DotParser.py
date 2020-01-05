@@ -50,5 +50,5 @@ class CheckDotVisitor(CheckVisitor):
         #         self.errors.append((value, str(e), set()))
 
     def tokenvisit(self, token):
-                if token.type in ["GRAPH", "DIGRAPH"]:
-                    self.type = token.type
+        if token.type in ["GRAPH", "DIGRAPH"]:
+            self.type = token.type

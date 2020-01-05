@@ -116,6 +116,10 @@ class GraphicsView(QtWidgets.QWidget):
             dot = QtSvg.QGraphicsSvgItem()
             dot.setSharedRenderer(svgRenderer)
             self._scene.addItem(dot)
+            margin = 25
+            sr = self._scene.itemsBoundingRect()
+            sr.adjust(-margin, -margin, margin, margin)
+            self._scene.setSceneRect(sr)
         else:
             pixmap = dotToQPixmap(dot, format, renderer, formatter)
             self._scene.addPixmap(pixmap)
