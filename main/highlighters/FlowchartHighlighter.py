@@ -30,8 +30,9 @@ class FlowchartHighlighter(hlgt.Highlighter):
 
         self.highlightingRules.append((QtCore.QRegExp("'[^%s]*'" % Constants.LINE_ENDING), self.format_string))
         self.highlightingRules.append((QtCore.QRegExp('"[^%s]*"' % Constants.LINE_ENDING), self.format_string))
+        self.highlightingRules.append((QtCore.QRegExp('`[^%s]*`' % Constants.LINE_ENDING), self.format_string))
         self.highlightingRules.append((QtCore.QRegExp("//[^%s]*" % Constants.LINE_ENDING), self.format_comment_single))
-        self.highlightingRules.append((QtCore.QRegExp("%%[^%s]*" % Constants.LINE_ENDING), self.format_comment_hash))
+        self.highlightingRules.append((QtCore.QRegExp("^%%[^%s]*$" % Constants.LINE_ENDING), self.format_comment_hash))
 
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")

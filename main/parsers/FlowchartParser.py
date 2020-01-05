@@ -58,12 +58,17 @@ class ConversionVisitor:
                 self.graphviz.edge(p, n, l)
 
     def isString(self, value):
-        return value in ["STRINGD", "STRINGS"]
+        return value in ["STRINGD", "STRINGS", "STRINGT"]
 
     def string(self, token):
         if self.isString(token.type):
             return token.value[1:-1]
         return token.value
+
+    def stringValue(self, old):
+        if old[0] == old[-1] and old[0] in "`'\"":
+            return old[1:-1]
+        return old
 
     def isBroken(self):
         return len(self.broken) > 0 and self.broken[-1] is not None
@@ -114,8 +119,7 @@ class ConversionVisitor:
             elif attr == "FALSE":
                 self.false = value
             elif attr == "TF":
-                self.true, self.false = [x[1:-1] if (x[0] == '"' and x[-1] == '"') or (x[0] == "'" and x[-1] == "'")
-                                         else x for x in [x.strip() for x in value.split(",")]]
+                self.true, self.false = [self.stringValue(x.strip()) for x in value.split(",")]
             elif attr == "splines":
                 self.splines = value
         if name == "assign":

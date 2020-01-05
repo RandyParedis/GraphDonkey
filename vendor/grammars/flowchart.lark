@@ -17,9 +17,8 @@ stmt: (state SEP?) | assign | ifthenelse | while | io | BREAK | CONTINUE | retur
 assign: (NAME (ASSIGN operation)+ SEP?) | ((INC | DEC | OPA) state) | (state OPA)
 operation: state ((OP | MOD) state)*
 ?state: NAME | NUMERAL | string
-?string: STRINGD | STRINGS
+?string: STRINGD | STRINGS | STRINGT
 ifthenelse: IF condition THEN SEP? stmts elif* else? (FI | (END IF?))
-// iftype: "[" (string | NAME) "," (string | NAME) "]"
 condition: state ((TEST | IS | IN | AND | OR) state)* QM?
 elif: (ELIF | (ELSE IF)) condition THEN SEP? stmts
 else: ELSE stmts
@@ -30,13 +29,13 @@ pstmt: PP NAME ("=" | ":") (string | NAME)
 
 
 TEST: "<>" | "<=" | ">=" | "<" | ">" | "==" | "!=" | "&&" | "||"
-OP: "+" | "-" | "*" | "/" | "%"
+OP: "+" | "-" | "*" | "/" | "%" | "^"
 OPA: "++" | "--"
 
 SEP: ";"
 QM: "?"
-PP: "%"
-ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/="
+PP: /^%/
+ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/=" | "^="
 IF: "if"i
 THEN: "then"i
 ELIF: "elif"i
@@ -64,5 +63,6 @@ RETURN: "return"i
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 STRINGD: "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""
 STRINGS: "'" /[^\'\\]*(?:\\.[^\'\\]*)*/ "'"
+STRINGT: "`" /[^\'\\]*(?:\\.[^\'\\]*)*/ "`"
 NUMERAL: /[-]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)/
 

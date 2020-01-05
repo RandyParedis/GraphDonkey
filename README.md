@@ -95,7 +95,8 @@ elsewhere, you **must** reference this project.
 
 ### Changelog
 ##### Jack-in-a-Box
-* [0.2.0] Split CodeEditor to allow for multiple file types in future
+* [0.2.0] Some filetypes other than graphviz are possible now
+  * [Pseudocode / Flowcharts](docs/Flowcharts.md)
 * [0.1.3] Added automatic pairing of brackets
 * [0.1.3] Added controls to view area (and AST-display)
   * Zoom in/out/reset
