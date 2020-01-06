@@ -13,8 +13,8 @@ WS: /[ \t\f\r\n]/+
 
 start: stmts
 stmts: pstmt* stmt*
-stmt: (state SEP?) | assign | ifthenelse | while | io | BREAK | CONTINUE | return
-assign: (NAME (ASSIGN operation)+ SEP?) | ((INC | DEC | OPA) state) | (state OPA)
+stmt: (state | assign | ifthenelse | while | do | io | BREAK | CONTINUE | return) SEP?
+assign: (NAME (ASSIGN operation)+) | ((INC | DEC | OPA) state) | (state OPA)
 operation: state ((OP | MOD) state)*
 ?state: NAME | NUMERAL | string
 ?string: STRINGD | STRINGS | STRINGT
@@ -23,19 +23,20 @@ condition: state ((TEST | IS | IN | AND | OR) state)* QM?
 elif: (ELIF | (ELSE IF)) condition THEN SEP? stmts
 else: ELSE stmts
 while: WHILE condition DO SEP? stmts (DONE | (END WHILE?))
-io: (INPUT | OUTPUT) state? SEP?
-return: RETURN state? SEP?
+do: DO SEP? stmts (DONE | (END DO?))
+io: (INPUT | OUTPUT) state?
+return: RETURN state?
 pstmt: PP NAME ("=" | ":") (string | NAME)
 
 
-TEST: "<>" | "<=" | ">=" | "<" | ">" | "==" | "!=" | "&&" | "||"
-OP: "+" | "-" | "*" | "/" | "%" | "^"
+TEST: "<>" | "<=" | ">=" | "<" | ">" | "===" | "==" | "!=" | "&&" | "||"
+OP: "+" | "-" | "*" | "/" | "%" | "^" | "." | "~"
 OPA: "++" | "--"
 
 SEP: ";"
 QM: "?"
 PP: /^%/
-ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/=" | "^="
+ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/=" | "^=" | "~="
 IF: "if"i
 THEN: "then"i
 ELIF: "elif"i

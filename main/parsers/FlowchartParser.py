@@ -28,7 +28,7 @@ class CheckFlowchartVisitor(CheckVisitor):
         self.depth = 0
 
     def previsit(self, tree: Tree):
-        if tree.data == "while":
+        if tree.data in ["while", "do"]:
             self.depth += 1
 
     def tokenvisit(self, token: Token):
@@ -76,6 +76,40 @@ class ConversionVisitor:
     def isContinued(self):
         return len(self.continued) > 0 and self.continued[-1] is not None
 
+    def nodeName(self, tree: Tree):
+        name = tree.data
+        if name == "start":
+            return "n0"
+        if name == "stmts":
+            return self.nodeName(tree.children[0])
+        if name == "stmt":
+            child = tree.children[0]
+            if isinstance(child, Tree):
+                return self.nodeName(child)
+            if isinstance(child, Token):
+                if child.type in ["BREAK", "CONTINUE"]:
+                    return None
+                else:
+                    return "n%i" % id(child)
+        if name == "assign":
+            return "n%i" % id(tree)
+        if name == "condition":
+            return "n%i" % id(tree)
+        if name == "ifthenelse":
+            return self.nodeName(tree.children[1])
+        if name == "while":
+            return self.nodeName(tree.children[1])
+        if name == "do":
+            stmts = tree.children[1]
+            if isinstance(stmts, Token):
+                stmts = tree.children[2]
+            return self.nodeName(stmts)
+        if name == "io":
+            return "n%i" % id(tree)
+        if name == "return":
+            return "n%i" % id(tree)
+        return None
+
     def visit(self, tree: Tree, links=None):
         assert isinstance(links, list) or links is None
         if tree is None:
@@ -106,7 +140,7 @@ class ConversionVisitor:
                 elif len(links) == 0:
                     return []
                 else:
-                    node = "n%i" % id(child)
+                    node = self.nodeName(tree)
                     value = self.string(child)
                     self.graphviz.node(node, value, shape="box")
                     self.connect(links, node)
@@ -118,8 +152,8 @@ class ConversionVisitor:
                 self.true = value
             elif attr == "FALSE":
                 self.false = value
-            elif attr == "TF":
-                self.true, self.false = [self.stringValue(x.strip()) for x in value.split(",")]
+            # elif attr == "TF":
+            #     self.true, self.false = [self.stringValue(x.strip()) for x in value.split(",")]
             elif attr == "splines":
                 self.splines = value
         if name == "assign":
@@ -131,7 +165,7 @@ class ConversionVisitor:
                     if child.data == "operation":
                         for c in child.children:
                             t.append(c.value)
-            node = "n%i" % id(tree)
+            node = self.nodeName(tree)
             lbl = " ".join(t)
             self.graphviz.node(node, lbl, shape="box")
             self.connect(links, node)
@@ -140,7 +174,7 @@ class ConversionVisitor:
             t = []
             for child in tree.children:
                 t.append(self.string(child))
-            node = "n%i" % id(tree)
+            node = self.nodeName(tree)
             self.graphviz.node(node, " ".join(t), shape="diamond")
             self.connect(links, node)
             return [(node, "")]
@@ -151,9 +185,7 @@ class ConversionVisitor:
             _else = None
             for child in tree.children:
                 if isinstance(child, Tree):
-                    if child.data == "iftype":
-                        types = [self.string(x) for x in child.children]
-                    elif child.data == "stmts":
+                    if child.data == "stmts":
                         then = child
                     elif child.data == "elif":
                         elifs.append(child)
@@ -163,8 +195,16 @@ class ConversionVisitor:
             if len(elifs) > 0:
                 p = condition
                 for e in elifs:
-                    con = self.visit(e.children[1], [(p, self.false)])[0][0]
-                    res += self.visit(e.children[3], [(con, self.true)])
+                    cond = None
+                    stmts = None
+                    for c in e.children:
+                        if isinstance(c, Tree):
+                            if c.data == "condition":
+                                cond = c
+                            elif c.data == "stmts":
+                                stmts = c
+                    con = self.visit(cond, [(p, self.false)])[0][0]
+                    res += self.visit(stmts, [(con, self.true)])
                     p = con
                 if _else is not None:
                     res += self.visit(_else, [(p, self.false)])
@@ -177,25 +217,44 @@ class ConversionVisitor:
             condition = self.visit(tree.children[1], links)[0][0]
             self.broken.append(None)
             self.continued.append([])
-            res = self.visit(tree.children[3], [(condition, self.true)])
+            stmts = tree.children[3]
+            if isinstance(stmts, Token):
+                stmts = tree.children[4]
+            res = self.visit(stmts, [(condition, self.true)])
             self.connect(res, condition)
             self.connect(self.continued.pop(), condition)
             broken = self.broken.pop()
             if broken is not None:
                 return broken
             return [(condition, self.false)]
+        if name == "do":
+            self.broken.append(None)
+            self.continued.append([])
+            stmts = tree.children[2]
+            if isinstance(stmts, Token):
+                stmts = tree.children[3]
+            res = self.visit(stmts, links)
+            frst = self.nodeName(stmts)
+            if frst is None:
+                frst = links
+            self.connect(res, frst)
+            self.connect(self.continued.pop(), frst)
+            broken = self.broken.pop()
+            if broken is not None:
+                return broken
+            return []
         if name == "io":
-            node = "n%i" % id(tree)
-            value = "<<b>%s</b>>" % tree.children[0].type.lower()
+            node = self.nodeName(tree)
+            value = "<<b>%s</b>>" % tree.children[0].value
             if len(tree.children) == 2:
                 v = self.string(tree.children[1])
                 v = v.replace("\\n", "<br/>")
-                value = "<<b>%s: </b> %s>" % (tree.children[0].type.lower(), v)
+                value = "<<b>%s: </b> %s>" % (tree.children[0].value, v)
             self.graphviz.node(node, value, shape="parallelogram")
             self.connect(links, node)
             return [(node, "")]
         if name == "return":
-            node = "n%i" % id(tree)
+            node = self.nodeName(tree)
             value = "end"
             if len(tree.children) == 2:
                 value = self.string(tree.children[1])

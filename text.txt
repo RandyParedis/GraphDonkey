@@ -13,8 +13,18 @@ TODO LIST
     - Force autocompleter to suggest context-specific items
     - attribute checking
     - Other file types
+        - flowchart
+            - brackets
+            - global html-string?
+            - string-concatenation
+            - multiline strings
+            - start and end node text
+            - function calls
+            - guards on branches of if-statements
+            - preprocessor check only current line
     - Update all highlighting on typing!
     - Automatic brackets: on removal (or on typing at the end)
+            + matching of all types of brackets: ticks, parentheses, brackets, braces, quotes...
     - Allow view to be scrolled with mouse wheel
             ==> set 'on x', zoom (nothing, shift, control, alt)
     - Fix in-code TODOs
