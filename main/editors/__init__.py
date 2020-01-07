@@ -4,12 +4,12 @@ Author: Randy Paredis
 Date:   01/04/2020
 """
 
-from main.highlighters.Highlighter import Highlighter
-from main.highlighters.DotHighlighter import DotHighlighter
-from main.highlighters.FlowchartHighlighter import FlowchartHighlighter
+from main.editors.Highlighter import BaseHighlighter
+from main.editors.dot.DotHighlighter import DotHighlighter
+from main.editors.flowchart.FlowchartHighlighter import FlowchartHighlighter
 
 EDITORTYPES = {
-    "": ("No File Type", Highlighter),
+    "": ("No File Type", BaseHighlighter),
     "DOT": ("Graphviz", DotHighlighter),
     "Flowchart": ("Flowchart / Pseudocode", FlowchartHighlighter)
 }

@@ -17,7 +17,7 @@ class Parser:
         if file != "":
             with open(file, "r") as file:
                 self.grammar = file.read()
-            self.parser = Lark(self.grammar, parser=parser)
+            self.parser = Lark(self.grammar, parser=parser, propagate_positions=True)
 
         self.errors = []
 
@@ -109,7 +109,8 @@ class DotVisitor:
                 self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.data)
                 self.visit(child)
             elif isinstance(child, Token): # TOKENS
-                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + child.value,
+                val = child.value.replace("\\", "\\\\")
+                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + val,
                                                        color="blue", fontcolor="blue", shape="box")
             if id(tree) in self.nodes and id(child) in self.nodes:
                 self.root.edge("node_%i" % id(tree), "node_%i" % id(child))

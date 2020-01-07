@@ -16,9 +16,9 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 
 
 from main.extra import Constants, left
-from main.parsers.Parser import DotVisitor
+from main.editors.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
-from main.highlighters.Highlighter import Highlighter
+from main.editors.Highlighter import BaseHighlighter
 from main.editors import EDITORTYPES
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
@@ -41,11 +41,11 @@ class EditorWrapper(QtWidgets.QWidget):
     def setTypes(self):
         for type in EDITORTYPES:
             name, klass = EDITORTYPES[type]
-            self.filetype.addItem(name, klass(self.editor.document(), self.editor))
+            self.filetype.addItem(name, klass)
 
     def alter(self, idx):
         data = self.filetype.itemData(idx)
-        self.editor.alter(data)
+        self.editor.alter(data(self.editor.document(), self.editor))
         self.editor.highlighter.rehighlight()
 
     def setType(self, type):
@@ -60,14 +60,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.undoAvailable.connect(self.mainwindow.setUndoEnabled)
         self.redoAvailable.connect(self.mainwindow.setRedoEnabled)
 
-        self.blockCountChanged.connect(self.updateLineNumberAreaWidth)
+        self.blockCountChanged.connect(self.lineNrChanged)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
         self.textChanged.connect(self.textChangedSlot)
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
-        self.highlighter = Highlighter(self.document(), self)
+        self.highlighter = BaseHighlighter(self.document(), self)
 
         self.matches = []
         self.errors = []
@@ -83,6 +83,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.treeView = None
 
     def alter(self, highlighter):
+        self.highlighter.deleteLater()
         self.highlighter = highlighter
 
     def graphviz(self):
@@ -101,6 +102,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlightMatches()
         self.updateIndicator()
         self.mainwindow.updateTitle()
+
+    def lineNrChanged(self):
+        self.updateLineNumberAreaWidth()
+        self.highlighter.rehighlight()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
         menu = QtWidgets.QMenu(self)
@@ -178,20 +183,22 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 self.setTextCursor(cursor)
         elif event.key() not in [QtCore.Qt.Key_Delete]:
             k = event.key()
-            keys = [QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft, QtCore.Qt.Key_QuoteDbl]
-            open = ["{", "[", '"']
-            close = ["}", "]", '"']
+            keys = [QtCore.Qt.Key_ParenLeft, QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft, QtCore.Qt.Key_QuoteDbl,
+                    QtCore.Qt.Key_Apostrophe]
+            open = ["(", "{", "[", '"', "'"]
+            close = [")", "}", "]", '"', "'"]
             if k in keys and bool(Config.value("editor/pairedBrackets")):
+                idx = keys.index(k)
                 curs = self.textCursor()
                 s = curs.selectionStart()
                 e = curs.selectionEnd()
                 curs.setPosition(s)
                 curs.beginEditBlock()
                 self.setTextCursor(curs)
-                self.insertPlainText(open[keys.index(k)])
+                self.insertPlainText(open[idx])
                 curs.setPosition(e + 1)
                 self.setTextCursor(curs)
-                self.insertPlainText(close[keys.index(k)])
+                self.insertPlainText(close[idx])
                 curs.endEditBlock()
                 curs.setPosition(s + 1)
                 curs.setPosition(e + 1, QtGui.QTextCursor.KeepAnchor)
@@ -513,7 +520,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         selections = self.extraSelections()
         for start, size, message in self.errors:
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format = Highlighter.format_error(message)
+            selection.format = BaseHighlighter.format_error(message)
 
             curs = self.textCursor()
             curs.setPosition(start)

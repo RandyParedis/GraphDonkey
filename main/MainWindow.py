@@ -316,6 +316,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateTitle()
 
     def updateRecents(self, file=None):
+        if self.recents is None:
+            return
+
         if file is not None:
             while file in self.recents:
                 self.recents.remove(file)
@@ -484,7 +487,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def forceDisplay(self):
         if self.canDisplay():
-            self.displayGraph()
+            res = self.displayGraph()
+            self.error("Error", res)
         else:
             self.error("Cannot Render", "A process is currently trying to render the graph, please wait.")
 
@@ -498,6 +502,8 @@ class MainWindow(QtWidgets.QMainWindow):
             except graphviz.backend.CalledProcessError as e:
                 print(e.stderr.decode("utf-8"), file=sys.stderr)
                 # self.error("Error", e.stderr.decode("utf-8"))
+                return e.stderr.decode("utf-8")
+        return None
 
     def openSnippets(self):
         self.snippets.exec_()

@@ -6,7 +6,7 @@ Author: Randy Paredis
 Date:   16/12/2019
 """
 from main.extra.IOHandler import IOHandler
-from main.parsers.Parser import Parser, CheckVisitor
+from main.editors.Parser import Parser, CheckVisitor
 from lark import Tree
 
 class DotParser(Parser):

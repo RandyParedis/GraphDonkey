@@ -6,7 +6,7 @@ Date:   12/14/2019
 
 from PyQt5 import QtGui, QtCore
 from main.extra import Constants
-from main.parsers.Parser import Parser, EOFToken
+from main.editors.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
 from main.Preferences import bool
 
@@ -16,8 +16,9 @@ Config = IOHandler.get_preferences()
 
 BLOCKSTATE_NORMAL = 0
 BLOCKSTATE_COMMENT = 1
-BLOCKSTATE_STRING = 2
-BLOCKSTATE_HTML = 4
+BLOCKSTATE_STRING_1 = 2
+BLOCKSTATE_STRING_2 = 4
+BLOCKSTATE_STRING_3 = 8
 
 class ParenthesisInfo:
     def __init__(self, char, pos):
@@ -44,9 +45,9 @@ class TextBlockData(QtGui.QTextBlockUserData):
     def isCloseFold(self):
         return len(self.parenthesis) > 0 and self.parenthesis[0].char in Constants.INDENT_CLOSE
 
-class Highlighter(QtGui.QSyntaxHighlighter):
+class BaseHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
-        super(Highlighter, self).__init__(parent)
+        super(BaseHighlighter, self).__init__(parent)
         self.editor = editor
         self.highlightingRules = []
         self._setPatterns()
@@ -62,10 +63,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             startIndex = startexp.indexIn(text)
 
         while startIndex >= 0:
-            begin = 0 if startIndex == 0 else startIndex + 1
+            begin = startIndex + 1
             if skipexp:
                 skipIndex = skipexp.lastIndexIn(text)
-                begin = skipIndex + skipexp.matchedLength()
+                if skipIndex != -1:
+                    begin = skipIndex + skipexp.matchedLength()
             endIndex = endexp.indexIn(text, begin)
 
             if endIndex == -1:
@@ -122,12 +124,18 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 leftpos = text.find(c, leftpos + 1)
         self.setCurrentBlockUserData(data)
 
+    def syntaxHighlighting(self, text):
+        self.highlightRules(text, self.highlightingRules)
+
     def highlightBlock(self, text):
         self.storeParenthesis(text)
         self.setCurrentBlockState(BLOCKSTATE_NORMAL)
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
-            self.highlightRules(text, self.highlightingRules)
+            self.syntaxHighlighting(text)
+        # nxt = self.currentBlock().next()
+        # if nxt.isValid():
+        #     self.rehighlightBlock(nxt)
 
     @staticmethod
     def format_keyword():

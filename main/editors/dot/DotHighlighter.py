@@ -6,14 +6,13 @@ Date:   12/14/2019
 
 from PyQt5 import QtCore
 from main.extra import Constants
-from main.parsers.DotParser import DotParser
+from main.editors.dot.DotParser import DotParser
 from main.extra.IOHandler import IOHandler
-from main.Preferences import bool
-from main.highlighters import Highlighter as hlgt
+from main.editors import Highlighter as hglt
 
 Config = IOHandler.get_preferences()
 
-class DotHighlighter(hlgt.Highlighter):
+class DotHighlighter(hglt.BaseHighlighter):
     def __init__(self, parent=None, editor=None):
         super(DotHighlighter, self).__init__(parent, editor)
         self.parser = DotParser()
@@ -42,21 +41,19 @@ class DotHighlighter(hlgt.Highlighter):
         self.htmlTag = QtCore.QRegExp("</?[^<>/%s]*>" % Constants.LINE_ENDING)
 
     def highlightMultilineComments(self, text):
-        self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, hlgt.BLOCKSTATE_COMMENT,
+        self.multilineHighlighter(text, self.commentStartExpression, self.commentEndExpression, hglt.BLOCKSTATE_COMMENT,
                                   self.format_comment_multi())
 
     def highlightMultilineStrings(self, text):
-        self.multilineHighlighter(text, self.stringExpression, self.stringExpression, hlgt.BLOCKSTATE_STRING,
+        self.multilineHighlighter(text, self.stringExpression, self.stringExpression, hglt.BLOCKSTATE_STRING_1,
                                   self.format_string())
 
     def highlightMultilineHtml(self, text):
-        self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, hlgt.BLOCKSTATE_HTML,
+        self.multilineHighlighter(text, self.htmlStartExpression, self.htmlEndExpression, hglt.BLOCKSTATE_STRING_2,
                                   self.format_html(), self.htmlTag)
 
-    def highlightBlock(self, text):
-        hlgt.Highlighter.highlightBlock(self, text)
-        sh = bool(Config.value("editor/syntaxHighlighting", True))
-        if sh:
-            self.highlightMultilineStrings(text)
-            self.highlightMultilineHtml(text)
-            self.highlightMultilineComments(text)
+    def syntaxHighlighting(self, text):
+        hglt.BaseHighlighter.syntaxHighlighting(self, text)
+        self.highlightMultilineStrings(text)
+        self.highlightMultilineHtml(text)
+        self.highlightMultilineComments(text)

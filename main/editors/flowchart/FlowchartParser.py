@@ -6,7 +6,7 @@ Author: Randy Paredis
 Date:   16/12/2019
 """
 from main.extra.IOHandler import IOHandler
-from main.parsers.Parser import Parser, CheckVisitor
+from main.editors.Parser import Parser, CheckVisitor
 from lark import Tree, Token
 from graphviz import Digraph
 
@@ -30,6 +30,10 @@ class CheckFlowchartVisitor(CheckVisitor):
     def previsit(self, tree: Tree):
         if tree.data in ["while", "do"]:
             self.depth += 1
+        elif tree.data == "pstmt":
+            meta = tree.meta
+            if meta.end_line != meta.line:
+                self.errors.append((tree.children[-1], "Preprocessor statements may not span multiple lines.", {}))
 
     def tokenvisit(self, token: Token):
         if token.type in ["BREAK", "CONTINUE"]:
@@ -60,9 +64,19 @@ class ConversionVisitor:
     def isString(self, value):
         return value in ["STRINGD", "STRINGS", "STRINGT"]
 
-    def string(self, token):
+    def string(self, token, encap=True):
         if self.isString(token.type):
-            return token.value[1:-1]
+            res = token.value[1:-1].replace(r"\n", "<br/>")
+            if token.type == "STRINGD":
+                res = res.replace("\\\"", "\"")
+            elif token.type == "STRINGS":
+                res = res.replace("\\'", "'")
+            elif token.type == "STRINGT":
+                res = res.replace("\\`", "`")
+            if encap:
+                return "<%s>" % res
+            else:
+                return res
         return token.value
 
     def stringValue(self, old):
@@ -109,6 +123,15 @@ class ConversionVisitor:
         if name == "return":
             return "n%i" % id(tree)
         return None
+
+    def terminals(self, tree: Tree):
+        lst = []
+        for child in tree.children:
+            if isinstance(child, Token):
+                lst.append(self.string(child))
+            else:
+                lst += self.terminals(child)
+        return lst
 
     def visit(self, tree: Tree, links=None):
         assert isinstance(links, list) or links is None
@@ -157,25 +180,14 @@ class ConversionVisitor:
             elif attr == "splines":
                 self.splines = value
         if name == "assign":
-            t = []
-            for child in tree.children:
-                if isinstance(child, Token):
-                    t.append(child.value)
-                elif isinstance(child, Tree):
-                    if child.data == "operation":
-                        for c in child.children:
-                            t.append(c.value)
             node = self.nodeName(tree)
-            lbl = " ".join(t)
+            lbl = " ".join(self.terminals(tree))
             self.graphviz.node(node, lbl, shape="box")
             self.connect(links, node)
             return [(node, "")]
         if name == "condition":
-            t = []
-            for child in tree.children:
-                t.append(self.string(child))
             node = self.nodeName(tree)
-            self.graphviz.node(node, " ".join(t), shape="diamond")
+            self.graphviz.node(node, " ".join(self.terminals(tree)), shape="diamond")
             self.connect(links, node)
             return [(node, "")]
         if name == "ifthenelse":
@@ -247,8 +259,7 @@ class ConversionVisitor:
             node = self.nodeName(tree)
             value = "<<b>%s</b>>" % tree.children[0].value
             if len(tree.children) == 2:
-                v = self.string(tree.children[1])
-                v = v.replace("\\n", "<br/>")
+                v = self.string(tree.children[1], False)
                 value = "<<b>%s: </b> %s>" % (tree.children[0].value, v)
             self.graphviz.node(node, value, shape="parallelogram")
             self.connect(links, node)

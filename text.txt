@@ -14,11 +14,7 @@ TODO LIST
     - attribute checking
     - Other file types
         - flowchart
-            - brackets
-            - global html-string?
-            - string-concatenation
-            - multiline strings
-            - start and end node text
+            - start node text
             - function calls
             - guards on branches of if-statements
             - preprocessor check only current line

@@ -64,10 +64,18 @@ It becomes more complex once you require multiple words, grouped together as
 one, multiple lines, or special characters. This can be obtained via the
 usage of _strings_. A string is any sequence of characters, encapsulated in
 single quotes (`'...'`), double quotes (`"..."`) or backticks (`` `...` ``).
+Strings may span multiple lines.
 
-Within these strings, POSIX newline characters (`\n`) may be used to create
-states with multiple lines. Note that the quotes will be removed in the actual
-flowchart, but they can be embedded in other quotes.
+Within these strings, POSIX newline characters (`\n`) or HTML line breaks
+(`<br/>`) may be used to create states with multiple lines. On top of that, you
+may use [Graphviz HTML-like syntax](
+https://graphviz.gitlab.io/_pages/doc/info/shapes.html#html) inside of these
+strings to format your text. You don't have to type the encapsulating angle
+brackets (`<...>`) for this to work.
+
+Note that the quotes will be removed in the actual flowchart, but they can be
+embedded in other quotes, or added by preceding them with a backslash (`\`).
+(All other escape sequences are ignored.)
 
 States may be followed with a semicolon (`;`), as is common in `Basic`-based
 programming languages, but this is not required.
@@ -110,11 +118,13 @@ name_d ^= name_c
 inc name_a
 decrement name_e
 name_f ++
-name_g := "interesting" += 9 /= `test` mod -.236    // also valid
+name_g := "interesting" + 9 / `test` mod -.236    // also valid
 ```
 
 As you may see in the final example, _assignments_ may be chained and do not
-have to make sense.
+have to make sense. To increase readability, you may use the parentheses
+(`(...)`), the bracktes (`[...]`) and/or the braces (`{...}`) to encapsulate the
+operations themselves.
 
 ### Input / Output
 Most software outputs or shows results of a computation or the execution of an
@@ -156,15 +166,16 @@ Fi;  // End the if-block, may also be 'end' or 'end if', semicolon is optional
 ```
 
 The condition that is evaluated can not only be a state, but it may be a
-comparison of multiple states, optionally followed by a question mark (`?`).
-Different comparisons include less than (`<`), greater than (`>`), less than
-or equals (`<=`), greater than or equals (`>=`), equals (`==`), not equals
-(`!=` or `<>`), and (`and` or `&&`), or (`or` or `||`), containment (`in`)
-and identity (`===` or `is`).
+comparison of multiple states. Different comparisons include less than (`<`),
+greater than (`>`), less than or equals (`<=`), greater than or equals (`>=`),
+equals (`==`), not equals (`!=` or `<>`), and (`and` or `&&`), or
+(`or` or `||`), containment (`in`) and identity (`===` or `is`). Similar to the
+operations, groups of comparisons may be encapsulated with parentheses, brackets
+and/or braces.
 
 Additionally, an `if` may be followed by an `else` to show alternatives:
 ```
-if statement1 <> statement2 then
+if (statement1 <> statement2) then
     output "They are not equal!"
 else
     output "They are equal!"
@@ -173,7 +184,7 @@ end if
 
 More alternatives can be obtained via chaining `if`s together:
 ```
-if myvar is 1 ? then        // Question mark is optional
+if {myvar is 1} then        // Encapsulation with braces
     output "myvar = 1"
 elif myvar is 2 then        // Python Style
     output "myvar = 2"
@@ -242,11 +253,11 @@ They have a simple structure: a percentage sign (`%`) followed by a name,
 followed by an equals sign (`=`) or a colon (`:`), followed by a string or a
 name. They allow users to define some additional functionalities for their
 graphs. Please be aware that the percentage sign must be at the beginning
-of a line.
+of a line. They may be ended with a semicolon.
 
 Invalid preprocessor statements are ignored for now and the valid ones are:
 ```
 % TRUE: "Yes"           // The label for the edges when a condition is true
-% FALSE: "No"           // The label for the edges when a condition is false
+% FALSE: "No";          // The label for the edges when a condition is false
 % splines: "polyline"   // The graphviz graph splines attribute
 ```
