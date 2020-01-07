@@ -30,10 +30,10 @@ class CheckFlowchartVisitor(CheckVisitor):
     def previsit(self, tree: Tree):
         if tree.data in ["while", "do"]:
             self.depth += 1
-        elif tree.data == "pstmt":
-            meta = tree.meta
-            if meta.end_line != meta.line:
-                self.errors.append((tree.children[-1], "Preprocessor statements may not span multiple lines.", {}))
+        # elif tree.data == "pstmt":
+        #     meta = tree.meta
+        #     if meta.end_line != meta.line:
+        #         self.errors.append((tree.children[-1], "Preprocessor statements may not span multiple lines.", {}))
 
     def tokenvisit(self, token: Token):
         if token.type in ["BREAK", "CONTINUE"]:
@@ -134,19 +134,18 @@ class ConversionVisitor:
         return lst
 
     def visit(self, tree: Tree, links=None):
-        assert isinstance(links, list) or links is None
+        assert isinstance(links, list) or links is None or len(links) == 0
         if tree is None:
             return []
         name = tree.data
         if name == "start":
-            self.graphviz.node("n0", "start")
-            l = self.visit(tree.children[0], [("n0", "")])
+            l = self.visit(tree.children[0], [("start", "")])
             self.connect(l, "end")
             return [("end", "")]
         if name == "stmts":
             for child in tree.children:
                 links = self.visit(child, links)
-                if self.isBroken() or len(links) == 0:
+                if self.isBroken():
                     break
             return links
         if name == "stmt":
@@ -160,8 +159,6 @@ class ConversionVisitor:
                 elif child.type == "CONTINUE":
                     self.continued[-1] = links
                     return []
-                elif len(links) == 0:
-                    return []
                 else:
                     node = self.nodeName(tree)
                     value = self.string(child)
@@ -169,7 +166,7 @@ class ConversionVisitor:
                     self.connect(links, node)
                     return [(node, "")]
         if name == "pstmt":
-            attr = tree.children[1].value
+            attr = tree.children[1].value.lower()
             value = self.string(tree.children[2])
             if attr == "TRUE":
                 self.true = value
@@ -179,6 +176,11 @@ class ConversionVisitor:
             #     self.true, self.false = [self.stringValue(x.strip()) for x in value.split(",")]
             elif attr == "splines":
                 self.splines = value
+            elif attr == "start":
+                if tree.children[2].type == "NAME" and value.lower() in ["false", "no", "off"]:
+                    links = []
+                else:
+                    self.graphviz.node("start", value)
         if name == "assign":
             node = self.nodeName(tree)
             lbl = " ".join(self.terminals(tree))

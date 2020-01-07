@@ -43,7 +43,7 @@ examples in the rest of this file.
 
 ### States and Operations
 #### States
-A _state_ is a standalone instance, shown inside of a single box. The simplest
+A _state_ is a standalone instance, shown inside of a single node. The simplest
 example of this is a single word (later referred to as a _name_). This can be
 typed without any further ado, as long as it only consists of letters,
 underscores and numbers (as long as they are not the first character), which
@@ -249,15 +249,24 @@ twice (as is done by `C` and `C++` compilers), but that these must be located
 at the top of the file, so they can be processed before all the other
 statements.
 
-They have a simple structure: a percentage sign (`%`) followed by a name,
-followed by an equals sign (`=`) or a colon (`:`), followed by a string or a
-name. They allow users to define some additional functionalities for their
-graphs. Please be aware that the percentage sign must be at the beginning
-of a line. They may be ended with a semicolon.
+They have a simple structure: a percentage sign (`%`) followed by a 
+case-insensitive name, followed by an equals sign (`=`) or a colon (`:`),
+followed by a string or a name. They allow users to define some additional
+functionalities for their graphs. Please be aware that the percentage sign must
+be at the beginning of a line. They may be ended with a semicolon.
 
 Invalid preprocessor statements are ignored for now and the valid ones are:
 ```
-% TRUE: "Yes"           // The label for the edges when a condition is true
-% FALSE: "No";          // The label for the edges when a condition is false
-% splines: "polyline"   // The graphviz graph splines attribute
+// The label for the edges of a condition when it is considered true
+% True: "Yes"
+
+// The label for the edges of a condition when it is considered false
+% FALSE: "No";
+
+// The graphviz graph splines attribute, usually either 'polyline' or 'ortho'
+% splines: "polyline"
+
+// The value of the start node. When the value is a name and either 'no', 'off'
+//   or 'false' (case-insensitive), no special start node will be shown.
+% start: "start"
 ```

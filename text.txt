@@ -14,10 +14,8 @@ TODO LIST
     - attribute checking
     - Other file types
         - flowchart
-            - start node text
             - function calls
             - guards on branches of if-statements
-            - preprocessor check only current line
     - Update all highlighting on typing!
     - Automatic brackets: on removal (or on typing at the end)
             + matching of all types of brackets: ticks, parentheses, brackets, braces, quotes...
