@@ -41,6 +41,8 @@ comments in the editor. They are either single lines, preceded with two slashes
 This syntax will also be used to provide additional explanation with code
 examples in the rest of this file.
 
+See also the information about the `comment` keyword below.
+
 ### States and Operations
 #### States
 A _state_ is a standalone instance, shown inside of a single node. The simplest
@@ -71,7 +73,8 @@ Within these strings, POSIX newline characters (`\n`) or HTML line breaks
 may use [Graphviz HTML-like syntax](
 https://graphviz.gitlab.io/_pages/doc/info/shapes.html#html) inside of these
 strings to format your text. You don't have to type the encapsulating angle
-brackets (`<...>`) for this to work.
+brackets (`<...>`) for this to work. _Please be aware that not all view
+preferences will allow all HTML-labels to work._
 
 Note that the quotes will be removed in the actual flowchart, but they can be
 embedded in other quotes, or added by preceding them with a backslash (`\`).
@@ -240,6 +243,25 @@ rest of the current branch is ignored (similar to a `break`).
 
 When followed by a state, the label of the newly generated node will be that of
 this state.
+
+#### Comment
+Often, you might be interested in adding the comments in your code to the
+flowchart itself. This might allow for more readability and additional
+explanations of certain actions. To do this in the editor, simply use the
+`comment` keyword **above** the node/state you want to comment. You must
+provide a state (comment contents) as well:
+```
+comment "this is an if-statement";
+if "action" then;
+    "do stuff";
+fi;
+```
+Multiple comments can simply be placed below one another.
+
+Please note that comments placed at the end of a block (`if`, `while`, `do`...)
+or at the end of a file will not be linked to anything whatsoever. Comments
+before `break` or `continue` statements will not create additional nodes, but 
+instead alter the label of the edge that represents this control flow.
 
 #### Preprocessor Statements
 Some properties of the flowchart are hardcoded, which is bad-practice in my

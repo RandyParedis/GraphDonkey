@@ -13,7 +13,7 @@ from main.editors import Highlighter as hglt
 Config = IOHandler.get_preferences()
 
 KEYWORDS = ["if", "then", "else", "elif", "fi", "end", "do", "done", "while", "is", "in", "mod", "and", "or", "inc",
-            "dec", "increment", "decrement", "break", "continue", "input", "output", "return"]
+            "dec", "increment", "decrement", "break", "continue", "input", "output", "return", "comment"]
 
 class FlowchartHighlighter(hglt.BaseHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -27,9 +27,6 @@ class FlowchartHighlighter(hglt.BaseHighlighter):
 
         self.highlightingRules.append((QtCore.QRegExp("\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b"), self.format_number))
 
-        # self.highlightingRules.append((QtCore.QRegExp("'[^%s]*'" % Constants.LINE_ENDING), self.format_string))
-        # self.highlightingRules.append((QtCore.QRegExp('"[^%s]*"' % Constants.LINE_ENDING), self.format_string))
-        # self.highlightingRules.append((QtCore.QRegExp('`[^%s]*`' % Constants.LINE_ENDING), self.format_string))
         self.highlightingRules.append((QtCore.QRegExp("//[^%s]*" % Constants.LINE_ENDING), self.format_comment_single))
         self.highlightingRules.append((QtCore.QRegExp("^%%[^%s]*$" % Constants.LINE_ENDING), self.format_comment_hash))
 

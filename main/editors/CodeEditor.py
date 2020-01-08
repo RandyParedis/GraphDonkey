@@ -628,8 +628,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
             dot = DotVisitor()
             dot.visit(T)
-            view.addDot(dot.root, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
-                        Config.value("graphviz/formatter"))
+            view.addDot(dot.root, Config.value("view/format"), Config.value("view/renderer"),
+                        Config.value("view/formatter"))
             if not self.treeView.isVisible():
                 self.treeView.show()
             if focus:

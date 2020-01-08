@@ -341,6 +341,8 @@ class Preferences(QtWidgets.QDialog):
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
     def apply(self):
+        self.preferences.clear()
+
         # GENERAL
         if True:
             self.preferences.setValue("rememberLayout", self.check_rememberLayout.isChecked())

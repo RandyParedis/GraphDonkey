@@ -1,6 +1,8 @@
 https://graphviz.readthedocs.io/en/stable/manual.html#using-raw-dot
 https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-within-a-qtextedit
 
+https://ogdf.uos.de
+
 Creating a package:
     pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
 
@@ -11,12 +13,45 @@ TODO LIST
     - Smart File Encoding detection
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
-    - attribute checking
+    - attribute checking?
     - Other file types
         - flowchart
             - function calls
-            - guards on branches of if-statements
+        - PlantUML?
+        - Mermaid?
+        - plain/plain-ext
+        - pic
+        - lark
+        - xdot?
+        - Convertion function
+            - Open new file with filetype gv, transformed from the file ext
+        - Plugin System
+            - Additional settings/preferences
+                ==> Creates new tab in preferences menu
+            - Custom about window
+            - Highlighter & Parser
+                ==> lark file specs, keyword list, highlighting rule mapping
+                ==> Semantic checks
+                ==> Custom Syntax to Graphviz function
+            - Conversion function
+                - To Graphviz
+                - To Binary data (image)
+            - Possible with executable?
+                ==> All plugins are a (json, exe)-pair
+                    ==> Allows mapping of 'semantic check function' to command
+                    ==> Allows mapping of 'DSL to Graphviz/Image' to command
+                    + see above
+            - If conversion to image is defined: always use this mapping
+                - If svg: render as svg
+                - Else: render as pixmap
+            - If conversion to graphviz is defined: convert to graphviz and render as such (current)
+            - If both defined: depend on option in preferences ("prefer graphviz rendering", default TRUE)
+            - FUTURE: Conversion to custom syntax can be defined: map to custom syntax and use OGDF algos for layout
+                ==> If defined, use this ("prefer rendering as <graphviz|OGDF|image|none>")
+                    - For "none": disable view area
     - Update all highlighting on typing!
+    - Syntax highlighting order of rules!
+    - CodeEditor must be language-specific!
     - Automatic brackets: on removal (or on typing at the end)
             + matching of all types of brackets: ticks, parentheses, brackets, braces, quotes...
     - Allow view to be scrolled with mouse wheel

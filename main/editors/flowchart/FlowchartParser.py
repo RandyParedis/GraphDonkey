@@ -5,6 +5,7 @@ It also loads the Graphviz grammar from the vendor folder.
 Author: Randy Paredis
 Date:   16/12/2019
 """
+from main.extra import delNodes
 from main.extra.IOHandler import IOHandler
 from main.editors.Parser import Parser, CheckVisitor
 from lark import Tree, Token
@@ -19,8 +20,7 @@ class FlowchartParser(Parser):
         T = self.parse(text)
         vis = ConversionVisitor()
         vis.visit(T)
-        vis.graphviz.attr(splines=vis.splines)
-        return vis.graphviz.source
+        return vis.get().source
 
 class CheckFlowchartVisitor(CheckVisitor):
     def __init__(self, parser):
@@ -30,10 +30,6 @@ class CheckFlowchartVisitor(CheckVisitor):
     def previsit(self, tree: Tree):
         if tree.data in ["while", "do"]:
             self.depth += 1
-        # elif tree.data == "pstmt":
-        #     meta = tree.meta
-        #     if meta.end_line != meta.line:
-        #         self.errors.append((tree.children[-1], "Preprocessor statements may not span multiple lines.", {}))
 
     def tokenvisit(self, token: Token):
         if token.type in ["BREAK", "CONTINUE"]:
@@ -53,13 +49,17 @@ class ConversionVisitor:
         self.false = "No"
         self.splines = "polyline"
 
-    def connect(self, prev, next):
+    def get(self):
+        self.graphviz.attr(splines=self.splines)
+        return self.graphviz
+
+    def connect(self, prev, next, **kwargs):
         assert isinstance(prev, list)
         if not isinstance(next, list):
             next = [next]
         for p, l in prev:
             for n in next:
-                self.graphviz.edge(p, n, l)
+                self.graphviz.edge(p, n, l, **kwargs)
 
     def isString(self, value):
         return value in ["STRINGD", "STRINGS", "STRINGT"]
@@ -93,7 +93,7 @@ class ConversionVisitor:
     def nodeName(self, tree: Tree):
         name = tree.data
         if name == "start":
-            return "n0"
+            return "start"
         if name == "stmts":
             return self.nodeName(tree.children[0])
         if name == "stmt":
@@ -105,10 +105,6 @@ class ConversionVisitor:
                     return None
                 else:
                     return "n%i" % id(child)
-        if name == "assign":
-            return "n%i" % id(tree)
-        if name == "condition":
-            return "n%i" % id(tree)
         if name == "ifthenelse":
             return self.nodeName(tree.children[1])
         if name == "while":
@@ -118,9 +114,7 @@ class ConversionVisitor:
             if isinstance(stmts, Token):
                 stmts = tree.children[2]
             return self.nodeName(stmts)
-        if name == "io":
-            return "n%i" % id(tree)
-        if name == "return":
+        if name in ["assign", "condition", "io", "return", "comment"]:
             return "n%i" % id(tree)
         return None
 
@@ -133,6 +127,13 @@ class ConversionVisitor:
                 lst += self.terminals(child)
         return lst
 
+    def isComment(self, tree: Tree):
+        if tree.data == "comment":
+            return True
+        if len(tree.children) > 0 and isinstance(tree.children[0], Tree):
+            return self.isComment(tree.children[0])
+        return False
+
     def visit(self, tree: Tree, links=None):
         assert isinstance(links, list) or links is None or len(links) == 0
         if tree is None:
@@ -143,10 +144,27 @@ class ConversionVisitor:
             self.connect(l, "end")
             return [("end", "")]
         if name == "stmts":
+            cmnt = []
             for child in tree.children:
-                links = self.visit(child, links)
-                if self.isBroken():
-                    break
+                if len(cmnt) > 0 and not self.isComment(child) and self.nodeName(child) is not None:
+                    self.connect([(x[0], "") for x in cmnt], self.nodeName(child), style="dashed", arrowhead="none")
+                    cmnt.clear()
+                nlinks = self.visit(child, links)
+                if self.isComment(child):
+                    cmnt.append(nlinks[0])
+                else:
+                    links = nlinks
+                    if len(links) == 0:
+                        if len(cmnt) > 0:
+                            if self.isBroken():
+                                self.broken[-1] = [(b[0], "<%s>" % "<br/>".join([x[1][1:-1] for x in cmnt]))
+                                                   for b in self.broken[-1]]
+                            elif self.isContinued():
+                                self.continued[-1] = [(c[0], "<%s>" % "<br/>".join([x[1][1:-1] for x in cmnt]))
+                                                      for c in self.continued[-1]]
+                            delNodes(self.graphviz, [c[0] for c in cmnt])
+                            cmnt.clear()
+                        break
             return links
         if name == "stmt":
             child = tree.children[0]
@@ -274,5 +292,11 @@ class ConversionVisitor:
             self.graphviz.node(node, value)
             self.connect(links, node)
             return []
+        if name == "comment":
+            node = self.nodeName(tree)
+            child = tree.children[1]
+            value = self.string(child)
+            self.graphviz.node(node, value, shape="note")
+            return [(node, value)]
 
         return links

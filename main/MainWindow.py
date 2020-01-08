@@ -459,7 +459,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             return self.export()
             if Constants.valid_ext(ext, Constants.FILE_TYPES_SAVE):
                 try:
-                    dot = Source(self.editor().toPlainText())
+                    dot = Source(self.editor().graphviz())
                     contents = dot.pipe(ext)
                     with open(fileName, 'bw') as myfile:
                         myfile.write(contents)
@@ -496,9 +496,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.canDisplay() and self.editor() is not None:
             self.view.clear()
             try:
-                dot = Source(self.editor().graphviz(), engine=Config.value("graphviz/engine"))
-                self.view.addDot(dot, Config.value("graphviz/format"), Config.value("graphviz/renderer"),
-                                 Config.value("graphviz/formatter"))
+                dot = Source(self.editor().graphviz(), engine=Config.value("view/engine"))
+                self.view.addDot(dot, Config.value("view/format"), Config.value("view/renderer"),
+                                 Config.value("view/formatter"))
             except graphviz.backend.CalledProcessError as e:
                 print(e.stderr.decode("utf-8"), file=sys.stderr)
                 # self.error("Error", e.stderr.decode("utf-8"))

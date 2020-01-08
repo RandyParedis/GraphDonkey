@@ -13,7 +13,7 @@ WS: /[ \t\f\r\n]/+
 
 start: stmts
 stmts: pstmt* stmt*
-stmt: (state | assign | ifthenelse | while | do | io | BREAK | CONTINUE | return) SEP?
+stmt: (state | assign | ifthenelse | while | do | io | BREAK | CONTINUE | return | comment) SEP?
 assign: (NAME (ASSIGN operation)+) | ((INC | DEC | OPA) state) | (state OPA)
 operation: state | (LPAR operation RPAR) | (operation (OP | MOD) operation)
 ?state: NAME | NUMERAL | string
@@ -27,7 +27,7 @@ do: DO SEP? stmts (DONE | (END DO?))
 io: (INPUT | OUTPUT) state?
 return: RETURN state?
 pstmt: PP NAME ("=" | ":") (string | NAME) SEP?
-
+comment: CMNT state
 
 TEST: "<>" | "<=" | ">=" | "<" | ">" | "===" | "==" | "!=" | "&&" | "||"
 OP: "+" | "-" | "*" | "/" | "%" | "^" | "." | "~"
@@ -60,6 +60,7 @@ CONTINUE: "continue"i
 INPUT: "input"i
 OUTPUT: "output"i
 RETURN: "return"i
+CMNT: "comment"i
 LPAR: "(" | "[" | "{"
 RPAR: ")" | "]" | "}"
 

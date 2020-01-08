@@ -178,6 +178,7 @@ graphviz
   * _Python?_
   * [_mermaid?_](https://mermaid-js.github.io/mermaid)
   * _PlantUML?_
+* [0.2.0] Add full-on plugin system
 * [0.2.1] Add graphviz html syntax highlighting + parsing
 * [0.3.0] Context Specific Checking
   * Attribute Checking (currently discontinued)
@@ -198,4 +199,4 @@ graphviz
   * How? Run python script and use all captured output as input for graphviz.
 * [1.3.0] Multiple Languages
 * [1.3.0] Automatic install of updates via app
-* [1.3.0] Style/Theme Finder
+* [1.3.0] Style/Theme/Plugin Finder

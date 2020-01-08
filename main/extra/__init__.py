@@ -55,3 +55,18 @@ def tabPathnames(names: list, skip=('undefined',)):
         nlist[idx] = tabs[idx]
 
     return nlist
+
+from graphviz import Digraph
+
+def delNodes(dot: Digraph, nodeNames: list):
+    tr = []
+    for i in range(len(dot.body)):
+        line = dot.body[i]
+        if "--" not in line or "->" not in line:
+            l = line.strip().split(" ")
+            if l[0] in nodeNames:
+                tr.append(i)
+
+    tr = sorted(tr, reverse=True)
+    for i in tr:
+        dot.body.pop(i)
