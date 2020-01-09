@@ -1,6 +1,6 @@
 """Check semantics of Graphviz file."""
 
-from main.editors.Parser import CheckVisitor
+from main.editor.Parser import CheckVisitor
 from lark import Tree
 
 class CheckDotVisitor(CheckVisitor):

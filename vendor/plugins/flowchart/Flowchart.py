@@ -1,26 +1,9 @@
-"""This file uses the LARK module in order to identify the validity of a DOT-file.
+"""Check semantics of Flowchart / Pseudocode file."""
 
-It also loads the Graphviz grammar from the vendor folder.
-
-Author: Randy Paredis
-Date:   16/12/2019
-"""
 from main.extra import delNodes
-from main.extra.IOHandler import IOHandler
-from main.editors.Parser import Parser, CheckVisitor
+from main.editor.Parser import CheckVisitor
 from lark import Tree, Token
 from graphviz import Digraph
-
-class FlowchartParser(Parser):
-    def __init__(self):
-        super(FlowchartParser, self).__init__(IOHandler.dir_grammars("flowchart.lark"))
-        self.visitor = CheckFlowchartVisitor(self)
-
-    def toGraphviz(self, text: str):
-        T = self.parse(text)
-        vis = ConversionVisitor()
-        vis.visit(T)
-        return vis.get().source
 
 class CheckFlowchartVisitor(CheckVisitor):
     def __init__(self, parser):
@@ -300,3 +283,8 @@ class ConversionVisitor:
             return [(node, value)]
 
         return links
+
+def convert(text, T):
+    vis = ConversionVisitor()
+    vis.visit(T)
+    return vis.get().source

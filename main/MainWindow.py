@@ -9,7 +9,7 @@ from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
-from main.editors.CodeEditor import EditorWrapper
+from main.editor.CodeEditor import EditorWrapper
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker

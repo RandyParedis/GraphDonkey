@@ -16,9 +16,9 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 
 
 from main.extra import Constants, left
-from main.editors.Parser import DotVisitor
+from main.editor.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
-from main.editors.Highlighter import BaseHighlighter
+from main.editor.Highlighter import BaseHighlighter
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
@@ -562,7 +562,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         selections = self.extraSelections()
         for start, size, message in self.errors:
             selection = QtWidgets.QTextEdit.ExtraSelection()
-            selection.format = BaseHighlighter.format_error(message)
+            selection.format = BaseHighlighter.format_error()
 
             curs = self.textCursor()
             curs.setPosition(start)

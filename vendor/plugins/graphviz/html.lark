@@ -1,0 +1,38 @@
+// The HTML-like specification used in Graphviz
+//  Adapted from https://graphviz.gitlab.io/_pages/doc/info/shapes.html#html
+
+label: text | fonttable
+text: text? textitem
+textitem: string | "<BR" attribute? "/>"i | font | italics | bold | underline | overline | sub | sup | strikethrough
+fonttable: string | tfont | titalics | tbold | tunderline | toverline
+table: "<TABLE"i attributes? ">" rows "</TABLE>"i
+rows: (rows "<HR/>"i?)? row
+row: "<TR>"i cells "</TR>"i
+cells: (cells "<VR/>"i?)? cell
+cell: "<TD"i attributes? ">" (label | "<IMG" attributes? "/>"i) "</TD>"i
+
+string: /.+/
+attributes: attributes? attribute
+attribute: /[a-zA-Z-]+/ "=" /".*?"/
+
+
+// Tags
+font: "<FONT"i attributes? ">" text "</FONT>"i
+italics: "<I>"i text "</I>"i
+bold: "<B>"i text "</B>"i
+underline: "<U>"i text "</U>"i
+overline: "<O>"i text "</O>"i
+sub: "<SUB>"i text "</SUB>"i
+sup: "<SUP>"i text "</SUP>"i
+strikethrough: "<S>"i text "</S>"i
+
+tfont: "<FONT"i attributes? ">" table "</FONT>"i
+titalics: "<I>"i table "</I>"i
+tbold: "<B>"i table "</B>"i
+tunderline: "<U>"i table "</U>"i
+toverline: "<O>"i table "</O>"i
+
+WS: /[ \t\f\r\n]/+
+COMMENT: "<!--" /((?!-->).)*/ "-->"
+%ignore WS
+%ignore COMMENT

@@ -26,7 +26,7 @@ INDENT_CLOSE = ['}', ']']
 
 FILE_TYPES_OPEN = {
     "DOT": ["canon", "dot", "gv", "xdot", "xdot1.2", "xdot1.4"],
-    "Flowchart": ["code", "psc", "pseudo", "pseudocode", "flowchart", "fc"]
+    "FlowChart": ["code", "psc", "pseudo", "pseudocode", "flowchart", "fc"]
 }
 
 FILE_TYPES_SAVE = {

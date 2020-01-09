@@ -74,7 +74,8 @@ TYPES = {
             {
                 "start": '"',
                 "end": '"',
-                "format": "string"
+                "format": "string",
+                "exclude": '\\\\"'
             },
             {
                 "start": '<',

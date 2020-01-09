@@ -1,0 +1,72 @@
+// This file consists of the pseudocode grammar for Graphviz
+//  Author: Randy Paredis
+//  Date:   01/04/2020
+
+// Discard Comments and whitespace
+COMMENT_SNG: "//" /[^\n]/*
+COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
+WS: /[ \t\f\r\n]/+
+
+%ignore WS
+%ignore COMMENT_SNG
+%ignore COMMENT_MLT
+
+start: stmts
+stmts: pstmt* stmt*
+stmt: (state | assign | ifthenelse | while | do | io | BREAK | CONTINUE | return | comment) SEP?
+assign: (NAME (ASSIGN operation)+) | ((INC | DEC | OPA) state) | (state OPA)
+operation: state | (LPAR operation RPAR) | (operation (OP | MOD) operation)
+?state: NAME | NUMERAL | string
+?string: STRINGD | STRINGS | STRINGT
+ifthenelse: IF condition THEN SEP? stmts elif* else? (FI | (END IF?))
+condition: (LPAR condition RPAR) | (condition (TEST | IS | IN | AND | OR) condition) | state
+elif: (ELIF | (ELSE IF)) condition THEN SEP? stmts
+else: ELSE stmts
+while: WHILE condition DO SEP? stmts (DONE | (END WHILE?))
+do: DO SEP? stmts (DONE | (END DO?))
+io: (INPUT | OUTPUT) state?
+return: RETURN state?
+pstmt: PP NAME ("=" | ":") (string | NAME) SEP?
+comment: CMNT state
+
+TEST: "<>" | "<=" | ">=" | "<" | ">" | "===" | "==" | "!=" | "&&" | "||"
+OP: "+" | "-" | "*" | "/" | "%" | "^" | "." | "~"
+OPA: "++" | "--"
+
+SEP: ";"
+QM: "?"
+PP: /^%/
+ASSIGN: "=" | ":=" | "+=" | "-=" | "*=" | "%=" | "/=" | "^=" | "~="
+IF: "if"i
+THEN: "then"i
+ELIF: "elif"i
+ELSEIF: "elseif"i
+ELSE: "else"i
+FI: "fi"i
+ENDIF: "endif"i
+END: "end"i
+WHILE: "while"i
+DO: "do"i
+DONE: "done"i
+IS: "is"i
+IN: "in"i
+AND: "and"i
+OR: "or"i
+MOD: "mod"i
+INC: "inc"i | "increment"i
+DEC: "dec"i | "decrement"i
+BREAK: "break"i
+CONTINUE: "continue"i
+INPUT: "input"i
+OUTPUT: "output"i
+RETURN: "return"i
+CMNT: "comment"i
+LPAR: "(" | "[" | "{"
+RPAR: ")" | "]" | "}"
+
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+STRINGD: "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""
+STRINGS: "'" /[^\'\\]*(?:\\.[^\'\\]*)*/ "'"
+STRINGT: "`" /[^\`\\]*(?:\\.[^\`\\]*)*/ "`"
+NUMERAL: /[-]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)/
+

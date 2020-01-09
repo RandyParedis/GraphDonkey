@@ -6,7 +6,7 @@ Date:   12/14/2019
 
 from PyQt5 import QtGui, QtCore
 from main.extra import Constants
-from main.editors.Parser import Parser, EOFToken
+from main.editor.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
 from main.Preferences import bool
 

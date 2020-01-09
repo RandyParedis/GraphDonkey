@@ -7,8 +7,8 @@ Author: Randy Paredis
 Date:   01/09/2020
 """
 from main.extra.IOHandler import IOHandler
-from main.editors.Parser import Parser
-from main.editors.Highlighter import BaseHighlighter
+from main.editor.Parser import Parser
+from main.editor.Highlighter import BaseHighlighter
 import os
 
 class Plugin:
