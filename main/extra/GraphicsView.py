@@ -12,7 +12,7 @@ Date:   01/01/2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
-from main.extra import IOHandler, dotToQPixmap, tango
+from main.extra import IOHandler, dotToQPixmap, isSVG, tango
 
 Config = IOHandler.IOHandler.get_preferences()
 
@@ -111,15 +111,16 @@ class GraphicsView(QtWidgets.QWidget):
         self._view.setScene(QtWidgets.QGraphicsScene())
         self._scene = self._view.scene()
 
-    def addDot(self, dot, format, renderer, formatter):
-        if format == "svg":
-            bdata = dot.pipe(format, renderer, formatter)
+    def add(self, bdata):
+        if isSVG(bdata):
             svgRenderer = QtSvg.QSvgRenderer(bdata)
             dot = QtSvg.QGraphicsSvgItem()
             dot.setSharedRenderer(svgRenderer)
             self._scene.addItem(dot)
         else:
-            pixmap = dotToQPixmap(dot, format, renderer, formatter)
+            image = QtGui.QImage()
+            image.loadFromData(bdata)
+            pixmap = QtGui.QPixmap.fromImage(image)
             self._scene.addPixmap(pixmap)
         margin = 25
         sr = self._scene.itemsBoundingRect()

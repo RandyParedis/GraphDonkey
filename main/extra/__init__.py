@@ -12,6 +12,22 @@ def left(string, seq=(' ', '\t', '\r', '\n')):
 def right(string, seq=(' ', '\t', '\r', '\n')):
     return left(reversed(string), seq)
 
+
+import xml.etree.cElementTree as et
+
+def isSVG(bdata):
+    tag = None
+    try:
+        parser = et.XMLPullParser(["start"])
+        parser.feed(bdata)
+        for event, el in parser.read_events():
+            tag = el.tag
+            break
+    except et.ParseError:
+        pass
+    return tag == '{http://www.w3.org/2000/svg}svg'
+
+
 from graphviz import Source
 from PyQt5 import QtGui
 

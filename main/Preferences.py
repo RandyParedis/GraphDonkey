@@ -10,8 +10,6 @@ import configparser
 import glob
 import re
 import os
-import subprocess
-
 
 def bool(name: str):
     if name in ["True", "true"]:
@@ -20,25 +18,51 @@ def bool(name: str):
         return False
     return name
 
+from main.plugins import PluginLoader
+pluginloader = PluginLoader.instance()
+
+
 class Preferences(QtWidgets.QDialog):
     def __init__(self, parent):
         super(Preferences, self).__init__(parent)
         uic.loadUi(IOHandler.dir_ui("Preferences.ui"), self)
+        self.pluginUi = []
+
         self.buttonBox.clicked.connect(self.restoreDefaults)
         self.check_monospace.toggled.connect(self.setFontCombo)
         self._setupKs()
-        self.setupGraphviz()
 
         self.themes = []
         self.preferences = IOHandler.get_preferences()
         self.check_parse.toggled.connect(self.parseDisable)
         self._setColorPickers()
         self.fillQuickSelect()
+
+        self._setupPlugins()
         self.rectify()
 
         self.combo_theme.activated.connect(self.setTheme)
         self.pb_reload.clicked.connect(self.setTheme)
         self.pb_saveTheme.clicked.connect(self.saveTheme)
+
+    def _setupPlugins(self):
+        self.pluginUi = {}
+        ps = pluginloader.get()
+        lo = self.view_scroll.layout()
+        self.combo_engine.currentTextChanged.connect(self.showPlugin)
+        for p in ps:
+            for e in p.engines:
+                self.combo_engine.addItem(e)
+                box = p.getPreferencesUi(e)
+                if box is not None:
+                    box.preferences = self.preferences
+                    self.pluginUi[e] = box
+                    lo.addWidget(box, lo.rowCount(), 0, 1, -1)
+        self.showPlugin(self.combo_engine.currentText())
+
+    def showPlugin(self, text):
+        for eid in self.pluginUi:
+            self.pluginUi[eid].setEnabled(text == eid)
 
     def parseDisable(self, b):
         if not b:
@@ -55,48 +79,6 @@ class Preferences(QtWidgets.QDialog):
     def setFontCombo(self, on):
         f = QtWidgets.QFontComboBox.MonospacedFonts if on else QtWidgets.QFontComboBox.AllFonts
         self.font_editor.setFontFilters(f)
-
-    def setupGraphviz(self):
-        self.combo_engine.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
-        self.combo_format.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
-        self.combo_renderer.currentTextChanged.connect(lambda x: self.setGraphvizFormatter())
-        cmd = [self.combo_engine.currentText(), "-T:"]
-        try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            self.combo_format.clear()
-            fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: ":" not recognized. Use one of: '):]\
-                .split(" ")
-            fmts = [f.split(":")[0] for f in fmts]
-            for f in ["gif", "jpe", "jpeg", "jpg", "png", "svg", "svgz", "wbmp"]:
-                if f in fmts:
-                    self.combo_format.addItem(f)
-            self.setGraphvizRenderer()
-
-    def setGraphvizRenderer(self):
-        fmt = self.combo_format.currentText()
-        cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
-        try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            self._setGraphviz(e, fmt, 1, self.combo_renderer)
-            self.setGraphvizFormatter()
-
-    def setGraphvizFormatter(self):
-        fmt = self.combo_format.currentText()
-        cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
-        try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            self._setGraphviz(e, fmt, 2, self.combo_formatter, lambda f: f.split(":")[1] == self.combo_renderer.currentText())
-
-    def _setGraphviz(self, e, fmt, idx, field, cond=lambda x: True):
-        fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: "%s:" not recognized. Use one of: ' % fmt):] \
-            .split(" ")
-        fmts = sorted(list(set(f.split(":")[idx] for f in fmts if cond(f))))
-        field.clear()
-        for fmt in fmts:
-            field.addItem(fmt)
 
     def _setColorPickers(self):
         self.names_general = [
@@ -249,10 +231,7 @@ class Preferences(QtWidgets.QDialog):
 
         # VIEW
         if True:
-            self.combo_engine.setCurrentText(self.preferences.value("view/engine", "dot"))
-            self.combo_format.setCurrentText(self.preferences.value("view/format", "svg"))
-            self.combo_renderer.setCurrentText(self.preferences.value("view/renderer", "svg"))
-            self.combo_formatter.setCurrentText(self.preferences.value("view/formatter", "core"))
+            self.combo_engine.setCurrentText(self.preferences.value("view/engine", "Graphviz"))
             self.check_view_controls.setChecked(bool(self.preferences.value("view/controls", True)))
             self.combo_scroll_key.setCurrentText(self.preferences.value("view/scrollKey", "CTRL"))
             self.num_zoom_level_min.setValue(int(self.preferences.value("view/zoomMin", 10)))
@@ -341,6 +320,10 @@ class Preferences(QtWidgets.QDialog):
             self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
+        # PLUGINS
+        for eid in self.pluginUi:
+            self.pluginUi[eid].rectify()
+
     def apply(self):
         self.preferences.clear()
 
@@ -376,10 +359,7 @@ class Preferences(QtWidgets.QDialog):
 
         # VIEW
         if True:
-            self.preferences.setValue("view/format", self.combo_format.currentText())
             self.preferences.setValue("view/engine", self.combo_engine.currentText())
-            self.preferences.setValue("view/renderer", self.combo_renderer.currentText())
-            self.preferences.setValue("view/formatter", self.combo_formatter.currentText())
             self.preferences.setValue("view/controls", self.check_view_controls.isChecked())
             self.preferences.setValue("view/scrollKey", self.combo_scroll_key.currentText())
             self.preferences.setValue("view/zoomMin", self.num_zoom_level_min.value())
@@ -467,6 +447,8 @@ class Preferences(QtWidgets.QDialog):
         self.applyView()
         self.applyStyle()
         self.applyShortcuts()
+        for eid in self.pluginUi:
+            self.pluginUi[eid].apply()
         self.parent().releaseDisplay()
 
     def applyShortcuts(self):

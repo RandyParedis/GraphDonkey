@@ -6,7 +6,6 @@ Author: Randy Paredis
 Date:   12/14/2019
 """
 from PyQt5 import QtCore
-
 import xml.etree.ElementTree as ET
 import os
 

@@ -13,10 +13,12 @@ from main.editors.CodeEditor import EditorWrapper
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
-from graphviz import Source
-import graphviz, subprocess, os, sys
+import subprocess, os, sys
+
+from main.plugins import PluginLoader
 
 Config = IOHandler.get_preferences()
+pluginloader = PluginLoader.instance()
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -438,6 +440,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                           "Please try another extension." % rext)
 
     def export(self):
+        # TODO
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, t = QtWidgets.QFileDialog\
@@ -495,14 +498,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
             self.view.clear()
+            ename = Config.value("view/engine")
             try:
-                dot = Source(self.editor().convert("DOT"), engine=Config.value("view/engine"))
-                self.view.addDot(dot, Config.value("view/format"), Config.value("view/renderer"),
-                                 Config.value("view/formatter"))
-            except graphviz.backend.CalledProcessError as e:
-                print(e.stderr.decode("utf-8"), file=sys.stderr)
-                # self.error("Error", e.stderr.decode("utf-8"))
-                return e.stderr.decode("utf-8")
+                engine = pluginloader.getEngines()[ename]
+                bdata = engine["convert"](self.editor().convert(ename))
+                self.view.add(bdata)
+            except Exception as e:
+                print(e, file=sys.stderr)
+                return str(e)
         return None
 
     def openSnippets(self):

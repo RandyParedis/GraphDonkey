@@ -27,24 +27,7 @@ TODO LIST
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
-            - Additional settings/preferences
-                ==> Creates new tab in preferences menu
-            - Custom about window
-            - Highlighter & Parser
-                ==> Custom Syntax to Graphviz function
-            - Conversion function
-                - To Graphviz
-                - To Binary data (image)
-            - Possible with executable?
-                ==> All plugins are a (json, exe)-pair
-                    ==> Allows mapping of 'semantic check function' to command
-                    ==> Allows mapping of 'DSL to Graphviz/Image' to command
-                    + see above
-            - If conversion to image is defined: always use this mapping
-                - If svg: render as svg
-                - Else: render as pixmap
-            - If conversion to graphviz is defined: convert to graphviz and render as such (current)
-            - If both defined: depend on option in preferences ("prefer graphviz rendering", default TRUE)
+            - Open/Save/Export
             - FUTURE: Conversion to custom syntax can be defined: map to custom syntax and use OGDF algos for layout
                 ==> If defined, use this ("prefer rendering as <graphviz|OGDF|image|none>")
                     - For "none": disable view area

@@ -333,275 +333,214 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_graphviz">
+     <widget class="QWidget" name="tab_view">
       <attribute name="title">
        <string>&amp;View</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_20" rowstretch="0,0">
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_11">
-         <property name="title">
-          <string>Display</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_22">
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_79">
-            <property name="text">
-             <string>Minimal Zoom Level:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_80">
-            <property name="text">
-             <string>Maximal Zoom Level:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_view_controls">
-            <property name="toolTip">
-             <string>Allow scrolling as zooming and add a control bar for the view.</string>
-            </property>
-            <property name="text">
-             <string>Enable Controls</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_81">
-            <property name="text">
-             <string>Zoom Factor:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QSpinBox" name="num_zoom_level_min">
-            <property name="suffix">
-             <string> %</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="num_zoom_level_max">
-            <property name="suffix">
-             <string> %</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>1000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="num_zoom_factor">
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_84">
-            <property name="text">
-             <string>Scroll Control Key(s):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="combo_scroll_key">
-            <property name="currentIndex">
-             <number>0</number>
-            </property>
-            <item>
-             <property name="text">
-              <string>No Key</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>META</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ALT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + META</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + ALT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>META + ALT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>META + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ALT + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + META + ALT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + META + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + ALT + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>META + ALT + SHIFT</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>CTRL + META + ALT + SHIFT</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
+      <layout class="QGridLayout" name="gridLayout_20" rowstretch="0">
        <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox_10">
-         <property name="title">
-          <string>Graphviz</string>
+        <widget class="QScrollArea" name="scrollArea_3">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
-         <layout class="QGridLayout" name="gridLayout_21">
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_70">
-            <property name="text">
-             <string>Formatter:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_69">
-            <property name="text">
-             <string>Renderer:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_68">
-            <property name="text">
-             <string>Output Render Format (for view):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_71">
-            <property name="text">
-             <string>Engine:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="combo_engine">
-            <item>
+         <widget class="QWidget" name="view_scroll">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>643</width>
+            <height>457</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_21">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_68">
              <property name="text">
-              <string>dot</string>
+              <string>Render with:</string>
              </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>neato</string>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="combo_engine"/>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QGroupBox" name="groupBox_11">
+             <property name="title">
+              <string>Display</string>
              </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>twopi</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>circo</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>fdp</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>sfdp</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>patchwork</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>osage</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="combo_format"/>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="combo_renderer"/>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="combo_formatter"/>
-          </item>
-         </layout>
+             <layout class="QGridLayout" name="gridLayout_22">
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_79">
+                <property name="text">
+                 <string>Minimal Zoom Level:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_80">
+                <property name="text">
+                 <string>Maximal Zoom Level:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="2">
+               <widget class="QCheckBox" name="check_view_controls">
+                <property name="toolTip">
+                 <string>Allow scrolling as zooming and add a control bar for the view.</string>
+                </property>
+                <property name="text">
+                 <string>Enable Controls</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_81">
+                <property name="text">
+                 <string>Zoom Factor:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QSpinBox" name="num_zoom_level_min">
+                <property name="suffix">
+                 <string> %</string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="num_zoom_level_max">
+                <property name="suffix">
+                 <string> %</string>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QDoubleSpinBox" name="num_zoom_factor">
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="minimum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_84">
+                <property name="text">
+                 <string>Scroll Control Key(s):</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="combo_scroll_key">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>No Key</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>META</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ALT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + META</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + ALT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>META + ALT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>META + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>ALT + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + META + ALT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + META + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + ALT + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>META + ALT + SHIFT</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>CTRL + META + ALT + SHIFT</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -923,7 +862,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-830</y>
+            <y>0</y>
             <width>629</width>
             <height>1366</height>
            </rect>

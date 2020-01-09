@@ -11,6 +11,8 @@ Website:    https://www.graphviz.org/
 Author:     Randy Paredis
 """
 from vendor.plugins.graphviz.CheckDot import CheckDotVisitor
+from vendor.plugins.graphviz.Engine import convert
+from vendor.plugins.graphviz.Settings import GraphvizSettings
 from main.extra import Constants
 
 keywords = [
@@ -95,13 +97,17 @@ TYPES = {
             }
         ],
         "converter": {
-            "DOT": lambda x, T: x
+            "Graphviz": lambda x, T: x
         }
     }
 }
 
 ENGINES = {
-    "DOT": {
-
+    "Graphviz": {
+        "convert": convert,
+        "preferences": {
+            "file": "preferences.ui",
+            "class": GraphvizSettings
+        }
     }
 }

@@ -4,7 +4,7 @@ The Plugin class is a representation of a single plugin.
 The PluginLoader loads a list of all plugins
 
 Author: Randy Paredis
-Date:   09/01/2020
+Date:   01/09/2020
 """
 from main.extra.IOHandler import IOHandler
 from main.editors.Parser import Parser
@@ -18,6 +18,8 @@ class Plugin:
         self.name = ""
         self.description = ""
         self.types = {}
+        self.engines = {}
+        self.preferences = {}
         self.enabled = True
         self.load()
 
@@ -28,6 +30,7 @@ class Plugin:
         self.name = ""
         self.description = ""
         self.types = {}
+        self.engines = {}
 
         _locals = {}
         exec(open(self.filename).read(), {}, _locals)
@@ -52,6 +55,8 @@ class Plugin:
             for t in self.types:
                 if "grammar" in self.types[t]:
                     self.types[t]["grammar"] = self.path(self.types[t]["grammar"])
+        if "ENGINES" in _locals:
+            self.engines = _locals["ENGINES"]
 
     def enable(self, on=True):
         self.enabled = on
@@ -98,20 +103,25 @@ class Plugin:
             res[t] = (self.types[t].get("name", "???"), lambda p, e, tp=t: self.getHighlighter(tp, p, e))
         return res
 
-    def convert(self, text, parser, typeid):
-        if typeid in self.types:
-            tp = self.types[typeid]
-            T = parser.parse(text)
-            # TODO
-            engine = "DOT"
-            return tp["converter"][engine](text, T)
-        return text
+    def getPreferencesUi(self, engineid):
+        prefs = self.engines[engineid].get("preferences", {})
+        klass = prefs.get("class", None)
+        if klass is not None:
+            return klass(self.path(prefs["file"]))
+        return None
 
     def __repr__(self):
         return "Plugin <%s, %s>" % (self.name, self.enabled)
 
 
 class PluginLoader:
+    _instance = None
+    @staticmethod
+    def instance():
+        if PluginLoader._instance is None:
+            PluginLoader._instance = PluginLoader()
+        return PluginLoader._instance
+
     def __init__(self):
         self.plugins = {}
         self.load()
@@ -136,6 +146,29 @@ class PluginLoader:
         for p in ps:
             res.update(p.getFileTypes())
         return res
+
+    def getEngines(self, active=True):
+        res = {}
+        ps = self.get(active)
+        for p in ps:
+            res.update(p.engines)
+        return res
+
+
+from PyQt5 import QtWidgets, uic
+
+class Settings(QtWidgets.QGroupBox):
+    def __init__(self, pathname, parent=None):
+        super(Settings, self).__init__(parent)
+        uic.loadUi(pathname, self)
+        self.preferences = None
+
+    def apply(self):
+        raise NotImplementedError()
+
+    def rectify(self):
+        raise NotImplementedError()
+
 
 if __name__ == '__main__':
     from main.extra.IOHandler import IOHandler

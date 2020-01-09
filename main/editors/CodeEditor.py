@@ -23,7 +23,7 @@ from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
 
-pluginloader = PluginLoader()
+pluginloader = PluginLoader.instance()
 Config = IOHandler.get_preferences()
 
 class EditorWrapper(QtWidgets.QWidget):
