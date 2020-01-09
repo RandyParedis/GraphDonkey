@@ -34,6 +34,7 @@ TODO LIST
     - Update all highlighting on typing!
     - Syntax highlighting order of rules!
     - CodeEditor must be language-specific!
+    - Last line = newline
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:
