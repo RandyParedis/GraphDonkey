@@ -14,7 +14,7 @@
    <string>Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -24,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
@@ -364,7 +364,7 @@
              <string>Allow scrolling as zooming and add a control bar for the view.</string>
             </property>
             <property name="text">
-             <string>Use controls and zoom with scroll wheel</string>
+             <string>Enable Controls</string>
             </property>
            </widget>
           </item>
@@ -415,6 +415,100 @@
             <property name="singleStep">
              <double>0.100000000000000</double>
             </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_84">
+            <property name="text">
+             <string>Scroll Control Key(s):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="combo_scroll_key">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>No Key</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>META</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ALT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + META</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + ALT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>META + ALT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>META + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ALT + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + META + ALT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + META + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + ALT + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>META + ALT + SHIFT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CTRL + META + ALT + SHIFT</string>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
@@ -829,7 +923,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-830</y>
             <width>629</width>
             <height>1366</height>
            </rect>
@@ -1000,6 +1094,9 @@
               <string>View Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
+              <item row="6" column="1">
+               <widget class="QKeySequenceEdit" name="ks_zoom_in"/>
+              </item>
               <item row="0" column="1">
                <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
               </item>
@@ -1080,9 +1177,6 @@
                  <string>Reset Zoom:</string>
                 </property>
                </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QKeySequenceEdit" name="ks_zoom_in"/>
               </item>
               <item row="7" column="1">
                <widget class="QKeySequenceEdit" name="ks_zoom_out"/>

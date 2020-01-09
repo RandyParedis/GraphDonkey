@@ -13,8 +13,9 @@ TODO LIST
     - Smart File Encoding detection
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
-    - attribute checking?
     - Other file types
+        - dot/graphviz itself
+            - attribute checking?
         - flowchart
             - function calls
         - PlantUML?
@@ -52,10 +53,6 @@ TODO LIST
     - Update all highlighting on typing!
     - Syntax highlighting order of rules!
     - CodeEditor must be language-specific!
-    - Automatic brackets: on removal (or on typing at the end)
-            + matching of all types of brackets: ticks, parentheses, brackets, braces, quotes...
-    - Allow view to be scrolled with mouse wheel
-            ==> set 'on x', zoom (nothing, shift, control, alt)
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:

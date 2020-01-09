@@ -145,10 +145,26 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor = self.textCursor()
         extra = len(self.completer.completionPrefix())
         if extra > 0:
-            cursor.movePosition(QtGui.QTextCursor.Left)
+            cursor.movePosition(QtGui.QTextCursor.PreviousCharacter)
         cursor.movePosition(QtGui.QTextCursor.EndOfWord)
         cursor.insertText(completion[extra:])
         self.setTextCursor(cursor)
+
+    def encapsulateText(self, o, c):
+        curs = self.textCursor()
+        s = curs.selectionStart()
+        e = curs.selectionEnd()
+        curs.setPosition(s)
+        curs.beginEditBlock()
+        self.setTextCursor(curs)
+        self.insertPlainText(o)
+        curs.setPosition(e + 1)
+        self.setTextCursor(curs)
+        self.insertPlainText(c)
+        curs.endEditBlock()
+        curs.setPosition(s + 1)
+        curs.setPosition(e + 1, QtGui.QTextCursor.KeepAnchor)
+        self.setTextCursor(curs)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         if self.completer.popup().isVisible():
@@ -183,26 +199,50 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 self.setTextCursor(cursor)
         elif event.key() not in [QtCore.Qt.Key_Delete]:
             k = event.key()
-            keys = [QtCore.Qt.Key_ParenLeft, QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft, QtCore.Qt.Key_QuoteDbl,
-                    QtCore.Qt.Key_Apostrophe]
-            open = ["(", "{", "[", '"', "'"]
-            close = [")", "}", "]", '"', "'"]
-            if k in keys and bool(Config.value("editor/pairedBrackets")):
+            keys = [QtCore.Qt.Key_ParenLeft, QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft]
+            ckeys = [QtCore.Qt.Key_ParenRight, QtCore.Qt.Key_BraceRight, QtCore.Qt.Key_BracketRight]
+            okeys = [QtCore.Qt.Key_QuoteDbl, QtCore.Qt.Key_Apostrophe]
+            open = ["(", "{", "["]
+            close = [")", "}", "]"]
+            other = ['"', "'"]
+            pb = bool(Config.value("editor/pairedBrackets"))
+            if pb and k in keys:
                 idx = keys.index(k)
+                self.encapsulateText(open[idx], close[idx])
+            elif pb and k in ckeys:
+                idx = ckeys.index(k)
                 curs = self.textCursor()
                 s = curs.selectionStart()
                 e = curs.selectionEnd()
-                curs.setPosition(s)
-                curs.beginEditBlock()
-                self.setTextCursor(curs)
-                self.insertPlainText(open[idx])
-                curs.setPosition(e + 1)
-                self.setTextCursor(curs)
-                self.insertPlainText(close[idx])
-                curs.endEditBlock()
-                curs.setPosition(s + 1)
-                curs.setPosition(e + 1, QtGui.QTextCursor.KeepAnchor)
-                self.setTextCursor(curs)
+                if s == e:
+                    curs.setPosition(e)
+                    curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+                    txt = curs.selectedText()
+                    if txt != close[idx]:
+                        self.insertPlainText(close[idx])
+                    else:
+                        curs.setPosition(e)
+                        curs.movePosition(QtGui.QTextCursor.NextCharacter)
+                        self.setTextCursor(curs)
+                else:
+                    self.insertPlainText(close[idx])
+            elif pb and k in okeys:
+                idx = okeys.index(k)
+                curs = self.textCursor()
+                s = curs.selectionStart()
+                e = curs.selectionEnd()
+                if s == e:
+                    curs.setPosition(e)
+                    curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+                    txt = curs.selectedText()
+                    if txt != other[idx]:
+                        self.encapsulateText(other[idx], other[idx])
+                    else:
+                        curs.setPosition(e)
+                        curs.movePosition(QtGui.QTextCursor.NextCharacter)
+                        self.setTextCursor(curs)
+                else:
+                    self.encapsulateText(other[idx], other[idx])
             else:
                 QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
 

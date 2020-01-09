@@ -12,7 +12,9 @@ Date:   01/01/2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
-from main.extra import dotToQPixmap, tango
+from main.extra import IOHandler, dotToQPixmap, tango
+
+Config = IOHandler.IOHandler.get_preferences()
 
 class GraphicsView(QtWidgets.QWidget):
     zoomed = QtCore.pyqtSignal(float)
@@ -163,8 +165,26 @@ class GraphicsView(QtWidgets.QWidget):
         self.zoomTo(min(w, h))
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
-        if self.controls:
-            angle = event.angleDelta().y()
+        mods = Config.value("view/scrollKey").split(" + ")
+        modifiers = QtCore.Qt.NoModifier
+        alt = False
+        for m in mods:
+            if m == "CTRL":
+                modifiers |= QtCore.Qt.ControlModifier
+            elif m == "ALT":
+                modifiers |= QtCore.Qt.AltModifier
+                alt = True
+            elif m == "SHIFT":
+                modifiers |= QtCore.Qt.ShiftModifier
+            elif m == "META":
+                modifiers |= QtCore.Qt.MetaModifier
+
+        if event.modifiers() == modifiers:
+            delta = event.angleDelta()
+            if alt:
+                angle = delta.x()
+            else:
+                angle = delta.y()
             factor = pow(self.zoom_factor_scroll, angle)
             self.zoom(factor)
         else:
