@@ -496,7 +496,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.canDisplay() and self.editor() is not None:
             self.view.clear()
             try:
-                dot = Source(self.editor().graphviz(), engine=Config.value("view/engine"))
+                dot = Source(self.editor().convert("DOT"), engine=Config.value("view/engine"))
                 self.view.addDot(dot, Config.value("view/format"), Config.value("view/renderer"),
                                  Config.value("view/formatter"))
             except graphviz.backend.CalledProcessError as e:

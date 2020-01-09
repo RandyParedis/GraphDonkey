@@ -31,8 +31,6 @@ TODO LIST
                 ==> Creates new tab in preferences menu
             - Custom about window
             - Highlighter & Parser
-                ==> lark file specs, keyword list, highlighting rule mapping
-                ==> Semantic checks
                 ==> Custom Syntax to Graphviz function
             - Conversion function
                 - To Graphviz

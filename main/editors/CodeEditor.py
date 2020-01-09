@@ -19,10 +19,11 @@ from main.extra import Constants, left
 from main.editors.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
 from main.editors.Highlighter import BaseHighlighter
-from main.editors import EDITORTYPES
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
+from main.plugins import PluginLoader
 
+pluginloader = PluginLoader()
 Config = IOHandler.get_preferences()
 
 class EditorWrapper(QtWidgets.QWidget):
@@ -34,13 +35,14 @@ class EditorWrapper(QtWidgets.QWidget):
         self._layout.addWidget(self.editor, 0, 0)
         self.filetype = QtWidgets.QComboBox()
         self.filetype.currentIndexChanged.connect(self.alter)
+        self.types = pluginloader.getFileTypes()
         self.setTypes()
         self._layout.addWidget(self.filetype, 1, 0)
         self.setLayout(self._layout)
 
     def setTypes(self):
-        for type in EDITORTYPES:
-            name, klass = EDITORTYPES[type]
+        for type in self.types:
+            name, klass = self.types[type]
             self.filetype.addItem(name, klass)
 
     def alter(self, idx):
@@ -49,7 +51,7 @@ class EditorWrapper(QtWidgets.QWidget):
         self.editor.highlighter.rehighlight()
 
     def setType(self, type):
-        self.filetype.setCurrentText(EDITORTYPES[type][0])
+        self.filetype.setCurrentText(self.types[type][0])
 
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
@@ -86,8 +88,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter.deleteLater()
         self.highlighter = highlighter
 
-    def graphviz(self):
-        return self.highlighter.parser.toGraphviz(self.toPlainText())
+    def convert(self, engine):
+        return self.highlighter.parser.convert(self.toPlainText(), engine)
 
     def textChangedSlot(self):
         self.highlighter.storeErrors()

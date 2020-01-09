@@ -18,10 +18,9 @@ class Parser:
             with open(file, "r") as file:
                 self.grammar = file.read()
             self.parser = Lark(self.grammar, parser=parser, propagate_positions=True)
-
         self.errors = []
-
         self.visitor = CheckVisitor(self)
+        self.converter = {}
 
     def parse(self, text: str, yld=False):
         self.errors = []
@@ -49,8 +48,11 @@ class Parser:
             return self.parser._terminals_dict[terminal_name]
         return None
 
-    def toGraphviz(self, text: str):
-        return text
+    def convert(self, text, engine):
+        # TODO: what if engine does not exist?
+        T = self.parse(text)
+        if T is not None:
+            return self.converter[engine](text, T)
 
 
 class EOFToken:

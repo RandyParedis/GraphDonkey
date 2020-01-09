@@ -14,12 +14,6 @@ from lark import UnexpectedToken, UnexpectedCharacters, Token
 
 Config = IOHandler.get_preferences()
 
-BLOCKSTATE_NORMAL = 0
-BLOCKSTATE_COMMENT = 1
-BLOCKSTATE_STRING_1 = 2
-BLOCKSTATE_STRING_2 = 4
-BLOCKSTATE_STRING_3 = 8
-
 class ParenthesisInfo:
     def __init__(self, char, pos):
         self.char = char
@@ -50,11 +44,34 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         super(BaseHighlighter, self).__init__(parent)
         self.editor = editor
         self.highlightingRules = []
-        self._setPatterns()
         self.parser = Parser()
 
-    def _setPatterns(self):
-        pass
+    def setRules(self, rules):
+        def obtainRegex(value):
+            if isinstance(value, str):
+                return QtCore.QRegExp(value)
+            elif isinstance(value, dict):
+                if value.get("caseInsensitive", False):
+                    return QtCore.QRegExp(value["pattern"], QtCore.Qt.CaseInsensitive)
+                else:
+                    return QtCore.QRegExp(value["pattern"])
+            return None
+
+        state = 1
+        for rule in rules:
+            if "regex" in rule and "format" in rule:
+                regex = obtainRegex(rule["regex"])
+                fmt = getattr(self, "format_%s" % rule["format"])
+                if regex is not None:
+                    self.highlightingRules.append((regex, fmt))
+            elif "start" in rule and "end" in rule and "format" in rule:
+                start = obtainRegex(rule["start"])
+                end = obtainRegex(rule["end"])
+                exclude = obtainRegex(rule.get("exclude", None))
+                fmt = getattr(self, "format_%s" % rule["format"])
+                if start is not None and end is not None:
+                    self.highlightingRules.append((start, end, state, fmt(), exclude))
+                    state *= 2
 
     def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
@@ -105,15 +122,6 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
             if bool(Config.value("editor/autorender")):
                 self.editor.mainwindow.displayGraph()
 
-    def highlightRules(self, text, rules):
-        for pattern, formatter in rules:
-            expression = QtCore.QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, formatter())
-                index = expression.indexIn(text, index + length)
-
     def storeParenthesis(self, text:str):
         data = TextBlockData()
         for c in Constants.INDENT_OPEN + Constants.INDENT_CLOSE:
@@ -124,18 +132,22 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 leftpos = text.find(c, leftpos + 1)
         self.setCurrentBlockUserData(data)
 
-    def syntaxHighlighting(self, text):
-        self.highlightRules(text, self.highlightingRules)
-
     def highlightBlock(self, text):
         self.storeParenthesis(text)
-        self.setCurrentBlockState(BLOCKSTATE_NORMAL)
+        self.setCurrentBlockState(0)
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
-            self.syntaxHighlighting(text)
-        # nxt = self.currentBlock().next()
-        # if nxt.isValid():
-        #     self.rehighlightBlock(nxt)
+            for rule in self.highlightingRules:
+                if len(rule) == 2:
+                    pattern, formatter = rule
+                    expression = QtCore.QRegExp(pattern)
+                    index = expression.indexIn(text)
+                    while index >= 0:
+                        length = expression.matchedLength()
+                        self.setFormat(index, length, formatter())
+                        index = expression.indexIn(text, index + length)
+                else:
+                    self.multilineHighlighter(text, *rule)
 
     @staticmethod
     def format_keyword():
@@ -191,10 +203,9 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         return htmlStringFormat
 
     @staticmethod
-    def format_error(tooltip=""):
+    def format_error():
         errorFormat = QtGui.QTextCharFormat()
         errorFormat.setFontUnderline(True)
         errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col/error")))
         errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
-        errorFormat.setToolTip(tooltip)
         return errorFormat

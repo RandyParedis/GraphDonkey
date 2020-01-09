@@ -20,6 +20,10 @@ class IOHandler:
         return os.path.join(*path)
 
     @staticmethod
+    def directory(path):
+        return os.path.dirname(path)
+
+    @staticmethod
     def dir_main():
         return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -46,6 +50,10 @@ class IOHandler:
     @staticmethod
     def dir_grammars(*grammars):
         return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "grammars", *grammars))
+
+    @staticmethod
+    def dir_plugins(*plugins):
+        return os.path.realpath(IOHandler.join(IOHandler.dir_vendor(), "plugins", *plugins))
 
     @staticmethod
     def dir_lang(*lang):

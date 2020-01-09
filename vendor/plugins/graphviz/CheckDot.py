@@ -1,25 +1,9 @@
-"""This file uses the LARK module in order to identify the validity of a DOT-file.
+"""Check semantics of Graphviz file."""
 
-It also loads the Graphviz grammar from the vendor folder.
-
-Author: Randy Paredis
-Date:   16/12/2019
-"""
-from main.extra.IOHandler import IOHandler
-from main.editors.Parser import Parser, CheckVisitor
+from main.editors.Parser import CheckVisitor
 from lark import Tree
 
-class DotParser(Parser):
-    def __init__(self):
-        super(DotParser, self).__init__(IOHandler.dir_grammars("graphviz.lark"))
-        self.visitor = CheckDotVisitor(self)
-
-    def toGraphviz(self, text: str):
-        return text
-
-
 class CheckDotVisitor(CheckVisitor):
-    """Helper class that makes sure additional conditions on rules are valid."""
     def __init__(self, parser):
         super(CheckDotVisitor, self).__init__(parser)
         self.type = None
