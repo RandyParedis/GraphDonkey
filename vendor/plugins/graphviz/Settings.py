@@ -34,7 +34,7 @@ class GraphvizSettings(Settings):
         try:
             subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            self._setGraphviz(e, fmt, 1, self.combo_renderer)
+            self.setGraphviz(e, fmt, 1, self.combo_renderer)
             self.setGraphvizFormatter()
 
     def setGraphvizFormatter(self):
@@ -43,10 +43,11 @@ class GraphvizSettings(Settings):
         try:
             subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            self._setGraphviz(e, fmt, 2, self.combo_formatter,
-                              lambda f: f.split(":")[1] == self.combo_renderer.currentText())
+            self.setGraphviz(e, fmt, 2, self.combo_formatter,
+                             lambda f: f.split(":")[1] == self.combo_renderer.currentText())
 
-    def _setGraphviz(self, e, fmt, idx, field, cond=lambda x: True):
+    @staticmethod
+    def setGraphviz(e, fmt, idx, field, cond=lambda x: True):
         fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: "%s:" not recognized. Use one of: ' % fmt):] \
             .split(" ")
         fmts = sorted(list(set(f.split(":")[idx] for f in fmts if cond(f))))

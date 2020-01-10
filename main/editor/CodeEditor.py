@@ -118,7 +118,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def isSaved(self):
         """Returns True if the file was saved."""
-        return self.filename != "" and self.toPlainText() == self.filecontents
+        return (self.filename != "" and self.toPlainText() == self.filecontents) or \
+               (self.toPlainText() == "" == self.filename)
 
     def save(self):
         self.filecontents = self.toPlainText()
@@ -134,7 +135,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.filecontents = ""
 
     def setCompleter(self):
-        keywords = Constants.STRICT_KEYWORDS + Constants.ATTRIBUTES
+        keywords = [] # Constants.STRICT_KEYWORDS + Constants.ATTRIBUTES
         keywords.sort()
         self.completer = QtWidgets.QCompleter(keywords, self)
         self.completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)

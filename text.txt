@@ -14,6 +14,7 @@ TODO LIST
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
     - Other file types
+        - Simple txt (no highlighting/engine)
         - dot/graphviz itself
             - attribute checking?
         - flowchart
@@ -24,10 +25,13 @@ TODO LIST
         - pic
         - lark
         - xdot?
+        - SQL?
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
-            - Open/Save/Export
+            - Enabling/Disabling
+                ==> Tab in Preferences window?
+            - About window?
             - FUTURE: Conversion to custom syntax can be defined: map to custom syntax and use OGDF algos for layout
                 ==> If defined, use this ("prefer rendering as <graphviz|OGDF|image|none>")
                     - For "none": disable view area

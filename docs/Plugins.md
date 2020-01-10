@@ -50,9 +50,14 @@ give a description and denote authorship/copyright at the same time.
 The text on the first line is seen as the plugin name, which is followed by any
 number of empty lines, before the description starts. Usually, you end this
 description with a set of quick references, like copyright, dates, version
-numbers and websites that contain more info.
+numbers and websites that contain more info or documentation. Finally, you may end
+with as many empty lines as you like.
 
-For instance, the bundled `graphviz` plugin has the following docstring:
+The existance of such a docstring is required for the plugins to flawlessly work
+together. Please be aware that the name of a plugin must be **unique** between all
+enabled plugins in the system.
+
+For instance, the bundled `Graphviz` plugin has the following docstring:
 ```
 """Graphviz
 
@@ -68,7 +73,10 @@ Author:     Randy Paredis
 """
 ```
 
-#### imports
+#### Imports
+Often, one may require additional information for a plugin to work. Maybe, a [set of
+predefined constants](Contants.md) might help in developing your plugin.
+
 All import statements used in your plugin must assume the project root is the
 root of the repo. For instance:
 ```
@@ -78,3 +86,38 @@ from main.extra import Constants
 # Import the all objects from the Engine module in the myplugin plugin
 from vendor.plugins.myplugin.Engine import *
 ```
+
+#### TYPES
+
+#### ENGINES
+
+#### Preferences / Configuration
+You may access the values from the _Preferences_ window for your own purpose. It is,
+however discouraged to update and adapt them during execution. The set of
+preferences, or (more specifically) the configuration list, can be obtained via
+the following code:
+```
+from main.extra.IOHandler import IOHandler
+Config = IOHandler.get_preferences() 
+```
+The `Config` object is a singleton of type `QSettings`.
+
+If you desire to have your own preferences as an option in the plugin, you can do
+so. Each engine section can hold the optional `preferences` key, which must hold
+a `class` and a `file` key. The `file` refers to the ui file that's used in the UI
+(assuming the plugin directory is the root directory) and describes a `QGroupBox`.
+The `class` refers to a specific class, inheriting from the `main.plugins.Settings`
+class and takes a `pathname` and `parent` as constructor arguments.
+
+This subclass has a `preferences` member that refers to the `Config` singleton, as
+described above and two member functions: `rectify` and `apply`. `rectify` needs to
+set values from the `preferences` to the UI and `apply` does the opposite; it takes
+values from the UI and stores them in the `preferences`. The preferences to be
+added must be of the form `plugin/<plugin name>/<key>`, where `<plugin name>`
+stands for your plugin name and `<key>` stands for the value you're actually
+assigning.
+
+Remember to add default values in the `rectify` method!
+
+For more info, take a look at the `Settings` class in the bundled
+`vendor.plugins.graphviz.Settings` module.

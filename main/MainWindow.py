@@ -359,7 +359,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def openFile(self, fileName):
         if fileName and fileName != "":
             ext = fileName.split(".")[-1]
-            if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
+            exts = pluginloader.getFileExtensions()
+            if Constants.valid_ext(ext, exts):
                 valid = True
                 try:
                     with open(fileName, "rb") as myfile:
@@ -371,7 +372,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.updateRecents(fileName)
                     self.editor().filename = fileName
                     self.editor().filecontents = data
-                    self.setEditorType(Constants.reverse(ext))
+                    self.setEditorType(Constants.lookup(ext, exts))
                 except IOError as e:
                     self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
                     self.close()
@@ -379,6 +380,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.updateTitle()
                 return valid
             else:
+                # TODO: check for plugin enabled
                 self.warn("Invalid File", "It looks like this file cannot be opened.")
                 return False
         else:
@@ -389,8 +391,8 @@ class MainWindow(QtWidgets.QMainWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog\
-            .getOpenFileName(self, "Open a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
-                             options=options)
+            .getOpenFileName(self, "Open a File", "",
+                             "All Files (*);;" + Constants.file_list(pluginloader.getFileExtensions()), options=options)
         if fileName != "":
             self.openFile(fileName)
 
@@ -419,20 +421,19 @@ class MainWindow(QtWidgets.QMainWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, t = QtWidgets.QFileDialog\
-            .getSaveFileName(self, "Save a Graphviz File", "", "All Files (*);;" + Constants.file_list_open(),
-                             options=options)
+            .getSaveFileName(self, "Save a File", "",
+                             "All Files (*);;" + Constants.file_list(pluginloader.getFileExtensions()), options=options)
         if fileName:
             spt = fileName.split(".")
             ext = spt[-1]
             rext = Constants.obtain_exts(t)
             if len(rext) == 0:
-                rext = Constants.FILE_TYPES_OPEN["DOT"]
-            if len(spt) == 1:
-                ext = "dot"
+                fext = pluginloader.getFileExtensions()
+                rext = fext[next(iter(fext.items()))] if len(fext) > 0 else []
             if ext not in rext:
-                ext = rext[0]
+                ext = rext[0] if len(rext) > 0 else "txt"
                 fileName += "." + ext
-            if Constants.valid_ext(ext, Constants.FILE_TYPES_OPEN):
+            if Constants.valid_ext(ext, pluginloader.getFileExtensions()):
                 self.editor().filename = fileName
                 self.save()
             else:
@@ -440,35 +441,53 @@ class MainWindow(QtWidgets.QMainWindow):
                                           "Please try another extension." % rext)
 
     def export(self):
-        # TODO
+        ename = Config.value("view/engine")
+        engine = pluginloader.getEngines().get(ename, None)
+        export = engine.get("export", {})
+        _exts = export.get("extensions", [])
+        if "exporter" not in export or len(_exts) == 0:
+            self.error("Cannot Export", "The current selected engine (%s) cannot export." % ename)
+            return
+        exts = {}
+        ftps = Constants.FILE_TYPES
+        ftps.update(engine.get("filetypes", {}))
+        for ft in _exts:
+            name = Constants.lookup(ft, ftps)
+            if name is None:
+                name = ft.upper()
+            if name in exts:
+                exts[name].append(ft)
+            else:
+                exts[name] = [ft]
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, t = QtWidgets.QFileDialog\
-            .getSaveFileName(self, "Export a Graphviz File", "", "All Files (*);;" + Constants.file_list_save(),
-                             options=options)
+        fileName, t = QtWidgets.QFileDialog \
+            .getSaveFileName(self, "Export a File", "", Constants.file_list(exts), options=options)
         if fileName:
             ext = fileName.split(".")[-1]
             rext = Constants.obtain_exts(t)
             if fileName == ext:
-                if len(rext) == 0:
-                    ext = "plain"
-                else:
-                    ext = rext[0]
-                    fileName += "." + ext
-                    if os.path.isfile(fileName):
-                        yes = self.question("File already exists!", "This file already exists. Are you sure, you want "
-                                                                    "to replace it?")
-                        if not yes:
-                            return self.export()
-            if Constants.valid_ext(ext, Constants.FILE_TYPES_SAVE):
+                ext = rext[0]
+                fileName += "." + ext
+                if os.path.isfile(fileName):
+                    yes = self.question("File already exists!", "This file already exists. Are you sure, you want "
+                                                                "to replace it?")
+                    if not yes:
+                        # Reboot file chooser window
+                        return self.export()
+            if Constants.valid_ext(ext, exts):
                 try:
-                    dot = Source(self.editor().graphviz())
-                    contents = dot.pipe(ext)
-                    with open(fileName, 'bw') as myfile:
-                        myfile.write(contents)
-                except graphviz.backend.CalledProcessError as e:
-                    self.error("Uh oh!", "It looks like there are some errors in your dot file. Cannot export!\n" +
-                               e.stderr.decode("utf-8"))
+                    contents = export["exporter"](self.editor().convert(ename), ext)
+                    if contents is not None and len(contents) > 0:
+                        with open(fileName, 'bw') as myfile:
+                            myfile.write(contents)
+                    else:
+                        self.error("Cannot Export", "It looks as if you cannot export such a file.\n"
+                                                    "This is either because the graph cannot be expressed as a %s file,"
+                                                    " or due to an error in the rendering engine you're currently using"
+                                                    " (which is '%s').\n\n"
+                                                    "Please try another file extension, or refer to the current"
+                                                    " engine's documentation." % (ext.upper(), ename))
                 except Exception as e:
                     self.error("Uh oh!", "It looks as if something went wrong whilst trying to save this file.\n" +
                                str(e))

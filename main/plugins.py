@@ -35,21 +35,20 @@ class Plugin:
         _locals = {}
         exec(open(self.filename).read(), {}, _locals)
 
-        if '__doc__' in _locals:
-            doc = _locals['__doc__'].split('\n')
-            if isinstance(doc, list) and len(doc) > 0:
-                self.name = doc.pop(0)
-                idx = 0
-                for i in range(len(doc)):
-                    if doc[i] != "":
-                        idx = i
-                        break
+        doc = _locals['__doc__'].splitlines()
+        if isinstance(doc, list) and len(doc) > 0:
+            self.name = doc.pop(0)
+            idx = 0
+            for i in range(len(doc)):
+                if doc[i] != "":
+                    idx = i
+                    break
+            p = doc.pop()
+            while p == "":
                 p = doc.pop()
-                while p == "":
-                    p = doc.pop()
-                else:
-                    doc.append(p)
-                self.description = "\n".join(doc[idx:])
+            else:
+                doc.append(p)
+            self.description = "\n".join(doc[idx:])
         if "TYPES" in _locals:
             self.types = _locals["TYPES"]
             for t in self.types:
@@ -94,13 +93,10 @@ class Plugin:
                 return visitor
         return None
 
-    def typeName(self, typeid):
-        return self.types.get(typeid, {}).get("name", "")
-
     def getFileTypes(self):
         res = {}
         for t in self.types:
-            res[t] = (self.types[t].get("name", "???"), lambda p, e, tp=t: self.getHighlighter(tp, p, e))
+            res[t] = (t, lambda p, e, tp=t: self.getHighlighter(tp, p, e))
         return res
 
     def getPreferencesUi(self, engineid):
@@ -126,13 +122,16 @@ class PluginLoader:
         self.plugins = {}
         self.load()
 
-    def load(self):
+    def load(self, failOnDuplicate=False):
         self.plugins.clear()
         for filename in os.listdir(IOHandler.dir_plugins()):
             dname = IOHandler.dir_plugins(filename)
             if os.path.isdir(dname):
                 plugin = Plugin(IOHandler.join(dname, "__init__.py"))
-                self.plugins[plugin.name] = plugin
+                if plugin.name not in self.plugins:
+                    self.plugins[plugin.name] = plugin
+                elif failOnDuplicate:
+                    raise KeyError("Duplicate Plugin Name Found: %s!" % plugin.name)
 
     def get(self, active=True):
         if active:
@@ -145,6 +144,14 @@ class PluginLoader:
         ps = self.get(active)
         for p in ps:
             res.update(p.getFileTypes())
+        return res
+
+    def getFileExtensions(self, active=True):
+        res = {}
+        ps = self.get(active)
+        for p in ps:
+            for t in p.types:
+                res[t] = p.types[t].get("extensions", [])
         return res
 
     def getEngines(self, active=True):
