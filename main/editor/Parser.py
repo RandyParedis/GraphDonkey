@@ -53,6 +53,7 @@ class Parser:
         T = self.parse(text)
         if T is not None:
             return self.converter[engine](text, T)
+        return None
 
 
 class EOFToken:
@@ -72,21 +73,40 @@ class EOFToken:
 
 
 class CheckVisitor:
-    """Helper class that makes sure additional conditions on rules are valid."""
+    """Helper class that makes sure additional conditions on rules are valid.
+
+    This is ideally inherited from when defining semantic analysis, making sure
+    all functions and attributes are set correctly.
+
+    Attrs:
+        parser (Parser):    The Parser object that's used for syntax checking.
+                            This allows for a mere lookup of terminals and rules.
+        errors (list):      A list of 3-tuples (tok, msg, alt); where
+                                tok (Token):    The token on which the error occurred.
+                                msg (str):      The error message for the issue at hand.
+                                alt (set):      A set of alternative tokens to use instead.
+    """
     def __init__(self, parser):
         self.parser = parser
         self.errors = []
 
     def previsit(self, tree: Tree):
+        """Function to call before visiting a rule."""
         pass
 
     def tokenvisit(self, token: Token):
+        """Function to call on visiting a token."""
         pass
 
     def postvisit(self, tree: Tree):
+        """Function to call after visiting a rule."""
         pass
 
     def visit(self, tree: Tree):
+        """Actual visit function.
+
+        Do not override this function unless you know what you're doing.
+        """
         self.previsit(tree)
         for child in tree.children:
             if isinstance(child, Tree):
@@ -96,6 +116,7 @@ class CheckVisitor:
         self.postvisit(tree)
 
     def clear(self):
+        """Clear the errors."""
         self.errors.clear()
 
 

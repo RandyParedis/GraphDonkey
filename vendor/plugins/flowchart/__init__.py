@@ -14,8 +14,7 @@ keywords = [
 ]
 
 TYPES = {
-    "FlowChart": {
-        "name": "Flowchart / Pseudocode",
+    "Flowchart / Pseudocode": {
         "extensions": ["code", "psc", "pseudo", "pseudocode", "flowchart", "fc"],
         "grammar": "flowchart.lark",
         "semantics": CheckFlowchartVisitor,
@@ -51,16 +50,16 @@ TYPES = {
             },
             {
                 "regex": "^%%[^%s]*$" % Constants.LINE_ENDING,
-                "format": "comment_hash"
+                "format": "hash"
             },
             {
                 "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
-                "format": "comment_single"
+                "format": "comment"
             },
             {
                 "start": "/\\*",
                 "end": "\\*/",
-                "format": "comment_multi"
+                "format": "comment"
             }
         ],
         "converter": {

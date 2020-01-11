@@ -72,6 +72,8 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 if start is not None and end is not None:
                     self.highlightingRules.append((start, end, state, fmt(), exclude))
                     state *= 2
+            else:
+                raise ValueError("Invalid Highlighting Rule %s" % str(rule))
 
     def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
         startIndex = 0
@@ -164,25 +166,18 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         return attributeFormat
 
     @staticmethod
-    def format_comment_hash():
+    def format_hash():
         hashCommentFormat = QtGui.QTextCharFormat()
         hashCommentFormat.setForeground(QtGui.QColor(Config.value("col/hash")))
         hashCommentFormat.setFontItalic(True)
         return hashCommentFormat
 
     @staticmethod
-    def format_comment_single():
+    def format_comment():
         singleLineCommentFormat = QtGui.QTextCharFormat()
         singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col/comment")))
         singleLineCommentFormat.setFontItalic(True)
         return singleLineCommentFormat
-
-    @staticmethod
-    def format_comment_multi():
-        multiLineCommentFormat = QtGui.QTextCharFormat()
-        multiLineCommentFormat.setForeground(QtGui.QColor(Config.value("col/comment")))
-        multiLineCommentFormat.setFontItalic(True)
-        return multiLineCommentFormat
 
     @staticmethod
     def format_number():

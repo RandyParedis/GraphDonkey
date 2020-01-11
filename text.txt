@@ -17,26 +17,32 @@ TODO LIST
         - Simple txt (no highlighting/engine)
         - dot/graphviz itself
             - attribute checking?
+        - xdot?
         - flowchart
             - function calls
-        - PlantUML?
-        - Mermaid?
+        - lark
         - plain/plain-ext
         - pic
-        - lark
-        - xdot?
+        - PlantUML?
+        - Mermaid?
         - SQL?
+        - OGDF
+        - Text Engine?
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
             - Enabling/Disabling
-                ==> Tab in Preferences window?
-            - About window?
-            - FUTURE: Conversion to custom syntax can be defined: map to custom syntax and use OGDF algos for layout
-                ==> If defined, use this ("prefer rendering as <graphviz|OGDF|image|none>")
-                    - For "none": disable view area
+                ==> Separate tab in Preferences window?
+            - Autocompleter?
+            - Snippets?
+            - Engine per file type instead of globally
+            - Export:
+                - For all/current filetype(s), list all export possibilities
+                - When user chooses export type, export to that type using the current engine, or the first possible
+                  engine.
+                  If you do not support exporting to this file, yield error and retry.
+    - Finish documentation
     - Update all highlighting on typing!
-    - Syntax highlighting order of rules!
     - CodeEditor must be language-specific!
     - Last line = newline
     - Fix in-code TODOs

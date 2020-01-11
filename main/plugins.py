@@ -66,7 +66,7 @@ class Plugin:
     def getParser(self, typeid):
         if typeid in self.types:
             tp = self.types[typeid]
-            parser = Parser(tp.get("grammar", ""), tp.get("parser", "lalr"))
+            parser = Parser(tp.get("grammar", ""), tp.get("parser", "earley"))
             parser.converter = tp.get("converter", {})
             visitor = self.getVisitorClass(typeid)
             if visitor is not None:
@@ -88,9 +88,7 @@ class Plugin:
     def getVisitorClass(self, typeid):
         if typeid in self.types:
             tp = self.types[typeid]
-            visitor = tp.get("semantics", None)
-            if visitor is not None:
-                return visitor
+            return tp.get("semantics", None)
         return None
 
     def getFileTypes(self):

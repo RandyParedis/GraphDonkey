@@ -559,7 +559,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-424</y>
             <width>629</width>
             <height>881</height>
            </rect>
@@ -773,7 +773,7 @@
               <item row="6" column="0">
                <widget class="QLabel" name="label_31">
                 <property name="text">
-                 <string>Preprocessor:</string>
+                 <string>Hash:</string>
                 </property>
                </widget>
               </item>
@@ -862,9 +862,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-878</y>
             <width>629</width>
-            <height>1366</height>
+            <height>1335</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -1251,7 +1251,7 @@
               <string>Other Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_13">
-              <item row="2" column="0">
+              <item row="1" column="0">
                <widget class="QLabel" name="label_23">
                 <property name="text">
                  <string>Show Qt Info:</string>
@@ -1259,17 +1259,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QKeySequenceEdit" name="ks_graphviz"/>
-              </item>
-              <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_qt"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_22">
-                <property name="text">
-                 <string>Show Graphviz Info:</string>
-                </property>
-               </widget>
               </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_21">

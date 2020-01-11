@@ -49,6 +49,7 @@ TYPES = {
     "Graphviz": {
         "extensions": ["canon", "dot", "gv", "xdot", "xdot1.2", "xdot1.4"],
         "grammar": "graphviz.lark",
+        "parser": "lalr",
         "semantics": CheckDotVisitor,
         "highlighting": [
             {
@@ -84,16 +85,16 @@ TYPES = {
             },
             {
                 "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
-                "format": "comment_hash"
+                "format": "hash"
             },
             {
                 "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
-                "format": "comment_single"
+                "format": "comment"
             },
             {
                 "start": "/\\*",
                 "end": "\\*/",
-                "format": "comment_multi"
+                "format": "comment"
             }
         ],
         "converter": {

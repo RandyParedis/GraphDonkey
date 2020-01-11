@@ -8,13 +8,12 @@ Author: Randy Paredis
 Date:   12/14/2019
 """
 
-import sys, graphviz
+import sys
 from PyQt5 import QtWidgets
 from main.MainWindow import MainWindow
 from main.extra import Constants
 
 print("LAUNCING APP...")
-print("GraphViz Version:", graphviz.__version__)
 print("GraphDonkey Version:", Constants.APP_VERSION_NAME, "(" + Constants.APP_VERSION + ")")
 
 app = QtWidgets.QApplication(sys.argv)

@@ -62,11 +62,11 @@ FILE_TYPES = {
 def file_list(files):
     return ";;".join(sorted(["%s Files (*.%s)" % (x, " *.".join(files[x])) for x in files]))
 
-def lookup(ext, group):
+def lookup(ext, group, unknown=None):
     for k in group:
         if ext in group[k]:
             return k
-    return None
+    return unknown
 
 def obtain_exts(category):
     if "." in category:

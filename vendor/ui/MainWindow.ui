@@ -119,7 +119,6 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="action_GraphDonkey"/>
-    <addaction name="action_Graphviz"/>
     <addaction name="action_Qt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -311,11 +310,6 @@
    </property>
    <property name="text">
     <string>Save &amp;As...</string>
-   </property>
-  </action>
-  <action name="action_Graphviz">
-   <property name="text">
-    <string>About &amp;Graphviz</string>
    </property>
   </action>
   <action name="action_Qt">

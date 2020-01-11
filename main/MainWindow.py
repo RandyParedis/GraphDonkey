@@ -45,7 +45,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
 
         self.files.clear()
-        self.files.tabBar().setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectPreviousTab)
         self.files.currentChanged.connect(self.tabChanged)
         self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
@@ -98,7 +97,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
         self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
-        self.action_Graphviz.triggered.connect(self.aboutGraphviz)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
@@ -360,29 +358,24 @@ class MainWindow(QtWidgets.QMainWindow):
         if fileName and fileName != "":
             ext = fileName.split(".")[-1]
             exts = pluginloader.getFileExtensions()
-            if Constants.valid_ext(ext, exts):
-                valid = True
-                try:
-                    with open(fileName, "rb") as myfile:
-                        data = myfile.read()
-                        # TODO: On decoding crash => find actual encoding?
-                        data = data.decode(Config.value("encoding"))
-                    self.newTab(fileName)
-                    self.editor().setText(data)
-                    self.updateRecents(fileName)
-                    self.editor().filename = fileName
-                    self.editor().filecontents = data
-                    self.setEditorType(Constants.lookup(ext, exts))
-                except IOError as e:
-                    self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
-                    self.close()
-                    valid = False
-                self.updateTitle()
-                return valid
-            else:
-                # TODO: check for plugin enabled
-                self.warn("Invalid File", "It looks like this file cannot be opened.")
-                return False
+            valid = True
+            try:
+                with open(fileName, "rb") as myfile:
+                    data = myfile.read()
+                    # TODO: On decoding crash => find actual encoding?
+                    data = data.decode(Config.value("encoding"))
+                self.newTab(fileName)
+                self.editor().setText(data)
+                self.updateRecents(fileName)
+                self.editor().filename = fileName
+                self.editor().filecontents = data
+                self.setEditorType(Constants.lookup(ext, exts, ""))
+            except IOError as e:
+                self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
+                self.close()
+                valid = False
+            self.updateTitle()
+            return valid
         else:
             self.new()
         return True
@@ -504,6 +497,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                      "Are you sure you want to close it? All changes will be lost.")
         if close:
             self.files.removeTab(idx)
+        if old >= self.files.count():
+            old = self.files.count() - 1
         self.changeTab(old)
         self.updateTitle()
 
@@ -520,8 +515,10 @@ class MainWindow(QtWidgets.QMainWindow):
             ename = Config.value("view/engine")
             try:
                 engine = pluginloader.getEngines()[ename]
-                bdata = engine["convert"](self.editor().convert(ename))
-                self.view.add(bdata)
+                res = self.editor().convert(ename)
+                if res is not None:
+                    bdata = engine["convert"](res)
+                    self.view.add(bdata)
             except Exception as e:
                 print(e, file=sys.stderr)
                 return str(e)
@@ -540,24 +537,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def checkUpdates(self):
         checker = UpdateChecker(self)
         checker.exec_()
-
-    def aboutGraphviz(self):
-        cmd = [Config.value("graphviz/engine"), "-V"]
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        version = " ".join(out.decode("utf-8").split(" ")[-2:])
-        par = QtWidgets.QWidget(self)
-        par.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(Constants.ICON_GRAPHVIZ)))
-        QtWidgets\
-            .QMessageBox\
-            .about(par,
-                   "About Graphviz",
-                   "<p>Graphviz is open source graph visualization software. Graph visualization is a way of "
-                   "representing structural information as diagrams of abstract graphs and networks. It has important "
-                   "applications in networking, bioinformatics,  software engineering, database and web design, machine"
-                   " learning, and in visual interfaces for other technical domains.</p>"
-                   "<p>Current installed version is <b>%s</b>.</p>"
-                   "<p>More information on "
-                   "<a href='https://www.graphviz.org/'>www.graphviz.org</a>.</p>" % version)
 
     def aboutGraphDonkey(self):
         QtWidgets\

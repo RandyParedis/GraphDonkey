@@ -152,7 +152,7 @@ class Preferences(QtWidgets.QDialog):
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
             "Previous_File", "Render", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom", "Zoom_To_Fit",
-            "GraphDonkey", "Graphviz", "Qt"
+            "GraphDonkey", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -317,7 +317,6 @@ class Preferences(QtWidgets.QDialog):
             self.ks_zoom_to_fit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_to_fit", "")))
             # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
-            self.ks_graphviz.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphviz", "")))
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
         # PLUGINS
@@ -437,7 +436,6 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/zoom_to_fit", self.ks_zoom_to_fit.keySequence().toString())
             # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
-            self.preferences.setValue("ks/graphviz", self.ks_graphviz.keySequence().toString())
             self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 
         self.preferences.sync()
