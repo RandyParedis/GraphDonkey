@@ -14,20 +14,20 @@ TODO LIST
             ==> Document-specific properties?
     - Force autocompleter to suggest context-specific items
     - Other file types
-        - Simple txt (no highlighting/engine)
         - dot/graphviz itself
             - attribute checking?
-        - xdot?
+            - xdot?
         - flowchart
             - function calls
         - lark
-        - plain/plain-ext
-        - pic
-        - PlantUML?
-        - Mermaid?
         - SQL?
-        - OGDF
+        - Regex?
+        - pic
+        - plain/plain-ext
+        - Mermaid?
         - Text Engine?
+        - PlantUML?
+        - OGDF Engine?
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
@@ -35,15 +35,11 @@ TODO LIST
                 ==> Separate tab in Preferences window?
             - Autocompleter?
             - Snippets?
-            - Engine per file type instead of globally
-            - Export:
-                - For all/current filetype(s), list all export possibilities
-                - When user chooses export type, export to that type using the current engine, or the first possible
-                  engine.
-                  If you do not support exporting to this file, yield error and retry.
+            - AST rendering in plugin info for engine!
+            - Add export button for graphs, which makes use of the Qt QGraphicsView export to image
     - Finish documentation
+        - Change general README!
     - Update all highlighting on typing!
-    - CodeEditor must be language-specific!
     - Last line = newline
     - Fix in-code TODOs
 

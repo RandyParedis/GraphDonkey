@@ -51,10 +51,12 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
             if isinstance(value, str):
                 return QtCore.QRegExp(value)
             elif isinstance(value, dict):
+                reg = obtainRegex(value["pattern"])
                 if value.get("caseInsensitive", False):
-                    return QtCore.QRegExp(value["pattern"], QtCore.Qt.CaseInsensitive)
-                else:
-                    return QtCore.QRegExp(value["pattern"])
+                    reg.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+                return reg
+            elif isinstance(value, list):
+                return obtainRegex("\\b(%s)\\b" % "|".join(["(%s)" % x for x in value]))
             return None
 
         state = 1

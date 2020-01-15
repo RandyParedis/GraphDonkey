@@ -54,7 +54,7 @@ TYPES = {
         "highlighting": [
             {
                 "regex": {
-                    "pattern": "\\b(%s)\\b" % "|".join(["(%s)" % x for x in keywords]),
+                    "pattern": keywords,
                     "caseInsensitive": True
                 },
                 "format": "keyword"
@@ -64,7 +64,7 @@ TYPES = {
                 "format": "attribute"
             },
             {
-                "regex": "\\b(%s)\\b" % "|".join(["(%s)" % x for x in sp_attrs]),
+                "regex": sp_attrs,
                 "format": "attribute"
             },
             {

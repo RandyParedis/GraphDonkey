@@ -30,14 +30,19 @@ class EditorWrapper(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(EditorWrapper, self).__init__(parent)
         self._layout = QtWidgets.QGridLayout()
-        self._layout.setContentsMargins(0, 0, 0, 0)
         self.editor = CodeEditor(parent)
-        self._layout.addWidget(self.editor, 0, 0)
-        self.filetype = QtWidgets.QComboBox()
-        self.filetype.currentIndexChanged.connect(self.alter)
         self.types = pluginloader.getFileTypes()
+        self.filetype = QtWidgets.QComboBox()
+        self.engine = QtWidgets.QComboBox()
+
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.addWidget(self.editor, 0, 0, 1, -1)
+        self.filetype.currentIndexChanged.connect(self.alter)
         self.setTypes()
-        self._layout.addWidget(self.filetype, 1, 0)
+        self._layout.addWidget(QtWidgets.QLabel("File Type:"), 1, 0, 1, 1)
+        self._layout.addWidget(self.filetype, 1, 1, 1, 2)
+        self._layout.addWidget(QtWidgets.QLabel("Rendering with:"), 1, 3, 1, 1)
+        self._layout.addWidget(self.engine, 1, 4, 1, 2)
         self.setLayout(self._layout)
 
     def setTypes(self):
@@ -49,9 +54,15 @@ class EditorWrapper(QtWidgets.QWidget):
         data = self.filetype.itemData(idx)
         self.editor.alter(data(self.editor.document(), self.editor))
         self.editor.highlighter.rehighlight()
+        ens = pluginloader.getEnginesForFileType(self.filetype.itemText(idx))
+        self.engine.clear()
+        for en in ens:
+            self.engine.addItem(en)
+        self.engine.setCurrentText(Config.value("view/engine"))
 
     def setType(self, type):
         self.filetype.setCurrentText(self.types[type][0])
+
 
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
@@ -652,6 +663,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.updateLineNumberAreaWidth()
 
     def viewParseTree(self, focus=True):
+        # TODO: move this also to plugin!
         txt = self.toPlainText()
         T = self.highlighter.parser.parse(txt, True)
         if T is not None:
@@ -671,8 +683,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
             dot = DotVisitor()
             dot.visit(T)
-            view.addDot(dot.root, Config.value("view/format"), Config.value("view/renderer"),
-                        Config.value("view/formatter"))
+            view.addDot(dot.root, Config.value("plugin/graphviz/format"), Config.value("plugin/graphviz/renderer"),
+                        Config.value("plugin/graphviz/formatter"))
             if not self.treeView.isVisible():
                 self.treeView.show()
             if focus:

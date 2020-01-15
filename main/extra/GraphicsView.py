@@ -59,11 +59,15 @@ class GraphicsView(QtWidgets.QWidget):
         self.pb_zoom_reset.clicked.connect(self.resetZoom)
         self.zoomed.connect(self._zoomed)
 
+        self.pb_save = QtWidgets.QPushButton("Export Image...")
+        self.pb_save.clicked.connect(self.save)
+
         self.layout.addWidget(self.pb_zoom_out, 1, 0)
         self.layout.addWidget(self.slider_zoom, 1, 1)
         self.layout.addWidget(self.lb_zoom, 1, 2)
         self.layout.addWidget(self.pb_zoom_in, 1, 3)
         self.layout.addWidget(self.pb_zoom_reset, 1, 4)
+        self.layout.addWidget(self.pb_save, 1, 5)
         self.setLayout(self.layout)
 
         self.setControls(self.controls)
@@ -127,6 +131,17 @@ class GraphicsView(QtWidgets.QWidget):
         sr.adjust(-margin, -margin, margin, margin)
         self._scene.setSceneRect(sr)
 
+    def addDot(self, dot, format, renderer, formatter):
+        if format == "svg":
+            bdata = dot.pipe(format, renderer, formatter)
+            svgRenderer = QtSvg.QSvgRenderer(bdata)
+            dot = QtSvg.QGraphicsSvgItem()
+            dot.setSharedRenderer(svgRenderer)
+            self._scene.addItem(dot)
+        else:
+            pixmap = dotToQPixmap(dot, format, renderer, formatter)
+            self._scene.addPixmap(pixmap)
+
     @QtCore.pyqtSlot(QtCore.QPoint, name="centerOn")
     def centerOn(self, point):
         self._view.centerOn(point)
@@ -164,6 +179,10 @@ class GraphicsView(QtWidgets.QWidget):
         w = rect.width() / sceneRect.width()
         h = rect.height() / sceneRect.height()
         self.zoomTo(min(w, h))
+
+    @QtCore.pyqtSlot(name="save")
+    def save(self):
+        pass
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
         mods = Config.value("view/scrollKey").split(" + ")

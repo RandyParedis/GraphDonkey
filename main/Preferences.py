@@ -49,7 +49,6 @@ class Preferences(QtWidgets.QDialog):
         self.pluginUi = {}
         ps = pluginloader.get()
         lo = self.view_scroll.layout()
-        self.combo_engine.currentTextChanged.connect(self.showPlugin)
         for p in ps:
             for e in p.engines:
                 self.combo_engine.addItem(e)
@@ -58,11 +57,6 @@ class Preferences(QtWidgets.QDialog):
                     box.preferences = self.preferences
                     self.pluginUi[e] = box
                     lo.addWidget(box, lo.rowCount(), 0, 1, -1)
-        self.showPlugin(self.combo_engine.currentText())
-
-    def showPlugin(self, text):
-        for eid in self.pluginUi:
-            self.pluginUi[eid].setEnabled(text == eid)
 
     def parseDisable(self, b):
         if not b:

@@ -137,7 +137,9 @@ identified with another dictionary containing the following keys.
     below), or yet another dictionary.
         * `pattern`: The pattern string to use. This is a 
         [`QRegExp`](https://doc.qt.io/archives/qt-4.8/qregexp.html) pattern, as
-        defined in the `Qt` documentation.
+        defined in the `Qt` documentation, or a list of words that need to match
+        on word bounds. The latter option is rather useful for adding keywords and
+        such.
         * `caseInsensitive`: Optional. When `True`, the pattern will be checked
         case-insensitively.
     * `start`: Must be present if `regex` is absent. Used to indicate multiline
@@ -160,6 +162,7 @@ value is undefined, or the function returns `None`, no rendering is performed.
     
 Below, you can find a working example, taken from the `graphviz` plugin:
 ```
+kaywords = ["strict", "graph", "digraph", "node", "edge", "subgraph"]
 TYPES = {
     "Graphviz": {
         "extensions": ["canon", "dot", "gv", "xdot", "xdot1.2", "xdot1.4"],
@@ -169,9 +172,7 @@ TYPES = {
         "highlighting": [
             {
                 "regex": {
-                    # In the file, there is a 'keywords' list of all keywords defined,
-                    #  which are joined together in one big 'OR' operation.
-                    "pattern": "\\b(%s)\\b" % "|".join(["(%s)" % x for x in keywords]),
+                    "pattern": keywords,    # Any of the above-defined keywords
                     "caseInsensitive": True
                 },
                 "format": "keyword"

@@ -175,6 +175,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRender.setEnabled(False)
         return None
 
+    def editorWrapper(self):
+        idx = self.files.currentIndex()
+        return self.files.widget(idx)
+
     def tabChanged(self, index):
         self.updateTitle()
         edit = self.editor(index)
@@ -512,7 +516,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
             self.view.clear()
-            ename = Config.value("view/engine")
+            ename = self.editorWrapper().engine.currentText()
             try:
                 engine = pluginloader.getEngines()[ename]
                 res = self.editor().convert(ename)

@@ -356,7 +356,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="label_68">
              <property name="text">
-              <string>Render with:</string>
+              <string>Preferred Renderer:</string>
              </property>
             </widget>
            </item>
@@ -559,7 +559,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-424</y>
+            <y>0</y>
             <width>629</width>
             <height>881</height>
            </rect>
@@ -862,7 +862,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-878</y>
+            <y>0</y>
             <width>629</width>
             <height>1335</height>
            </rect>

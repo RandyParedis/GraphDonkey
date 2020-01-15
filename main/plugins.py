@@ -159,6 +159,14 @@ class PluginLoader:
             res.update(p.engines)
         return res
 
+    def getEnginesForFileType(self, filetype, active=True):
+        en = []
+        ps = self.get(active)
+        for p in ps:
+            if filetype in p.types:
+                en.append([*(p.types[filetype].get("converter", {}))])
+        return [i for s in en for i in s]
+
 
 from PyQt5 import QtWidgets, uic
 
