@@ -107,6 +107,7 @@
     <addaction name="action_Previous_File"/>
     <addaction name="separator"/>
     <addaction name="action_Render"/>
+    <addaction name="action_Save_Rendered_View"/>
     <addaction name="action_View_Parse_Tree"/>
     <addaction name="separator"/>
     <addaction name="action_Zoom_In"/>
@@ -641,6 +642,15 @@
    </property>
    <property name="text">
     <string>Zoom To &amp;Fit</string>
+   </property>
+  </action>
+  <action name="action_Save_Rendered_View">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/image-x-generic.png</normaloff>:/icons/tango/image-x-generic.png</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;ave Rendered View...</string>
    </property>
   </action>
  </widget>

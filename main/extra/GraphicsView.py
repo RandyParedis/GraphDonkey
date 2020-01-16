@@ -12,9 +12,19 @@ Date:   01/01/2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
-from main.extra import IOHandler, dotToQPixmap, isSVG, tango
+from main.extra import IOHandler, dotToQPixmap, isSVG, Constants, tango
+import os
 
 Config = IOHandler.IOHandler.get_preferences()
+
+FILE_TYPES_OUT = {
+    "Windows Bitmap Format": ["bmp"],
+    "JPEG": ["jpg", "jpeg"],
+    "Portable Network Graphics": ["png"],
+    "Portable Pixmap": ["ppm"],
+    "X11 Bitmap": ["xbm"],
+    "X11 Pixmap": ["xpm"]
+}
 
 class GraphicsView(QtWidgets.QWidget):
     zoomed = QtCore.pyqtSignal(float)
@@ -38,6 +48,7 @@ class GraphicsView(QtWidgets.QWidget):
         self.zoomlevel = 1.0
 
         self.pb_zoom_out = QtWidgets.QPushButton(QtGui.QIcon(":/icons/tango/list-remove.png"), "")
+        self.pb_zoom_out.setToolTip("Zoom Out")
         self.pb_zoom_out.clicked.connect(self.zoomOut)
 
         self.slider_zoom = QtWidgets.QSlider(QtCore.Qt.Horizontal)
@@ -51,15 +62,22 @@ class GraphicsView(QtWidgets.QWidget):
         self.slider_zoom.setValue(100)
 
         self.pb_zoom_in = QtWidgets.QPushButton(QtGui.QIcon(":/icons/tango/list-add.png"), "")
+        self.pb_zoom_in.setToolTip("Zoom In")
         self.pb_zoom_in.clicked.connect(self.zoomIn)
 
         self.lb_zoom = QtWidgets.QLabel("100%")
 
         self.pb_zoom_reset = QtWidgets.QPushButton("Reset")
+        self.pb_zoom_reset.setToolTip("Reset Zoom Level")
         self.pb_zoom_reset.clicked.connect(self.resetZoom)
         self.zoomed.connect(self._zoomed)
 
-        self.pb_save = QtWidgets.QPushButton("Export Image...")
+        self.pb_zoom_fit = QtWidgets.QPushButton(QtGui.QIcon(":/icons/tango/view-fullscreen.png"), "")
+        self.pb_zoom_fit.setToolTip("Zoom to Fit")
+        self.pb_zoom_fit.clicked.connect(self.zoomToFit)
+
+        self.pb_save = QtWidgets.QPushButton(QtGui.QIcon(":/icons/tango/image-x-generic.png"), "")
+        self.pb_save.setToolTip("Export to Image...")
         self.pb_save.clicked.connect(self.save)
 
         self.layout.addWidget(self.pb_zoom_out, 1, 0)
@@ -67,7 +85,8 @@ class GraphicsView(QtWidgets.QWidget):
         self.layout.addWidget(self.lb_zoom, 1, 2)
         self.layout.addWidget(self.pb_zoom_in, 1, 3)
         self.layout.addWidget(self.pb_zoom_reset, 1, 4)
-        self.layout.addWidget(self.pb_save, 1, 5)
+        self.layout.addWidget(self.pb_zoom_fit, 1, 5)
+        self.layout.addWidget(self.pb_save, 1, 6)
         self.setLayout(self.layout)
 
         self.setControls(self.controls)
@@ -180,9 +199,34 @@ class GraphicsView(QtWidgets.QWidget):
         h = rect.height() / sceneRect.height()
         self.zoomTo(min(w, h))
 
-    @QtCore.pyqtSlot(name="save")
     def save(self):
-        pass
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, t = QtWidgets.QFileDialog \
+            .getSaveFileName(self, "Export a File", "", Constants.file_list(FILE_TYPES_OUT), options=options)
+        if fileName:
+            ext = fileName.split(".")[-1]
+            rext = Constants.obtain_exts(t)
+            if fileName == ext:
+                ext = rext[0]
+                fileName += "." + ext
+                if os.path.isfile(fileName):
+                    yes = self.question("File already exists!", "This file already exists. Are you sure, you want "
+                                                                "to replace it?")
+                    if not yes:
+                        # Reboot file chooser window
+                        return self.save()
+
+        # Do the actual saving
+        self._scene.clearSelection()    # If there were to be any selections, these would also render to the file
+        self._scene.setSceneRect(self._scene.itemsBoundingRect())
+        image = QtGui.QImage(self._scene.sceneRect().size().toSize(), QtGui.QImage.Format_ARGB32)
+        image.fill(QtCore.Qt.transparent)
+        painter = QtGui.QPainter(image)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        self._scene.render(painter)
+        image.save(fileName)
+        painter.end()
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
         mods = Config.value("view/scrollKey").split(" + ")

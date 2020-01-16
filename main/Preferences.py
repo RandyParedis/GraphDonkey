@@ -145,8 +145,8 @@ class Preferences(QtWidgets.QDialog):
             "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File",
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
-            "Previous_File", "Render", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom", "Zoom_To_Fit",
-            "GraphDonkey", "Qt"
+            "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
+            "Zoom_To_Fit", "GraphDonkey", "Qt"
         ]
 
         def pressEvent(kseq, event):
@@ -301,6 +301,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/autocomplete", "CTRL+SPACE")))
             self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
+            self.ks_save_rendered_view.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_rendered_view", "")))
             self.ks_view_parse_tree.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/view_parse_tree", "CTRL+T")))
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
             self.ks_next_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/next_file", "CTRL+TAB")))
@@ -423,6 +424,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/next_file", self.ks_next_file.keySequence().toString())
             self.preferences.setValue("ks/previous_file", self.ks_previous_file.keySequence().toString())
             self.preferences.setValue("ks/render", self.ks_render.keySequence().toString())
+            self.preferences.setValue("ks/save_rendered_view", self.ks_save_rendered_view.keySequence().toString())
             self.preferences.setValue("ks/view_parse_tree", self.ks_view_parse_tree.keySequence().toString())
             self.preferences.setValue("ks/zoom_in", self.ks_zoom_in.keySequence().toString())
             self.preferences.setValue("ks/zoom_out", self.ks_zoom_out.keySequence().toString())

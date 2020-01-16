@@ -22,6 +22,7 @@ TODO LIST
         - lark
         - SQL?
         - Regex?
+        - JSON?
         - pic
         - plain/plain-ext
         - Mermaid?
@@ -36,7 +37,6 @@ TODO LIST
             - Autocompleter?
             - Snippets?
             - AST rendering in plugin info for engine!
-            - Add export button for graphs, which makes use of the Qt QGraphicsView export to image
     - Finish documentation
         - Change general README!
     - Update all highlighting on typing!

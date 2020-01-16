@@ -91,6 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Next_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() + 1))
         self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
         self.action_Render.triggered.connect(self.forceDisplay)
+        self.action_Save_Rendered_View.triggered.connect(self.view.save)
         self.action_View_Parse_Tree.triggered.connect(lambda: self.editorEvent("viewParseTree"))
         self.action_Zoom_In.triggered.connect(self.view.zoomIn)
         self.action_Zoom_Out.triggered.connect(self.view.zoomOut)

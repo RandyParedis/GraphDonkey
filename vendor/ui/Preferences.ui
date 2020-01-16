@@ -862,9 +862,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-862</y>
             <width>629</width>
-            <height>1335</height>
+            <height>1366</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -1033,16 +1033,23 @@
               <string>View Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
-              <item row="6" column="1">
+              <item row="8" column="0">
+               <widget class="QLabel" name="label_77">
+                <property name="text">
+                 <string>Zoom Out:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
                <widget class="QKeySequenceEdit" name="ks_zoom_in"/>
               </item>
               <item row="0" column="1">
                <widget class="QKeySequenceEdit" name="ks_show_render_area"/>
               </item>
-              <item row="5" column="1">
+              <item row="6" column="1">
                <widget class="QKeySequenceEdit" name="ks_view_parse_tree"/>
               </item>
-              <item row="6" column="0">
+              <item row="7" column="0">
                <widget class="QLabel" name="label_76">
                 <property name="text">
                  <string>Zoom In:</string>
@@ -1082,13 +1089,6 @@
               <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_snippets"/>
               </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="label_77">
-                <property name="text">
-                 <string>Zoom Out:</string>
-                </property>
-               </widget>
-              </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_74">
                 <property name="text">
@@ -1096,7 +1096,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
+              <item row="6" column="0">
                <widget class="QLabel" name="label_72">
                 <property name="text">
                  <string>View Parse Tree:</string>
@@ -1110,28 +1110,38 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0">
+              <item row="9" column="0">
                <widget class="QLabel" name="label_78">
                 <property name="text">
                  <string>Reset Zoom:</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="1">
+              <item row="8" column="1">
                <widget class="QKeySequenceEdit" name="ks_zoom_out"/>
               </item>
-              <item row="8" column="1">
+              <item row="9" column="1">
                <widget class="QKeySequenceEdit" name="ks_reset_zoom"/>
               </item>
-              <item row="9" column="0">
+              <item row="10" column="0">
                <widget class="QLabel" name="label_82">
                 <property name="text">
                  <string>Zoom To Fit:</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="1">
+              <item row="10" column="1">
                <widget class="QKeySequenceEdit" name="ks_zoom_to_fit"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Save Rendered View:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QKeySequenceEdit" name="ks_save_rendered_view"/>
               </item>
              </layout>
             </widget>
