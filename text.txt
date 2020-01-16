@@ -41,6 +41,8 @@ TODO LIST
     - Update all highlighting on typing!
     - Last line = newline
     - Open when in doc = open from current dir
+    - Styling is via CSS?
+    - Macros?
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:

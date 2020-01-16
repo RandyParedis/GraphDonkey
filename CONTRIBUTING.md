@@ -21,4 +21,4 @@ all your interactions with the project.
  [README.md](README.md). Figure out which version your PR can be a part of and
  change the corresponding values (mainly `main.extra.Constants.APP_VERSION`). PRs
  that do not take the future features into account **will not** be merged.
-5. Only PRs with [valid file formatting](docs/Formatting.md) will be accepted.
+5. Only PRs with [valid file formatting](wiki/Formatting.md) will be accepted.
