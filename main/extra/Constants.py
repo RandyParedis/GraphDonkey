@@ -11,8 +11,6 @@ APP_VERSION = "0.2.0"
 APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
-ICON_GRAPHVIZ = QImage(IOHandler.dir_icons("graphviz.png"))
-
 LINE_ENDING = "\u2029"  # Qt Handles all line endings internally => only need to replace on save
 ENDINGS = ['\n', '\r', '\r\n']
 
@@ -29,7 +27,6 @@ FILE_TYPES = {
     "CGImage Bitmap Format": ["cgimage"],
     "Encapsulated PostScript": ["eps"],
     "OpenEXR": ["exr"],
-    "FIG": ["fig"],
     "GD/GD2": ["gd", "gd2"],
     "GIF": ["gif"],
     "GTK Canvas": ["gtk"],

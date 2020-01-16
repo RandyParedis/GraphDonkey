@@ -36,8 +36,6 @@ TODO LIST
                 ==> Separate tab in Preferences window?
             - Autocompleter?
             - Snippets?
-    - Finish documentation
-        - Change general README!
     - Update all highlighting on typing!
     - Last line = newline
     - Open when in doc = open from current dir

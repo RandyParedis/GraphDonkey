@@ -67,8 +67,8 @@ to type clean and understandable pseudocode, but also see it visualized as a
 flowchart.
 
 ### Want to Learn More?
-Take a look at the [wiki](wiki/Home.md) and allow `GraphDonkey` to do the donkey
-work for you!
+Take a look at the [wiki][wiki] and allow `GraphDonkey` to do the donkey work for
+you!
 
 ### Copyright
 It's important to list your sources if you're working on a project. One does not
@@ -82,5 +82,6 @@ want to use it elsewhere, you **must** reference this project.
 Mozilla Public License Version 2.0.](LICENSE)
 
 
+[wiki]: https://github.com/RandyParedis/GraphDonkey/wiki
 [lark]: https://github.com/lark-parser/lark
 [gv]: https://www.graphviz.org/
