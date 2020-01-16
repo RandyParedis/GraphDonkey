@@ -78,7 +78,8 @@ creating it.
 https://github.com/ppinard/qtango)
 * The `GraphDonkey` icon, themes and source code were custom-made by me. If you
 want to use it elsewhere, you **must** reference this project.
-[See also the license.](LICENSE)
+[This project is also licensed under the
+Mozilla Public License Version 2.0.](LICENSE)
 
 
 [lark]: https://github.com/lark-parser/lark
