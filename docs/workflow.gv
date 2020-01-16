@@ -1,6 +1,7 @@
 digraph {
 	rankdir=LR;
 	start [label="", shape=none, width=0, height=0];
+	renderer [label="", shape=none, width=0, height=0];
 	converter [label="converter.convert()"];
 	engine [label="engine.convert()"];
 	start -> converter [label="input text\nw.r.t. file type"];

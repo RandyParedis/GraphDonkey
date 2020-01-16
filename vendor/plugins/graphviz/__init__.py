@@ -11,7 +11,7 @@ Website:    https://www.graphviz.org/
 Author:     Randy Paredis
 """
 from vendor.plugins.graphviz.CheckDot import CheckDotVisitor
-from vendor.plugins.graphviz.Engine import convert, export
+from vendor.plugins.graphviz.Engine import convert, export, AST
 from vendor.plugins.graphviz.Settings import GraphvizSettings
 from main.extra import Constants
 
@@ -110,6 +110,7 @@ ENGINES = {
             "file": "preferences.ui",
             "class": GraphvizSettings
         },
+        "AST": AST,
         "export": {
             "extensions": ['fig', 'jpeg', 'pdf', 'tk', 'eps', 'cmapx_np', 'jpe', 'ps', 'ismap', 'x11', 'dot_json', 'gd',
                            'plain', 'vmlz', 'xlib', 'pic', 'plain-ext', 'pov', 'vml', 'json0', 'cmapx', 'jpg', 'svg',

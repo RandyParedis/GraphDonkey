@@ -118,25 +118,3 @@ class CheckVisitor:
     def clear(self):
         """Clear the errors."""
         self.errors.clear()
-
-
-class DotVisitor:
-    """Helper class that generates a dot file from any parse tree."""
-    def __init__(self):
-        self.nodes = {}
-        self.root = graphviz.Digraph()
-
-    def visit(self, tree: Tree):
-        for child in tree.children:
-            if isinstance(child, Tree):
-                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.data)
-                self.visit(child)
-            elif isinstance(child, Token): # TOKENS
-                val = child.value.replace("\\", "\\\\")
-                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + val,
-                                                       color="blue", fontcolor="blue", shape="box")
-            if id(tree) in self.nodes and id(child) in self.nodes:
-                self.root.edge("node_%i" % id(tree), "node_%i" % id(child))
-
-    def show(self):
-        self.root.view()

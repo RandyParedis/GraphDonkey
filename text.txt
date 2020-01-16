@@ -36,11 +36,11 @@ TODO LIST
                 ==> Separate tab in Preferences window?
             - Autocompleter?
             - Snippets?
-            - AST rendering in plugin info for engine!
     - Finish documentation
         - Change general README!
     - Update all highlighting on typing!
     - Last line = newline
+    - Open when in doc = open from current dir
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:

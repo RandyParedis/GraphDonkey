@@ -25,8 +25,14 @@ of file references and a _set_ of engines.
 ## General System Workflow
 To demonstrate how plugins are used and how all information that's mentioned below
 will be combined together, take a look at this schematic representation:
-...
 
+![](workflow.svg)
+
+All that a creator of a plugin must do is define the `convert` methods in the nodes
+in the above schema. How you go about doing this will be described below. The text
+on the edges shows which input and output data is used.
+
+Plugins basically can be used to select different `convert` methods.
 
 
 ## Plugin File Structure
@@ -215,6 +221,7 @@ ENGINES = {
             "file": "preferences.ui",
             "class": GraphvizSettings
         },
+        "AST": AST,
         "export": {
             "extensions": ['fig', 'jpeg', 'pdf', 'tk', 'eps', 'cmapx_np', 'jpe', 'ps', 'ismap', 'x11', 'dot_json', 'gd',
                            'plain', 'vmlz', 'xlib', 'pic', 'plain-ext', 'pov', 'vml', 'json0', 'cmapx', 'jpg', 'svg',
@@ -238,6 +245,12 @@ another image type [that's recognized by Qt][2], it is rendered as a plain image
 This key is required.
 * `preferences`: If you desire to have custom user-defineable settings in your
 engine, you may use this key to indicate this. More information is given below.
+* `AST`: A handy feature of the editor is that it can display the current AST for
+the file type you're using. If you so desire to use your own rendering mechanism
+for the tree, you can define this key. The value is a function that takes a lark
+`Tree` as input and produces binary output similar to the `convert` key. If
+unspecified, the default `Graphviz` renderer is used, as long as the plugin is
+enabled and specified.
 * `export`: Your engine can allow for the exporting to numerous other file types
 that can't necessarily be rendered, or to images if you want your user to be able
 to save the images that your engine generates. This field allows for such export

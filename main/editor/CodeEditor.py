@@ -16,12 +16,12 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 
 
 from main.extra import Constants, left
-from main.editor.Parser import DotVisitor
 from main.extra.IOHandler import IOHandler
 from main.editor.Highlighter import BaseHighlighter
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
+import sys
 
 pluginloader = PluginLoader.instance()
 Config = IOHandler.get_preferences()
@@ -30,7 +30,7 @@ class EditorWrapper(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(EditorWrapper, self).__init__(parent)
         self._layout = QtWidgets.QGridLayout()
-        self.editor = CodeEditor(parent)
+        self.editor = CodeEditor(self)
         self.types = pluginloader.getFileTypes()
         self.filetype = QtWidgets.QComboBox()
         self.engine = QtWidgets.QComboBox()
@@ -39,10 +39,14 @@ class EditorWrapper(QtWidgets.QWidget):
         self._layout.addWidget(self.editor, 0, 0, 1, -1)
         self.filetype.currentIndexChanged.connect(self.alter)
         self.setTypes()
-        self._layout.addWidget(QtWidgets.QLabel("File Type:"), 1, 0, 1, 1)
-        self._layout.addWidget(self.filetype, 1, 1, 1, 2)
-        self._layout.addWidget(QtWidgets.QLabel("Rendering with:"), 1, 3, 1, 1)
-        self._layout.addWidget(self.engine, 1, 4, 1, 2)
+        ft = QtWidgets.QLabel("File Type:")
+        ft.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._layout.addWidget(ft, 1, 0, 1, 1)
+        self._layout.addWidget(self.filetype, 1, 1, 1, 3)
+        rw = QtWidgets.QLabel("Rendering with:")
+        rw.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._layout.addWidget(rw, 1, 4, 1, 1)
+        self._layout.addWidget(self.engine, 1, 5, 1, 3)
         self.setLayout(self._layout)
 
     def setTypes(self):
@@ -67,7 +71,8 @@ class EditorWrapper(QtWidgets.QWidget):
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, parent=None):
         super(CodeEditor, self).__init__(parent)
-        self.mainwindow = parent
+        self.mainwindow = parent.parent()
+        self.wrapper = parent
         self.lineNumberArea = LineNumberArea(self)
 
         self.undoAvailable.connect(self.mainwindow.setUndoEnabled)
@@ -663,7 +668,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.updateLineNumberAreaWidth()
 
     def viewParseTree(self, focus=True):
-        # TODO: move this also to plugin!
         txt = self.toPlainText()
         T = self.highlighter.parser.parse(txt, True)
         if T is not None:
@@ -681,10 +685,25 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             view.setZoomFactorBase(float(Config.value("view/zoomFactor")))
             view.clear()
 
-            dot = DotVisitor()
-            dot.visit(T)
-            view.addDot(dot.root, Config.value("plugin/graphviz/format"), Config.value("plugin/graphviz/renderer"),
-                        Config.value("plugin/graphviz/formatter"))
+            ename = self.wrapper.engine.currentText()
+            T = self.highlighter.parser.parse(self.toPlainText())
+            engine = pluginloader.getEngines()[ename]
+            if T is not None:
+                if "AST" in engine:
+                    bdata = engine["AST"](T)
+                    view.add(bdata)
+                else:
+                    engine = pluginloader.getEngines().get("Graphviz", {})
+                    if "AST" in engine:
+                        bdata = engine["AST"](T)
+                        view.add(bdata)
+                    else:
+                        self.mainwindow.error("Error!", "The current rendering engine '%s' does not support the "
+                                                        "rendering of Abstract Syntax Trees and the fallback renderer "
+                                                        "'Graphviz' cannot be found.\n\nCurrently unable to display the"
+                                                        " AST." % ename)
+                        return
+
             if not self.treeView.isVisible():
                 self.treeView.show()
             if focus:

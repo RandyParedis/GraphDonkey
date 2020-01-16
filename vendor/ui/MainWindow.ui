@@ -230,7 +230,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/document-save.png</normaloff>:/icons/tango/document-save.png</iconset>
+     <normaloff>:/icons/tango/media-floppy.png</normaloff>:/icons/tango/media-floppy.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -272,7 +272,7 @@
   <action name="action_Save">
    <property name="icon">
     <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/document-save.png</normaloff>:/icons/tango/document-save.png</iconset>
+     <normaloff>:/icons/tango/media-floppy.png</normaloff>:/icons/tango/media-floppy.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
