@@ -2,7 +2,7 @@
 
 Easily create flowcharts from pseudocode.
 
-Website:    docs/Flowcharts.md
+Website:    https://github.com/RandyParedis/GraphDonkey/wiki/Flowcharts
 Author:     Randy Paredis
 """
 from vendor.plugins.flowchart.Flowchart import CheckFlowchartVisitor, convert

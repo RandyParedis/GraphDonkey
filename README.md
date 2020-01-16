@@ -62,7 +62,7 @@ be amazed!
 By default, `GraphDonkey` comes bundled with:
 * The [Graphviz][gv] rendering engine to bring your graphs to life, complete with a
 full grammar checker for the `Graphviz dot` language.
-* A [Flowchart / Pseudocode](wiki/Flowcharts.md) language that not only allows you
+* A [Flowchart / Pseudocode](wiki/Flowcharts) language that not only allows you
 to type clean and understandable pseudocode, but also see it visualized as a
 flowchart.
 
