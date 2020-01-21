@@ -46,11 +46,13 @@ class DotVisitor:
     def visit(self, tree: Tree):
         for child in tree.children:
             if isinstance(child, Tree):
-                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.data)
+                self.nodes[id(child)] = \
+                    self.root.node("node_%i" % id(child), child.data + "[%i:%i]" % (child.line, child.column))
                 self.visit(child)
             elif isinstance(child, Token): # TOKENS
                 val = child.value.replace("\\", "\\\\")
-                self.nodes[id(child)] = self.root.node("node_%i" % id(child), child.type + ":\n" + val,
+                self.nodes[id(child)] = self.root.node("node_%i" % id(child),
+                                                       "%s [%i:%i]:\n%s" % (child.type, child.line, child.column, val),
                                                        color="blue", fontcolor="blue", shape="box")
             if id(tree) in self.nodes and id(child) in self.nodes:
                 self.root.edge("node_%i" % id(tree), "node_%i" % id(child))

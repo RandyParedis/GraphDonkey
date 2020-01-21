@@ -27,7 +27,7 @@ edgeop: DIOP | UNOP
 node_stmt: node_id attr_list?
 node_id: id port?
 port: (":" id (":" compass_pt)?) | (":" compass_pt)
-subgraph: ("subgraph" id?)? "{" stmt_list "}"
+subgraph: (SUBGRAPH id?)? "{" stmt_list "}"
 compass_pt: "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw" | "c" | "_"
 
 // Operators

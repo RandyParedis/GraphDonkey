@@ -5,10 +5,9 @@ It also loads the Graphviz grammar from the vendor folder.
 Author: Randy Paredis
 Date:   16/12/2019
 """
-import graphviz
-
-from lark import Lark, Tree, Token
+from lark import Lark, Token, Tree
 from lark.exceptions import UnexpectedCharacters, UnexpectedToken, UnexpectedEOF
+from main.editor.Intellisense import CompletionStorage
 
 class Parser:
     def __init__(self, file="", parser="lalr"):
@@ -22,16 +21,19 @@ class Parser:
         self.visitor = CheckVisitor(self)
         self.converter = {}
 
-    def parse(self, text: str, yld=False):
+    def parse(self, text: str, yld=False, line=-1, col=-1):
         self.errors = []
-        self.visitor.clear()
         try:
             if self.parser is not None:
                 tree = self.parser.parse(text)
-                self.visitor.visit(tree)
-                self.errors += self.visitor.errors
-                if len(self.errors) == 0 or yld:
-                    return tree
+                if tree is not None:
+                    self.visitor.clear()
+                    self.visitor.line = line
+                    self.visitor.column = col
+                    self.visitor.visit(tree)
+                    self.errors += self.visitor.errors
+                    if len(self.errors) == 0 or yld:
+                        return tree
         except (UnexpectedCharacters, UnexpectedToken) as e:
             splt = str(e).split("\n")
             while "" in splt:
@@ -48,9 +50,9 @@ class Parser:
             return self.parser._terminals_dict[terminal_name]
         return None
 
-    def convert(self, text, engine):
+    def convert(self, text, engine, line=-1, col=-1):
         # TODO: what if engine does not exist?
-        T = self.parse(text)
+        T = self.parse(text, line=line, col=col)
         if T is not None:
             return self.converter[engine](text, T)
         return None
@@ -78,7 +80,13 @@ class CheckVisitor:
     This is ideally inherited from when defining semantic analysis, making sure
     all functions and attributes are set correctly.
 
+    Additionally, this class allows for setting the autocompletion as you desire.
+
     Attrs:
+        line (int):         The current line number of the cursor.
+        column (int):       The current column of the cursor.
+        completer (Any):    A CompletionStorage object that can be used by subclasses in order
+                            to identify context-specific autocompletion.
         parser (Parser):    The Parser object that's used for syntax checking.
                             This allows for a mere lookup of terminals and rules.
         errors (list):      A list of 3-tuples (tok, msg, alt); where
@@ -87,34 +95,81 @@ class CheckVisitor:
                                 alt (set):      A set of alternative tokens to use instead.
     """
     def __init__(self, parser):
+        self.line = -1
+        self.column = -1
+        self.completer = CompletionStorage()
         self.parser = parser
         self.errors = []
 
-    def previsit(self, tree: Tree):
-        """Function to call before visiting a rule."""
-        pass
+    def visit(self, tree):
+        """Main visit function to be called. DO NOT CHANGE!
 
-    def tokenvisit(self, token: Token):
-        """Function to call on visiting a token."""
-        pass
+        If you want to define specialities in subclasses, it is preferred to use
+        the available methods thereof.
 
-    def postvisit(self, tree: Tree):
-        """Function to call after visiting a rule."""
-        pass
+        Tokens can be called by their name, rules by either enter_rule or exit_rule
+        (where 'rule' must be replaced with the rule name in question). These set of
+        functions accept a single argument: the Tree/Token they refer to.
 
-    def visit(self, tree: Tree):
-        """Actual visit function.
+        These functions are parser/grammar-specific and can be omitted.
 
-        Do not override this function unless you know what you're doing.
+        ONLY ALTER THIS METHOD IF YOU KNOW WHAT YOU'RE DOING!
+
+        Args:
+            tree (Any): A Tree or a Token to use as an entrypoint. Commonly, this is
+                        the root of the parsed file.
+
+        Examples:
+            Given a grammar:
+                start: a | b
+                a: A
+                b: B
+                A: "A"i
+                B: "B"i
+
+            This function will call the methods `enter_start`, `exit_start`, `enter_a`, `exit_a`, `enter_b`, `exit_b`,
+            `A` and `B` if available and when they're needed to be called.
         """
-        self.previsit(tree)
-        for child in tree.children:
-            if isinstance(child, Tree):
+        if isinstance(tree, Tree):
+            getattr(self, "enter_" + tree.data, lambda x: x)(tree)
+            for child in tree.children:
                 self.visit(child)
-            else: # TOKENS
-                self.tokenvisit(child)
-        self.postvisit(tree)
+            getattr(self, "exit_" + tree.data, lambda x: x)(tree)
+        elif isinstance(tree, Token):
+            getattr(self, tree.type, lambda x: x)(tree)
+
+    def terminals(self, tree):
+        """Get a list of values for all the non-consumed terminals in the tree.
+
+        Args:
+            tree (Any): A Tree or a Token.
+        """
+        if isinstance(tree, Tree):
+            res = []
+            for child in tree.children:
+                res += self.terminals(child)
+            return res
+        elif isinstance(tree, Token):
+            return [tree.value]
+
+    def encapsulates(self, item):
+        """Returns True when the given item encapsulates the current position.
+
+        Args:
+            item (Any): Expected to be either a Tree or a Token.
+        """
+        if item.line == self.line:
+            if self.line == item.end_line:
+                return item.column <= self.column <= item.end_column
+            else:
+                return item.column <= self.column
+        if item.end_line == self.line:
+            return self.column <= item.end_column
+        return item.line <= self.line <= item.end_line
 
     def clear(self):
-        """Clear the errors."""
+        """Clear the visitor."""
         self.errors.clear()
+        self.completer.clear()
+        self.line = -1
+        self.column = -1

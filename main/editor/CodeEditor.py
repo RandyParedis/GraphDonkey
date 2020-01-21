@@ -81,7 +81,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.blockCountChanged.connect(self.lineNrChanged)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
-        self.textChanged.connect(self.textChangedSlot)
+        # self.textChanged.connect(self.textChangedSlot)
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
@@ -105,12 +105,15 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter = highlighter
 
     def convert(self, engine):
-        return self.highlighter.parser.convert(self.toPlainText(), engine)
+        curs = self.textCursor()
+        return self.highlighter.parser.convert(self.toPlainText(), engine,
+                                               line=curs.block().blockNumber() + 1, col=curs.columnNumber())
 
-    def textChangedSlot(self):
-        self.highlighter.storeErrors()
+    # def textChangedSlot(self):
+    #     self.highlighter.storeErrors()
 
     def positionChangedSlot(self):
+        self.highlighter.storeErrors()
         if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
         if bool(Config.value("editor/parentheses")):
@@ -151,14 +154,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.filecontents = ""
 
     def setCompleter(self):
-        keywords = [] # Constants.STRICT_KEYWORDS + Constants.ATTRIBUTES
-        keywords.sort()
-        self.completer = QtWidgets.QCompleter(keywords, self)
+        self.completer = QtWidgets.QCompleter([], self)
         self.completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.completer.setWrapAround(False)
         self.completer.setWidget(self)
-        self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+        self.completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
 
     def insertCompletion(self, completion):
         cursor = self.textCursor()
@@ -462,14 +463,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lines(indentLine, indent)
 
     def complete(self):
-        # TODO: identify context-specific actions
-        #   Model list can be changed with self.completer.model().setStringList()
         cursor = self.textCursor()
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         prefix = cursor.selectedText()
-        eow = "~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-="
+        completions, prefix = self.highlighter.parser.visitor.completer.get(prefix)
+        completions = sorted([x[0] for x in completions])
+        self.completer.model().setStringList(completions)
 
-        if len(prefix) > 0 and prefix[-1] in eow:
+        if len(completions) == 0:
             return
 
         if prefix != self.completer.completionPrefix():

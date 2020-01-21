@@ -10,18 +10,25 @@ class CheckFlowchartVisitor(CheckVisitor):
         super(CheckFlowchartVisitor, self).__init__(parser)
         self.depth = 0
 
-    def previsit(self, tree: Tree):
-        if tree.data in ["while", "do"]:
-            self.depth += 1
+    def enter_while(self, _):
+        self.depth += 1
 
-    def tokenvisit(self, token: Token):
-        if token.type in ["BREAK", "CONTINUE"]:
-            if self.depth == 0:
-                self.errors.append((token, "Loop control statements outside of loop.", {}))
+    def enter_do(self, _):
+        self.depth += 1
 
-    def postvisit(self, tree: Tree):
-        if tree.data == "while":
-            self.depth -= 1
+    def exit_while(self, _):
+        self.depth -= 1
+
+    def exit_do(self, _):
+        self.depth -= 1
+
+    def BREAK(self, token):
+        if self.depth == 0:
+            self.errors.append((token, "Loop control statements outside of loop.", {}))
+
+    def CONTINUE(self, token):
+        if self.depth == 0:
+            self.errors.append((token, "Loop control statements outside of loop.", {}))
 
 class ConversionVisitor:
     def __init__(self):

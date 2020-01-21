@@ -12,7 +12,7 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     - Smart File Encoding detection
             ==> Document-specific properties?
-    - Force autocompleter to suggest context-specific items
+    - Listen on host:port address?
     - Other file types
         - dot/graphviz itself
             - attribute checking?
@@ -23,24 +23,26 @@ TODO LIST
         - SQL?
         - Regex?
         - JSON?
+	    - math functions?
         - pic
         - plain/plain-ext
         - Mermaid?
         - Text Engine?
         - PlantUML?
         - OGDF Engine?
+	    - 3D Engine?
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
             - Enabling/Disabling
                 ==> Separate tab in Preferences window?
-            - Autocompleter?
             - Snippets?
     - Update all highlighting on typing!
     - Last line = newline
     - Open when in doc = open from current dir
     - Styling is via CSS?
     - Macros?
+    - Add tests!
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:
