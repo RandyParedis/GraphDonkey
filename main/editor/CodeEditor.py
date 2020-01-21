@@ -129,11 +129,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter.rehighlight()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
-        menu = QtWidgets.QMenu(self)
-        snippets = self.mainwindow.snippets.snippets
-        for name in snippets:
-            menu.addAction(name, lambda: self.insertPlainText(snippets[name]))
-        menu.exec_(event.globalPos())
+        # menu = QtWidgets.QMenu(self)
+        # snippets = self.mainwindow.snippets.snippets
+        # for name in snippets:
+        #     menu.addAction(name, lambda: self.insertPlainText(snippets[name]))
+        # menu.exec_(event.globalPos())
+        pass
 
     def isSaved(self):
         """Returns True if the file was saved."""
@@ -467,7 +468,15 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         prefix = cursor.selectedText()
         completions, prefix = self.highlighter.parser.visitor.completer.get(prefix)
-        completions = sorted([x[0] for x in completions])
+        completions = [x[0] for x in completions]
+
+        # TODO: list snippets as contents instead of values
+        #       make autocompleter use content if it exists, else the normal text
+        #       Snippet type to autocompleter?
+        snps = self.mainwindow.snippets.snippets
+        tp = self.wrapper.filetype.currentText()
+        completions += [snps.get(tp, {}).get(n, "") for n in snps.get(tp, {})]
+        completions.sort()
         self.completer.model().setStringList(completions)
 
         if len(completions) == 0:

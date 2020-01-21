@@ -5,8 +5,10 @@ Date:   17/12/2019
 """
 from PyQt5 import QtWidgets, uic
 from main.extra.IOHandler import IOHandler
+from main.plugins import PluginLoader
 import json
 
+pluginloader = PluginLoader.instance()
 
 class Snippets(QtWidgets.QDialog):
     def __init__(self, parent):
@@ -25,30 +27,40 @@ class Snippets(QtWidgets.QDialog):
         self.le_filter.setText("")
         self.clear()
         self.table.setSortingEnabled(False)
-        for name in self.snippets:
-            r = self.table.rowCount()
-            self.table.insertRow(r)
-            self.set(r, name, self.snippets[name])
+        for type in self.snippets:
+            for name in self.snippets[type]:
+                r = self.table.rowCount()
+                self.table.insertRow(r)
+                self.set(r, name, self.snippets[type][name], type=type)
         self.table.setSortingEnabled(True)
         QtWidgets.QDialog.exec_(self)
 
     def accept(self):
         self.snippets = {}
         for row in range(self.table.rowCount()):
-            name, code = self.get(row)
-            self.snippets[name] = code
+            type, name, code = self.get(row)
+            if type not in self.snippets:
+                self.snippets[type] = {}
+            self.snippets[type][name] = code
         with open(self.snipfile, 'w') as f:
             json.dump(self.snippets, f)
         QtWidgets.QDialog.accept(self)
 
-    def set(self, row, name, code):
-        self.table.setItem(row, 0, QtWidgets.QTableWidgetItem(name))
-        self.table.setItem(row, 1, QtWidgets.QTableWidgetItem(code))
+    def set(self, row, name, code, type=""):
+        combo = QtWidgets.QComboBox(self.table)
+        for it in pluginloader.getFileTypes():
+            if len(it) > 0:
+                combo.addItem(it)
+        combo.setCurrentText(type)
+        self.table.setCellWidget(row, 0, combo)
+        self.table.setItem(row, 1, QtWidgets.QTableWidgetItem(name))
+        self.table.setItem(row, 2, QtWidgets.QTableWidgetItem(code))
 
     def get(self, row):
-        name = self.table.item(row, 0).text()
-        code = self.table.item(row, 1).text()
-        return name, code
+        combo = self.table.cellWidget(row, 0).currentText()
+        name = self.table.item(row, 1).text()
+        code = self.table.item(row, 2).text()
+        return combo, name, code
 
     def add(self):
         row = self.table.rowCount()
@@ -66,6 +78,6 @@ class Snippets(QtWidgets.QDialog):
 
     def filter(self, text):
         for row in range(self.table.rowCount()):
-            name, _ = self.get(row)
+            _, name, _ = self.get(row)
             self.table.setRowHidden(row, text.lower() not in name.lower())
 

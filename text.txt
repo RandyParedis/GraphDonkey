@@ -23,7 +23,7 @@ TODO LIST
         - SQL?
         - Regex?
         - JSON?
-	    - math functions?
+	    - math functions/plots?
         - pic
         - plain/plain-ext
         - Mermaid?
@@ -38,6 +38,7 @@ TODO LIST
                 ==> Separate tab in Preferences window?
             - Snippets?
     - Update all highlighting on typing!
+    - Contextmenu?
     - Last line = newline
     - Open when in doc = open from current dir
     - Styling is via CSS?
