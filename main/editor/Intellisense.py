@@ -12,6 +12,7 @@ import re
 class Types(Enum):
     """Allows future expansion into different autocompletion types."""
     DEFAULT = 0
+    SNIPPET = 1
 
 class Trie:
     def __init__(self, data: str = None, contents=None, prefix: str = '', parent: tuple = None):

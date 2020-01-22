@@ -185,8 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
         edit = self.editor(index)
         if edit is not None:
             edit.highlighter.rehighlight()
-            if edit.filename == "":
-                self.displayGraph()
+            self.displayGraph()
             self.setUndoEnabled(edit.document().isUndoAvailable())
             self.setRedoEnabled(edit.document().isRedoAvailable())
 

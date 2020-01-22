@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
+    <width>545</width>
     <height>278</height>
    </rect>
   </property>
@@ -14,31 +14,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <widget class="QPushButton" name="pb_add">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Filter:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
+   <item row="1" column="0" colspan="4">
     <widget class="QTableWidget" name="table">
      <property name="textElideMode">
       <enum>Qt::ElideMiddle</enum>
@@ -78,20 +54,68 @@
    <item row="2" column="1">
     <widget class="QPushButton" name="pb_remove">
      <property name="text">
-      <string>Remove</string>
+      <string>&amp;Remove</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../icons/tango.qrc">
+       <normaloff>:/icons/tango/list-remove.png</normaloff>:/icons/tango/list-remove.png</iconset>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
+   <item row="0" column="1" colspan="3">
     <widget class="QLineEdit" name="le_filter">
      <property name="placeholderText">
       <string>Filter by Name</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Filter:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="pb_add">
+     <property name="text">
+      <string>&amp;Add</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../icons/tango.qrc">
+       <normaloff>:/icons/tango/list-add.png</normaloff>:/icons/tango/list-add.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="pb_duplicate">
+     <property name="text">
+      <string>&amp;Duplicate</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../icons/tango.qrc">
+       <normaloff>:/icons/tango/edit-copy.png</normaloff>:/icons/tango/edit-copy.png</iconset>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../icons/tango.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

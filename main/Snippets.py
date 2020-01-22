@@ -21,6 +21,7 @@ class Snippets(QtWidgets.QDialog):
 
         self.pb_add.clicked.connect(self.add)
         self.pb_remove.clicked.connect(self.remove)
+        self.pb_duplicate.clicked.connect(self.duplicate)
         self.le_filter.textChanged.connect(self.filter)
 
     def exec_(self):
@@ -71,6 +72,13 @@ class Snippets(QtWidgets.QDialog):
     def remove(self):
         row = self.table.currentRow()
         self.table.removeRow(row)
+
+    def duplicate(self):
+        row = self.table.currentRow()
+        t, n, c = self.get(row)
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+        self.set(row, n, c, t)
 
     def clear(self):
         while self.table.rowCount() > 0:

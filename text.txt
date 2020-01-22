@@ -12,7 +12,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     - Smart File Encoding detection
             ==> Document-specific properties?
-    - Listen on host:port address?
     - Other file types
         - dot/graphviz itself
             - attribute checking?
@@ -20,15 +19,14 @@ TODO LIST
         - flowchart
             - function calls
         - lark
-        - SQL?
         - Regex?
         - JSON?
-	    - math functions/plots?
         - pic
         - plain/plain-ext
         - Mermaid?
-        - Text Engine?
         - PlantUML?
+	    - math functions/plots?
+        - Text Engine?
         - OGDF Engine?
 	    - 3D Engine?
         - Convertion function
@@ -36,12 +34,12 @@ TODO LIST
         - Plugin System
             - Enabling/Disabling
                 ==> Separate tab in Preferences window?
-            - Snippets?
-    - Update all highlighting on typing!
-    - Contextmenu?
     - Last line = newline
     - Open when in doc = open from current dir
-    - Styling is via CSS?
+    - Contextmenu?
+    - Check for Updates?
+    - Styling via CSS?
+    - Listen on host:port address?
     - Macros?
     - Add tests!
     - Fix in-code TODOs

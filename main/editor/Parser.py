@@ -158,6 +158,7 @@ class CheckVisitor:
         Args:
             item (Any): Expected to be either a Tree or a Token.
         """
+        if item.meta.empty: return False
         if item.line == self.line:
             if self.line == item.end_line:
                 return item.column <= self.column <= item.end_column

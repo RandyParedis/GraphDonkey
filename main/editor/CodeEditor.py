@@ -21,7 +21,7 @@ from main.editor.Highlighter import BaseHighlighter
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
-import sys
+from main.editor.Intellisense import Types
 
 pluginloader = PluginLoader.instance()
 Config = IOHandler.get_preferences()
@@ -155,7 +155,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.filecontents = ""
 
     def setCompleter(self):
-        self.completer = QtWidgets.QCompleter([], self)
+        self.completer = QtWidgets.QCompleter(self)
+        self.completer.setModel(QtGui.QStandardItemModel())
         self.completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.completer.setWrapAround(False)
@@ -163,12 +164,17 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
 
     def insertCompletion(self, completion):
+        comp, _ = self.highlighter.parser.visitor.completer.get(completion)
+        if len(comp) == 0:
+            text = completion
+        else:
+            text = comp[0][0] if comp[0][2] is None else comp[0][2]
         cursor = self.textCursor()
         extra = len(self.completer.completionPrefix())
         if extra > 0:
-            cursor.movePosition(QtGui.QTextCursor.PreviousCharacter)
-        cursor.movePosition(QtGui.QTextCursor.EndOfWord)
-        cursor.insertText(completion[extra:])
+            cursor.movePosition(QtGui.QTextCursor.PreviousCharacter, n=extra)
+        cursor.movePosition(QtGui.QTextCursor.EndOfWord, QtGui.QTextCursor.KeepAnchor)
+        cursor.insertText(text)
         self.setTextCursor(cursor)
 
     def encapsulateText(self, o, c):
@@ -467,17 +473,19 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor = self.textCursor()
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         prefix = cursor.selectedText()
-        completions, prefix = self.highlighter.parser.visitor.completer.get(prefix)
-        completions = [x[0] for x in completions]
 
-        # TODO: list snippets as contents instead of values
-        #       make autocompleter use content if it exists, else the normal text
-        #       Snippet type to autocompleter?
+        ctr = self.highlighter.parser.visitor.completer
         snps = self.mainwindow.snippets.snippets
         tp = self.wrapper.filetype.currentText()
-        completions += [snps.get(tp, {}).get(n, "") for n in snps.get(tp, {})]
-        completions.sort()
-        self.completer.model().setStringList(completions)
+        for n in snps.get(tp, {}):
+            ctr.add(n, Types.SNIPPET, snps[tp].get(n, None))
+        completions, prefix = self.highlighter.parser.visitor.completer.get(prefix)
+
+        mdl = self.completer.model()
+        mdl.clear()
+        for c in completions:
+            it = QtGui.QStandardItem(c[0])
+            mdl.appendRow(it)
 
         if len(completions) == 0:
             return
@@ -487,7 +495,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
 
         cr = self.cursorRect()
-        cr.setWidth(self.completer.popup().sizeHintForColumn(0) +
+        cr.setLeft(cr.left() + self.completer.popup().verticalScrollBar().sizeHint().width() * 3)
+        cr.setWidth(self.completer.popup().sizeHintForColumn(0) * 2 +
                     self.completer.popup().verticalScrollBar().sizeHint().width())
         self.completer.complete(cr)
 
