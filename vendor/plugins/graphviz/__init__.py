@@ -7,13 +7,26 @@ representing structural information as diagrams of abstract graphs and networks.
 important applications in networking, bioinformatics,  software engineering, database
 and web design, machine learning, and in visual interfaces for other technical domains.
 
-Website:    https://www.graphviz.org/
+This plugin includes:
+
+*   Syntax Highlighting and (LALR) Parsing for Graphviz-Files
+*   A rendering engine for Graphviz (which can be used by other plugins. This engine allows:
+    + Rendering in `dot`, `neato`, `twopi`, `circo`, `fdp`, `sfdp`, `patchwork` and `osage`
+    + Exporting to numerous filetypes
+    + Rendering AST structures to be shown
+*   Highly customizable
+
 Author:     Randy Paredis
+Website:    https://www.graphviz.org/
+Note:      '_Author_' refers to the creator of this plugin, not the software used behind
+:           the scenes.
 """
 from vendor.plugins.graphviz.CheckDot import CheckDotVisitor
 from vendor.plugins.graphviz.Engine import convert, export, AST
 from vendor.plugins.graphviz.Settings import GraphvizSettings
 from main.extra import Constants
+
+ICON = "graphviz.png"
 
 keywords = [
     "strict", "graph", "digraph", "node", "edge", "subgraph"

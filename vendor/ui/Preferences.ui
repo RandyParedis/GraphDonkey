@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>685</width>
-    <height>557</height>
+    <width>745</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,13 +24,10 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
-     <property name="tabPosition">
-      <enum>QTabWidget::North</enum>
-     </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tab_general">
       <attribute name="title">
@@ -348,8 +345,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>643</width>
-            <height>457</height>
+            <width>703</width>
+            <height>509</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -560,7 +557,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>689</width>
             <height>881</height>
            </rect>
           </property>
@@ -863,7 +860,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
+            <width>689</width>
             <height>1366</height>
            </rect>
           </property>
@@ -1290,6 +1287,99 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_plugins">
+      <attribute name="title">
+       <string>&amp;Plugins</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_23">
+       <item row="0" column="0">
+        <widget class="QSplitter" name="splitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="childrenCollapsible">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="pluginlistwrapper" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="filterPlugins">
+             <property name="placeholderText">
+              <string>Filter...</string>
+             </property>
+             <property name="clearButtonEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QScrollArea" name="pluginlistscroll">
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="pluginlist">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>433</width>
+                <height>478</height>
+               </rect>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QScrollArea" name="pluginviewscroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="pluginviewer">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>264</width>
+             <height>509</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_24"/>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -1337,12 +1427,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>365</x>
-     <y>436</y>
+     <x>119</x>
+     <y>86</y>
     </hint>
     <hint type="destinationlabel">
-     <x>365</x>
-     <y>479</y>
+     <x>119</x>
+     <y>86</y>
     </hint>
    </hints>
   </connection>

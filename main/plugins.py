@@ -17,6 +17,8 @@ class Plugin:
         self._dir = IOHandler.directory(self.filename)
         self.name = ""
         self.description = ""
+        self.attrs = []
+        self.icon = ""
         self.types = {}
         self.engines = {}
         self.preferences = {}
@@ -29,8 +31,10 @@ class Plugin:
     def load(self):
         self.name = ""
         self.description = ""
-        self.types = {}
-        self.engines = {}
+        self.icon = ""
+        self.attrs.clear()
+        self.types.clear()
+        self.engines.clear()
 
         _locals = {}
         exec(open(self.filename).read(), {}, _locals)
@@ -43,11 +47,24 @@ class Plugin:
                 if doc[i] != "":
                     idx = i
                     break
-            p = doc.pop()
-            while p == "":
-                p = doc.pop()
-            else:
-                doc.append(p)
+            for p in reversed(doc):
+                if ":" in p:
+                    k, v = p.split(":", 1)
+                    self.attrs.append((k.strip(), v.strip()))
+                    doc.pop()
+                elif p != "":
+                    break
+                else:
+                    doc.pop()
+            self.attrs.reverse()
+            for i in range(len(self.attrs) - 1, -1, -1):
+                if i > 0:
+                    k, v = self.attrs[i]
+                    if k == "":
+                        kp, vp = self.attrs[i-1]
+                        self.attrs[i-1] = kp, vp + " " + v
+                        self.attrs.pop(i)
+
             self.description = "\n".join(doc[idx:])
         if "TYPES" in _locals:
             self.types = _locals["TYPES"]
@@ -56,6 +73,8 @@ class Plugin:
                     self.types[t]["grammar"] = self.path(self.types[t]["grammar"])
         if "ENGINES" in _locals:
             self.engines = _locals["ENGINES"]
+        if "ICON" in _locals:
+            self.icon = self.path(_locals["ICON"])
 
     def enable(self, on=True):
         self.enabled = on

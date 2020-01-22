@@ -32,8 +32,7 @@ TODO LIST
         - Convertion function
             - Open new file with filetype gv, transformed from the file ext
         - Plugin System
-            - Enabling/Disabling
-                ==> Separate tab in Preferences window?
+            - Preferences: Filtering + Enabling/Disabling + (Optional) Settings
     - Last line = newline
     - Open when in doc = open from current dir
     - Contextmenu?

@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore, uic
 from main.extra.IOHandler import IOHandler
 from main.extra import Constants
 import configparser
+import markdown
 import glob
 import re
 import os
@@ -57,6 +58,13 @@ class Preferences(QtWidgets.QDialog):
                     box.preferences = self.preferences
                     self.pluginUi[e] = box
                     lo.addWidget(box, lo.rowCount(), 0, 1, -1)
+            self.pluginlist.layout().addWidget(PluginButton(p, self.pluginviewer, preferences=self))
+        eq = [2, 3]
+        seq = sum(eq)
+        w = self.splitter.width()
+        eq = [x / seq * w for x in eq]
+        self.splitter.setSizes(eq)
+        self.pluginlist.findChild(PluginButton).click()
 
     def parseDisable(self, b):
         if not b:
@@ -618,3 +626,88 @@ class Theme:
 
     def color(self, name:str="", default=None):
         return self.config.get("styles", name, fallback=default)
+
+
+class PluginButton(QtWidgets.QLabel):
+    def __init__(self, plugin, viewer, preferences=None, parent=None):
+        super(PluginButton, self).__init__(parent)
+        self.plugin = plugin
+        self.viewer = viewer
+        self.prefs = preferences
+        self.setTextFormat(QtCore.Qt.RichText)
+        self.setText(self.getHeader(16, 12))
+
+    def getHeader(self, size=None, small=None):
+        ic = ""
+        if len(self.plugin.icon) > 0:
+            ic = "<td width=64 valign='middle'><img src='%s' width=64 height=64></td>" % self.plugin.icon
+        stl1, stl2 = "", ""
+        if size is not None:
+            stl1 = "style='font-size:%ipx'" % size
+        if small is not None:
+            stl2 = "style='font-size:%ipx'" % small
+        return "<table width='100%%' cellspacing=10 %s>" \
+               "<tr>%s" \
+               "<td valign='middle'><b>%s</b><br><span %s>%s</span></td>" \
+               "</tr>" \
+               "</table>" % (stl1, ic, self.plugin.name, stl2, self.getSubSec())
+
+    def getSubSec(self):
+        author = ""
+        version = ""
+        for k, v in self.plugin.attrs:
+            if k.lower() == "author":
+                author = v
+            if k.lower() == "version":
+                version = v
+        if len(author) > 0 < len(version):
+            return "%s - %s" % (author, version)
+        else:
+            return author if len(author) > 0 else version
+
+    def getDesc(self):
+        desc = markdown.markdown(self.plugin.description, extensions=['legacy_em'])
+
+        attrs = "<table width='100%%' cellspacing=10>%s</table>" %\
+                ("".join(["<tr><td width='30%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
+                          (k, self.transform(v)) for k, v in self.plugin.attrs]))
+        return desc + "<br>" + attrs
+
+    @staticmethod
+    def transform(txt):
+        m = re.match(r"^https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$", txt)
+        if m is not None:
+            return "<a href='%s'>%s</a>" % (txt, txt)
+        return markdown.markdown(txt, extensions=['legacy_em'])
+
+    def mousePressEvent(self, QMouseEvent):
+        # Reset all button roles
+        btns = self.parent().findChildren(PluginButton)
+        pal = self.palette()
+        pal.setColor(QtGui.QPalette.Button, self.prefs.preferences.value('col_button', self.prefs.col_button.color()))
+        for btn in btns:
+            btn.setBackgroundRole(QtGui.QPalette.Button)
+            btn.setPalette(pal)
+            btn.setAutoFillBackground(True)
+        # Set current button
+        pal = self.palette()
+        pal.setColor(QtGui.QPalette.Button, self.prefs.preferences.value('col_base', self.prefs.col_base.color()))
+        self.setBackgroundRole(QtGui.QPalette.Highlight)
+        self.setPalette(pal)
+
+        # Fill the viewer
+        lo = self.viewer.layout()
+        for i in reversed(range(lo.count())):
+            lo.itemAt(i).widget().setParent(None)
+        header = QtWidgets.QLabel(self.getHeader(20, 14))
+        header.setTextFormat(QtCore.Qt.RichText)
+        header.setWordWrap(True)
+        lo.addWidget(header, 0, 0, 1, 1)
+        desc = QtWidgets.QLabel(self.getDesc())
+        desc.setTextFormat(QtCore.Qt.RichText)
+        desc.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
+        desc.setWordWrap(True)
+        lo.addWidget(desc, 1, 0, 3, 1)
+
+    def click(self):
+        self.mousePressEvent(None)
