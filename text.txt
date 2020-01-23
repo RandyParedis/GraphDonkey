@@ -10,36 +10,23 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    - Smart File Encoding detection
-            ==> Document-specific properties?
-    - Other file types
-        - dot/graphviz itself
-            - attribute checking?
-            - xdot?
-        - flowchart
-            - function calls
-        - lark
-        - Regex?
-        - JSON?
-        - pic
-        - plain/plain-ext
-        - Mermaid?
-        - PlantUML?
-	    - math functions/plots?
-        - Text Engine?
-        - OGDF Engine?
-	    - 3D Engine?
-        - Convertion function
-            - Open new file with filetype gv, transformed from the file ext
-        - Plugin System
-            - Preferences: Filtering + Enabling/Disabling + (Optional) Settings
-    - Last line = newline
-    - Open when in doc = open from current dir
-    - Contextmenu?
+    - Convertion function: Open new file with other filetype, transformed from the original
+    - Features:
+        - Last line = newline
+        - Move line up/down shortcut
+        - home to beginning of text vs beginning of line
+        - Open when in doc = open from current dir
+        - Contextmenu?
+        - Listen on host:port address?
+        - Macros?
+    - Document-specific properties (in statusbar?)
+        - Line endings (smart detection?)
+        - File encoding (smart detection?)
+        - File type
+        - Renderer
     - Check for Updates?
-    - Styling via CSS?
-    - Listen on host:port address?
-    - Macros?
+        - Other program (wizard) that includes updates, preference clearing, uninstalling
+    - Styles/themes via CSS vs INI
     - Add tests!
     - Fix in-code TODOs
 

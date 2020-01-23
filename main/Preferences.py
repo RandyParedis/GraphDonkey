@@ -49,15 +49,9 @@ class Preferences(QtWidgets.QDialog):
     def _setupPlugins(self):
         self.pluginUi = {}
         ps = pluginloader.get()
-        lo = self.view_scroll.layout()
         for p in ps:
             for e in p.engines:
                 self.combo_engine.addItem(e)
-                box = p.getPreferencesUi(e)
-                if box is not None:
-                    box.preferences = self.preferences
-                    self.pluginUi[e] = box
-                    lo.addWidget(box, lo.rowCount(), 0, 1, -1)
             self.pluginlist.layout().addWidget(PluginButton(p, self.pluginviewer, preferences=self))
         eq = [2, 3]
         seq = sum(eq)
@@ -65,6 +59,13 @@ class Preferences(QtWidgets.QDialog):
         eq = [x / seq * w for x in eq]
         self.splitter.setSizes(eq)
         self.pluginlist.findChild(PluginButton).click()
+        self.filterPlugins.textChanged.connect(self.pluginFilter)
+
+    def pluginFilter(self, txt):
+        fields = self.pluginlist.findChildren(PluginButton)
+        for field in fields:
+            field.setVisible(field.matches(txt))
+        [x for x in fields if x.isVisible()][0].click()
 
     def parseDisable(self, b):
         if not b:
@@ -323,8 +324,17 @@ class Preferences(QtWidgets.QDialog):
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
         # PLUGINS
-        for eid in self.pluginUi:
-            self.pluginUi[eid].rectify()
+        if True:
+            plst = pluginloader.get()
+            pls = self.preferences.value("plugin/enabled", [p.name for p in plst])
+            for plugin in plst:
+                plugin.enable(plugin.name in pls)
+            for eid in self.pluginUi:
+                ui = self.pluginUi[eid]
+                grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
+                self.preferences.beginGroup(grp)
+                ui.rectify()
+                self.preferences.endGroup()
 
     def apply(self):
         self.preferences.clear()
@@ -442,6 +452,16 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 
+        # PLUGINS
+        if True:
+            self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
+            for eid in self.pluginUi:
+                ui = self.pluginUi[eid]
+                grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
+                self.preferences.beginGroup(grp)
+                ui.apply()
+                self.preferences.endGroup()
+
         self.preferences.sync()
 
         self.parent().lockDisplay()
@@ -449,8 +469,6 @@ class Preferences(QtWidgets.QDialog):
         self.applyView()
         self.applyStyle()
         self.applyShortcuts()
-        for eid in self.pluginUi:
-            self.pluginUi[eid].apply()
         self.parent().releaseDisplay()
 
     def applyShortcuts(self):
@@ -488,6 +506,9 @@ class Preferences(QtWidgets.QDialog):
         self.parent().files.setTabBarAutoHide(self.check_autohide.isChecked())
         for index in range(self.parent().files.count()):
             editor = self.parent().editor(index)
+
+            # SET FILE TYPES AND ENGINES
+            editor.wrapper.setTypes()
 
             # SHOW WHITESPACES
             option = editor.document().defaultTextOption()
@@ -631,11 +652,15 @@ class Theme:
 class PluginButton(QtWidgets.QLabel):
     def __init__(self, plugin, viewer, preferences=None, parent=None):
         super(PluginButton, self).__init__(parent)
+        self.setCursor(QtCore.Qt.PointingHandCursor)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.plugin = plugin
         self.viewer = viewer
         self.prefs = preferences
         self.setTextFormat(QtCore.Qt.RichText)
         self.setText(self.getHeader(16, 12))
+
+        self.setOptions()
 
     def getHeader(self, size=None, small=None):
         ic = ""
@@ -663,15 +688,18 @@ class PluginButton(QtWidgets.QLabel):
         if len(author) > 0 < len(version):
             return "%s - %s" % (author, version)
         else:
-            return author if len(author) > 0 else version
+            return author if len(author) > 0 else version if len(version) > 0 else ""
 
     def getDesc(self):
         desc = markdown.markdown(self.plugin.description, extensions=['legacy_em'])
 
         attrs = "<table width='100%%' cellspacing=10>%s</table>" %\
-                ("".join(["<tr><td width='30%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
+                ("".join(["<tr><td width='20%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
                           (k, self.transform(v)) for k, v in self.plugin.attrs]))
-        return desc + "<br>" + attrs
+        return desc + "<br>" + attrs + "<br>"
+
+    def matches(self, txt):
+        return txt in self.plugin.name or txt in self.plugin.description
 
     @staticmethod
     def transform(txt):
@@ -679,6 +707,17 @@ class PluginButton(QtWidgets.QLabel):
         if m is not None:
             return "<a href='%s'>%s</a>" % (txt, txt)
         return markdown.markdown(txt, extensions=['legacy_em'])
+
+    def setOptions(self):
+        lo = self.viewer.layout()
+        for e in self.plugin.engines:
+            if e not in self.prefs.pluginUi:
+                box = self.plugin.getPreferencesUi(e)
+                if box is not None:
+                    box.preferences = self.prefs.preferences
+                    box.plugin = self.plugin
+                    self.prefs.pluginUi[e] = box
+            lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, 1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles
@@ -689,6 +728,7 @@ class PluginButton(QtWidgets.QLabel):
             btn.setBackgroundRole(QtGui.QPalette.Button)
             btn.setPalette(pal)
             btn.setAutoFillBackground(True)
+
         # Set current button
         pal = self.palette()
         pal.setColor(QtGui.QPalette.Button, self.prefs.preferences.value('col_base', self.prefs.col_base.color()))
@@ -701,13 +741,27 @@ class PluginButton(QtWidgets.QLabel):
             lo.itemAt(i).widget().setParent(None)
         header = QtWidgets.QLabel(self.getHeader(20, 14))
         header.setTextFormat(QtCore.Qt.RichText)
+        header.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         header.setWordWrap(True)
         lo.addWidget(header, 0, 0, 1, 1)
+
+        cb = QtWidgets.QCheckBox("Enable Plugin")
+        cb.setChecked(self.plugin.enabled)
+        cb.toggled.connect(self.plugin.enable)
+        lo.addWidget(cb, 1, 0, 1, 1)
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        lo.addWidget(line, 2, 0, 1, 1)
+
         desc = QtWidgets.QLabel(self.getDesc())
         desc.setTextFormat(QtCore.Qt.RichText)
         desc.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
+        desc.setOpenExternalLinks(True)
         desc.setWordWrap(True)
-        lo.addWidget(desc, 1, 0, 3, 1)
+        lo.addWidget(desc, 3, 0, 3, 1)
+
+        self.setOptions()
 
     def click(self):
         self.mousePressEvent(None)

@@ -56,13 +56,13 @@ class GraphvizSettings(Settings):
             field.addItem(fmt)
 
     def apply(self):
-        self.preferences.setValue("plugin/graphviz/format", self.combo_format.currentText())
-        self.preferences.setValue("plugin/graphviz/engine", self.combo_engine.currentText())
-        self.preferences.setValue("plugin/graphviz/renderer", self.combo_renderer.currentText())
-        self.preferences.setValue("plugin/graphviz/formatter", self.combo_formatter.currentText())
+        self.preferences.setValue("format", self.combo_format.currentText())
+        self.preferences.setValue("engine", self.combo_engine.currentText())
+        self.preferences.setValue("renderer", self.combo_renderer.currentText())
+        self.preferences.setValue("formatter", self.combo_formatter.currentText())
 
     def rectify(self):
-        self.combo_engine.setCurrentText(self.preferences.value("plugin/graphviz/engine", "dot"))
-        self.combo_format.setCurrentText(self.preferences.value("plugin/graphviz/format", "svg"))
-        self.combo_renderer.setCurrentText(self.preferences.value("plugin/graphviz/renderer", "svg"))
-        self.combo_formatter.setCurrentText(self.preferences.value("plugin/graphviz/formatter", "core"))
+        self.combo_engine.setCurrentText(self.preferences.value("engine", "dot"))
+        self.combo_format.setCurrentText(self.preferences.value("format", "svg"))
+        self.combo_renderer.setCurrentText(self.preferences.value("renderer", "svg"))
+        self.combo_formatter.setCurrentText(self.preferences.value("formatter", "core"))

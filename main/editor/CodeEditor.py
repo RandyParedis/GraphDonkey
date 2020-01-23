@@ -31,7 +31,7 @@ class EditorWrapper(QtWidgets.QWidget):
         super(EditorWrapper, self).__init__(parent)
         self._layout = QtWidgets.QGridLayout()
         self.editor = CodeEditor(self)
-        self.types = pluginloader.getFileTypes()
+        self.types = []
         self.filetype = QtWidgets.QComboBox()
         self.engine = QtWidgets.QComboBox()
 
@@ -50,19 +50,26 @@ class EditorWrapper(QtWidgets.QWidget):
         self.setLayout(self._layout)
 
     def setTypes(self):
+        self.types = pluginloader.getFileTypes()
+        txt = self.filetype.currentText()
+        self.filetype.clear()
         for type in self.types:
             name, klass = self.types[type]
             self.filetype.addItem(name, klass)
+        # TODO: determine filetype based on extension
+        self.filetype.setCurrentText(txt)
 
     def alter(self, idx):
-        data = self.filetype.itemData(idx)
-        self.editor.alter(data(self.editor.document(), self.editor))
-        self.editor.highlighter.rehighlight()
-        ens = pluginloader.getEnginesForFileType(self.filetype.itemText(idx))
         self.engine.clear()
-        for en in ens:
-            self.engine.addItem(en)
-        self.engine.setCurrentText(Config.value("view/engine"))
+        if idx >= 0:
+            data = self.filetype.itemData(idx)
+            self.editor.alter(data(self.editor.document(), self.editor))
+            self.editor.highlighter.rehighlight()
+            ens = pluginloader.getEnginesForFileType(self.filetype.itemText(idx))
+            for en in ens:
+                self.engine.addItem(en)
+            self.engine.setCurrentText(Config.value("view/engine"))
+        self.editor.mainwindow.displayGraph()
 
     def setType(self, type):
         self.filetype.setCurrentText(self.types[type][0])
@@ -81,7 +88,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.blockCountChanged.connect(self.lineNrChanged)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
-        # self.textChanged.connect(self.textChangedSlot)
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
@@ -108,9 +114,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         curs = self.textCursor()
         return self.highlighter.parser.convert(self.toPlainText(), engine,
                                                line=curs.block().blockNumber() + 1, col=curs.columnNumber())
-
-    # def textChangedSlot(self):
-    #     self.highlighter.storeErrors()
 
     def positionChangedSlot(self):
         self.highlighter.storeErrors()

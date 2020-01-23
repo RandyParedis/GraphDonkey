@@ -509,7 +509,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def forceDisplay(self):
         if self.canDisplay():
             res = self.displayGraph()
-            self.error("Error", res)
+            if res is not None and len(res) > 0:
+                self.error("Error", res)
         else:
             self.error("Cannot Render", "A process is currently trying to render the graph, please wait.")
 
@@ -518,7 +519,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.view.clear()
             ename = self.editorWrapper().engine.currentText()
             try:
-                engine = pluginloader.getEngines()[ename]
+                engine = pluginloader.getEngines().get(ename, None)
+                if engine is None:
+                    raise RuntimeError("Unknown rendering engine '%s'." % ename)
                 res = self.editor().convert(ename)
                 if res is not None:
                     bdata = engine["convert"](res)

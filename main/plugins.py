@@ -145,10 +145,12 @@ class PluginLoader:
             dname = IOHandler.dir_plugins(filename)
             if os.path.isdir(dname):
                 plugin = Plugin(IOHandler.join(dname, "__init__.py"))
-                if plugin.name not in self.plugins:
+                if len(plugin.name) == 0:
+                    raise KeyError("Plugin name cannot be empty!")
+                elif plugin.name not in self.plugins:
                     self.plugins[plugin.name] = plugin
                 elif failOnDuplicate:
-                    raise KeyError("Duplicate Plugin Name Found: %s!" % plugin.name)
+                    raise KeyError("Duplicate plugin name found: %s!" % plugin.name)
 
     def get(self, active=True):
         if active:
@@ -181,9 +183,12 @@ class PluginLoader:
     def getEnginesForFileType(self, filetype, active=True):
         en = []
         ps = self.get(active)
+        ens = set(self.getEngines(active))
         for p in ps:
             if filetype in p.types:
-                en.append([*(p.types[filetype].get("converter", {}))])
+                ta = p.types[filetype].get("converter", {})
+                if set(ta).intersection(ens):
+                    en.append(list(ta))
         return [i for s in en for i in s]
 
 
@@ -194,6 +199,7 @@ class Settings(QtWidgets.QGroupBox):
         super(Settings, self).__init__(parent)
         uic.loadUi(pathname, self)
         self.preferences = None
+        self.plugin = None
 
     def apply(self):
         raise NotImplementedError()
