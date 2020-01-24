@@ -20,6 +20,7 @@ Author:     Randy Paredis
 Website:    https://www.graphviz.org/
 Note:      '_Author_' refers to the creator of this plugin, not the software used behind
 :           the scenes.
+Requires:   Obviously, this requires the `graphviz` package.
 """
 from vendor.plugins.graphviz.CheckDot import CheckDotVisitor
 from vendor.plugins.graphviz.Engine import convert, export, AST

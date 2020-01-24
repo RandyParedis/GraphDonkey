@@ -1,9 +1,21 @@
 """Check semantics of Flowchart / Pseudocode file."""
 
-from main.extra import delNodes
 from main.editor.Parser import CheckVisitor
 from lark import Tree, Token
 from graphviz import Digraph
+
+def delNodes(dot: Digraph, nodeNames: list):
+    tr = []
+    for i in range(len(dot.body)):
+        line = dot.body[i]
+        if "--" not in line or "->" not in line:
+            l = line.strip().split(" ")
+            if l[0] in nodeNames:
+                tr.append(i)
+
+    tr = sorted(tr, reverse=True)
+    for i in tr:
+        dot.body.pop(i)
 
 class CheckFlowchartVisitor(CheckVisitor):
     def __init__(self, parser):

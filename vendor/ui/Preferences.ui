@@ -110,53 +110,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_65">
-            <property name="text">
-             <string>File Encoding:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="QComboBox" name="combo_encoding">
-            <item>
-             <property name="text">
-              <string>UTF-8</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>ISO-8859-1</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="QComboBox" name="combo_lineEndings">
-            <item>
-             <property name="text">
-              <string>Posix (LF)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Mac (CR)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Windows (CRLF)</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_66">
-            <property name="text">
-             <string>Line Endings:</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0" colspan="3">
            <widget class="QCheckBox" name="check_autohide">
             <property name="text">

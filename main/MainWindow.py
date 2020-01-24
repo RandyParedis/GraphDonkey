@@ -9,11 +9,11 @@ from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
 from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
-from main.editor.CodeEditor import EditorWrapper
+from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
-import subprocess, os, sys
+import os, sys, chardet
 
 from main.plugins import PluginLoader
 
@@ -32,23 +32,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.disableDisplay = []
         self.lockDisplay(False)
 
-        # Set Statusbar
-        self.statusMessage = QtWidgets.QLabel("")
-        self.positionIndicator = QtWidgets.QLabel(":")
-        self.encIndicator = QtWidgets.QLabel("")
-        self.positionIndicator.setAlignment(QtCore.Qt.AlignRight)
-        self.encIndicator.setAlignment(QtCore.Qt.AlignRight)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
-        self.statusBar().addPermanentWidget(self.statusMessage, 7)
-        self.statusBar().addPermanentWidget(self.positionIndicator, 1)
-        self.statusBar().addPermanentWidget(self.encIndicator, 1)
-        self.statusBar().addPermanentWidget(QtWidgets.QLabel(" "))
-
         self.files.clear()
         self.files.currentChanged.connect(self.tabChanged)
         self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
+        self.setStatusBar(StatusBar(None))
 
         self.preferences = Preferences(self)
         self.preferences.apply()
@@ -100,6 +89,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
+
+    def setStatusBar(self, status: StatusBar):
+        if self.statusBar() and isinstance(self.statusBar(), StatusBar):
+            self.statusBar().setParent(self.statusBar().wrapper)
+        super(MainWindow, self).setStatusBar(status)
 
     def editorEvent(self, name):
         edit = self.editor()
@@ -185,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
         edit = self.editor(index)
         if edit is not None:
             edit.highlighter.rehighlight()
+            self.setStatusBar(edit.wrapper.statusBar)
             self.displayGraph()
             self.setUndoEnabled(edit.document().isUndoAvailable())
             self.setRedoEnabled(edit.document().isRedoAvailable())
@@ -226,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle("")
 
     def updateStatus(self, text):
-        self.statusMessage.setText(text)
+        self.statusBar().statusMessage.setText(text)
 
     def newTab(self, label):
         editor = EditorWrapper(self)
@@ -359,16 +354,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateTitle()
 
     def openFile(self, fileName):
+        self.lockDisplay()
         if fileName and fileName != "":
             ext = fileName.split(".")[-1]
             exts = pluginloader.getFileExtensions()
             valid = True
             try:
+                self.newTab(fileName)
                 with open(fileName, "rb") as myfile:
                     data = myfile.read()
-                    # TODO: On decoding crash => find actual encoding?
-                    data = data.decode(Config.value("encoding"))
-                self.newTab(fileName)
+                    enc = chardet.detect(data)
+                    et = enc['encoding']
+                    idx = self.editor().wrapper.encoding.findText(et.upper())
+                    if idx == -1:
+                        self.warn("Unknown File Encoding", "Cannot identify encoding.\nReverting to UTF-8.")
+                        et = 'utf-8'
+                    data = data.decode(et)
+                self.editor().wrapper.encoding.setCurrentText(et.upper())
                 self.editor().setText(data)
                 self.updateRecents(fileName)
                 self.editor().filename = fileName
@@ -376,12 +378,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setEditorType(Constants.lookup(ext, exts, ""))
             except IOError as e:
                 self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
-                self.close()
+                self.closeFile()
                 valid = False
             self.updateTitle()
+            self.releaseDisplay()
             return valid
         else:
             self.new()
+        self.releaseDisplay()
         return True
 
     def open(self):
@@ -399,13 +403,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.saveAs()
         else:
             contents = editor.toPlainText()
-            contents = contents.replace("\n", Constants.ENDINGS[int(Config.value("endings"))])
-            bc = bytes(contents, Config.value("encoding"))
-            # TODO: error on invalid encoding
-            with open(editor.filename, 'wb') as myfile:
-                myfile.write(bc)
-            editor.save()
-            self.updateTitle()
+            contents = contents.replace("\n", editor.wrapper.linesep.currentData())
+            try:
+                bc = bytes(contents, editor.wrapper.encoding.currentData())
+                with open(editor.filename, 'wb') as myfile:
+                    myfile.write(bc)
+                editor.save()
+                self.updateTitle()
+            except Exception as e:
+                self.error("Error", str(e))
 
     def saveAll(self):
         old = self.files.currentIndex()

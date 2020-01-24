@@ -12,7 +12,7 @@ Date:   01/01/2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
-from main.extra import IOHandler, dotToQPixmap, isSVG, Constants, tango
+from main.extra import IOHandler, isSVG, Constants, tango
 import os
 
 Config = IOHandler.IOHandler.get_preferences()
@@ -149,17 +149,6 @@ class GraphicsView(QtWidgets.QWidget):
         sr = self._scene.itemsBoundingRect()
         sr.adjust(-margin, -margin, margin, margin)
         self._scene.setSceneRect(sr)
-
-    def addDot(self, dot, format, renderer, formatter):
-        if format == "svg":
-            bdata = dot.pipe(format, renderer, formatter)
-            svgRenderer = QtSvg.QSvgRenderer(bdata)
-            dot = QtSvg.QGraphicsSvgItem()
-            dot.setSharedRenderer(svgRenderer)
-            self._scene.addItem(dot)
-        else:
-            pixmap = dotToQPixmap(dot, format, renderer, formatter)
-            self._scene.addPixmap(pixmap)
 
     @QtCore.pyqtSlot(QtCore.QPoint, name="centerOn")
     def centerOn(self, point):

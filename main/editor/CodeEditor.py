@@ -26,27 +26,60 @@ from main.editor.Intellisense import Types
 pluginloader = PluginLoader.instance()
 Config = IOHandler.get_preferences()
 
+class StatusBar(QtWidgets.QStatusBar):
+    def __init__(self, wrapper, parent=None):
+        super(StatusBar, self).__init__(parent)
+        self.wrapper = wrapper
+        self.statusMessage = QtWidgets.QLabel("")
+        self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.positionIndicator = QtWidgets.QLabel(":")
+        self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.leCombo = QtWidgets.QComboBox()
+        self.leCombo.addItem("Posix (LF)", '\n')
+        self.leCombo.addItem("Mac (CR)", '\r')
+        self.leCombo.addItem("Windows (CRLF)", '\r\n')
+
+        self.encCombo = QtWidgets.QComboBox()
+        self.encCombo.addItem("UTF-8", "utf-8")
+        self.encCombo.addItem("UTF-16", "utf-16")
+        self.encCombo.addItem("ASCII", "ascii")
+        self.encCombo.addItem("ISO-8859-1", "latin1")
+
+        self.ftCombo = QtWidgets.QComboBox()
+
+        rdr = QtWidgets.QLabel("Render with:")
+        rdr.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.rendererCombo = QtWidgets.QComboBox()
+
+        self.addPermanentWidget(QtWidgets.QLabel(" "))
+        self.addPermanentWidget(self.statusMessage, 7)
+        self.addPermanentWidget(self.positionIndicator, 1)
+        self.addPermanentWidget(self.leCombo, 1)
+        self.addPermanentWidget(self.encCombo, 1)
+        self.addPermanentWidget(self.ftCombo, 0)
+        self.addPermanentWidget(rdr, 1)
+        self.addPermanentWidget(self.rendererCombo, 0)
+        self.addPermanentWidget(QtWidgets.QLabel(" "))
+
 class EditorWrapper(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super(EditorWrapper, self).__init__(parent)
         self._layout = QtWidgets.QGridLayout()
         self.editor = CodeEditor(self)
+        self.mainwindow = parent
         self.types = []
-        self.filetype = QtWidgets.QComboBox()
-        self.engine = QtWidgets.QComboBox()
+        self.statusBar = StatusBar(self)
+        self.filetype = self.statusBar.ftCombo
+        self.engine = self.statusBar.rendererCombo
+        self.linesep = self.statusBar.leCombo
+        self.encoding = self.statusBar.encCombo
 
         self._layout.setContentsMargins(0, 0, 0, 0)
         self._layout.addWidget(self.editor, 0, 0, 1, -1)
         self.filetype.currentIndexChanged.connect(self.alter)
         self.setTypes()
-        ft = QtWidgets.QLabel("File Type:")
-        ft.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self._layout.addWidget(ft, 1, 0, 1, 1)
-        self._layout.addWidget(self.filetype, 1, 1, 1, 3)
-        rw = QtWidgets.QLabel("Rendering with:")
-        rw.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self._layout.addWidget(rw, 1, 4, 1, 1)
-        self._layout.addWidget(self.engine, 1, 5, 1, 3)
         self.setLayout(self._layout)
 
     def setTypes(self):
@@ -69,7 +102,7 @@ class EditorWrapper(QtWidgets.QWidget):
             for en in ens:
                 self.engine.addItem(en)
             self.engine.setCurrentText(Config.value("view/engine"))
-        self.editor.mainwindow.displayGraph()
+        self.mainwindow.displayGraph()
 
     def setType(self, type):
         self.filetype.setCurrentText(self.types[type][0])
@@ -668,12 +701,13 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lineNumberArea.setGeometry(QtCore.QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
 
     def updateIndicator(self):
-        text = ""
-        cursor = self.textCursor()
-        if cursor.selectedText() != "":
-            text = "[%i chars]" % len(cursor.selectedText())
-        self.mainwindow.positionIndicator\
-            .setText("%s      %i:%i" % (text, cursor.blockNumber() + 1, cursor.columnNumber() + 1))
+        if isinstance(self.mainwindow.statusBar(), StatusBar):
+            text = ""
+            cursor = self.textCursor()
+            if cursor.selectedText() != "":
+                text = "[%i chars]" % len(cursor.selectedText())
+            self.mainwindow.statusBar().positionIndicator\
+                .setText("%s      %i:%i" % (text, cursor.blockNumber() + 1, cursor.columnNumber() + 1))
 
     def updateLineNumberAreaWidth(self, newBlockCount=0):
         self.setViewportMargins(self.lineNumberAreaWidth(), 0, 0, 0)

@@ -2,8 +2,9 @@
 
 Easily create flowcharts from pseudocode.
 
-Documentation:    https://github.com/RandyParedis/GraphDonkey/wiki/Flowcharts
-Author:     Randy Paredis
+Documentation:  https://github.com/RandyParedis/GraphDonkey/wiki/Flowcharts
+Author:         Randy Paredis
+Requires:       `graphviz` package
 """
 from vendor.plugins.flowchart.Flowchart import CheckFlowchartVisitor, convert
 from main.extra import Constants

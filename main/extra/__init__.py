@@ -27,16 +27,6 @@ def isSVG(bdata):
         pass
     return tag == '{http://www.w3.org/2000/svg}svg'
 
-
-from graphviz import Source
-from PyQt5 import QtGui
-
-def dotToQPixmap(dot: Source, format: str, renderer: str, formatter: str):
-    bdata = dot.pipe(format, renderer, formatter)
-    image = QtGui.QImage()
-    image.loadFromData(bdata)
-    return QtGui.QPixmap.fromImage(image)
-
 import os
 
 def tabPathnames(names: list, skip=('undefined',)):
@@ -71,18 +61,3 @@ def tabPathnames(names: list, skip=('undefined',)):
         nlist[idx] = tabs[idx]
 
     return nlist
-
-from graphviz import Digraph
-
-def delNodes(dot: Digraph, nodeNames: list):
-    tr = []
-    for i in range(len(dot.body)):
-        line = dot.body[i]
-        if "--" not in line or "->" not in line:
-            l = line.strip().split(" ")
-            if l[0] in nodeNames:
-                tr.append(i)
-
-    tr = sorted(tr, reverse=True)
-    for i in tr:
-        dot.body.pop(i)

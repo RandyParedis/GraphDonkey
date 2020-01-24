@@ -210,9 +210,6 @@ class Preferences(QtWidgets.QDialog):
                 self.radio_ws_restore.setChecked(False)
                 self.radio_ws_none.setChecked(True)
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
-            self.combo_encoding.setCurrentText(self.preferences.value("encoding", "UTF-8").upper())
-            self.combo_lineEndings.setCurrentIndex(int(self.preferences.value("endings",
-                                                                              Constants.ENDINGS.index(os.linesep))))
 
         # EDITOR
         if True:
@@ -350,8 +347,6 @@ class Preferences(QtWidgets.QDialog):
             else:
                 self.preferences.setValue("restore", 2)
             self.preferences.setValue("recents", self.num_recents.value())
-            self.preferences.setValue("encoding", self.combo_encoding.currentText())
-            self.preferences.setValue("endings", self.combo_lineEndings.currentIndex())
 
         # EDITOR
         if True:
@@ -532,9 +527,6 @@ class Preferences(QtWidgets.QDialog):
             # FIX DISPLAY
             editor.positionChangedSlot()
             editor.highlighter.rehighlight()
-
-            self.parent().encIndicator.setText(self.combo_lineEndings.currentText() + "  " +
-                                               self.combo_encoding.currentText())
 
             # TURN TABS TO SPACES AND VICE VERSA
             cursor = editor.textCursor()
