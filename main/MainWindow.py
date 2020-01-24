@@ -25,7 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
         self.files.installEventFilter(TabPressEater())
-        self.view = GraphicsView(self.viewDock)
+        self.view = GraphicsView(self, self.viewDock)
         self.viewDockWidgetContents.layout().addWidget(self.view)
         self.view.zoomed.connect(self.zoomed)
 
@@ -365,9 +365,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     data = myfile.read()
                     enc = chardet.detect(data)
                     et = enc['encoding']
+                    lan = enc['language']
                     idx = self.editor().wrapper.encoding.findText(et.upper())
                     if idx == -1:
-                        self.warn("Unknown File Encoding", "Cannot identify encoding.\nReverting to UTF-8.")
+                        self.warn("Unknown File Encoding", "Cannot identify encoding.\n"
+                                                           "Detected as %s.\n"
+                                                           "Reverting to UTF-8."
+                                  % (et.upper() + ("" if len(lan) == 0 else " (%s)" % lan)))
                         et = 'utf-8'
                     data = data.decode(et)
                 self.editor().wrapper.encoding.setCurrentText(et.upper())
@@ -388,11 +392,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.releaseDisplay()
         return True
 
-    def open(self):
+    def io(self):
+        folder = ""
+        edit = self.editor()
+        if edit is not None:
+            folder = IOHandler.directory(edit.filename)
+        if len(folder) == 0:
+            folder = os.path.expanduser("~")
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        return options, folder
+
+    def open(self):
+        options, folder = self.io()
         fileName, _ = QtWidgets.QFileDialog\
-            .getOpenFileName(self, "Open a File", "",
+            .getOpenFileName(self, "Open a File", folder,
                              "All Files (*);;" + Constants.file_list(pluginloader.getFileExtensions()), options=options)
         if fileName != "":
             self.openFile(fileName)
@@ -421,10 +435,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.changeTab(old)
 
     def saveAs(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        options, folder = self.io()
         fileName, t = QtWidgets.QFileDialog\
-            .getSaveFileName(self, "Save a File", "",
+            .getSaveFileName(self, "Save a File", folder,
                              "All Files (*);;" + Constants.file_list(pluginloader.getFileExtensions()), options=options)
         if fileName:
             spt = fileName.split(".")
@@ -462,10 +475,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 exts[name].append(ft)
             else:
                 exts[name] = [ft]
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        options, folder = self.io()
         fileName, t = QtWidgets.QFileDialog \
-            .getSaveFileName(self, "Export a File", "", Constants.file_list(exts), options=options)
+            .getSaveFileName(self, "Export a File", folder, Constants.file_list(exts), options=options)
         if fileName:
             ext = fileName.split(".")[-1]
             rext = Constants.obtain_exts(t)

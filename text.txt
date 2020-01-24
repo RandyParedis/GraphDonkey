@@ -12,10 +12,8 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     - Convertion function: Open new file with other filetype, transformed from the original
     - Features:
-        - Last line = newline
         - Move line up/down shortcut
         - home to beginning of text vs beginning of line
-        - Open when in doc = open from current dir
         - Contextmenu?
         - Listen on host:port address?
         - Macros?

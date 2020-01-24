@@ -113,7 +113,7 @@
           <item row="0" column="0" colspan="3">
            <widget class="QCheckBox" name="check_autohide">
             <property name="text">
-             <string>Automatically hide tabs when it contains less than 2 tabs</string>
+             <string>Automatically hide tabs when there are less than two.</string>
             </property>
            </widget>
           </item>
@@ -132,7 +132,7 @@
          <property name="title">
           <string>Presentation</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_19" columnstretch="0,0,0,0,0">
+         <layout class="QGridLayout" name="gridLayout_19" columnstretch="2,2,2,3,3">
           <item row="0" column="0">
            <widget class="QLabel" name="label_61">
             <property name="text">
@@ -242,6 +242,13 @@
            <widget class="QCheckBox" name="check_pairedBrackets">
             <property name="text">
              <string>Pair separators () {} [] &quot;&quot; ''</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_emptyline">
+            <property name="text">
+             <string>Ensure empty line at end of file.</string>
             </property>
            </widget>
           </item>

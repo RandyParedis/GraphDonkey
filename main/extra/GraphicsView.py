@@ -29,8 +29,9 @@ FILE_TYPES_OUT = {
 class GraphicsView(QtWidgets.QWidget):
     zoomed = QtCore.pyqtSignal(float)
 
-    def __init__(self, parent=None, controls=False):
+    def __init__(self, mainwindow, parent=None, controls=False):
         super(GraphicsView, self).__init__(parent)
+        self.mainwindow = mainwindow
         self._scene = QtWidgets.QGraphicsScene()
         self._view = QtWidgets.QGraphicsView(self._scene, parent)
         self._view.wheelEvent = self.viewWheelEvent
@@ -189,10 +190,9 @@ class GraphicsView(QtWidgets.QWidget):
         self.zoomTo(min(w, h))
 
     def save(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        options, folder = self.mainwindow.io()
         fileName, t = QtWidgets.QFileDialog \
-            .getSaveFileName(self, "Export a File", "", Constants.file_list(FILE_TYPES_OUT), options=options)
+            .getSaveFileName(self, "Export a File", folder, Constants.file_list(FILE_TYPES_OUT), options=options)
         if fileName:
             ext = fileName.split(".")[-1]
             rext = Constants.obtain_exts(t)
@@ -206,16 +206,16 @@ class GraphicsView(QtWidgets.QWidget):
                         # Reboot file chooser window
                         return self.save()
 
-        # Do the actual saving
-        self._scene.clearSelection()    # If there were to be any selections, these would also render to the file
-        self._scene.setSceneRect(self._scene.itemsBoundingRect())
-        image = QtGui.QImage(self._scene.sceneRect().size().toSize(), QtGui.QImage.Format_ARGB32)
-        image.fill(QtCore.Qt.transparent)
-        painter = QtGui.QPainter(image)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        self._scene.render(painter)
-        image.save(fileName)
-        painter.end()
+            # Do the actual saving
+            self._scene.clearSelection()    # If there were to be any selections, these would also render to the file
+            self._scene.setSceneRect(self._scene.itemsBoundingRect())
+            image = QtGui.QImage(self._scene.sceneRect().size().toSize(), QtGui.QImage.Format_ARGB32)
+            image.fill(QtCore.Qt.transparent)
+            painter = QtGui.QPainter(image)
+            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            self._scene.render(painter)
+            image.save(fileName)
+            painter.end()
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
         mods = Config.value("view/scrollKey").split(" + ")

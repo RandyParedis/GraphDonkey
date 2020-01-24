@@ -14,7 +14,6 @@ Date:   12/14/2019
 """
 from PyQt5 import QtGui, QtWidgets, QtCore
 
-
 from main.extra import Constants, left
 from main.extra.IOHandler import IOHandler
 from main.editor.Highlighter import BaseHighlighter
@@ -22,6 +21,7 @@ from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
 from main.editor.Intellisense import Types
+import os
 
 pluginloader = PluginLoader.instance()
 Config = IOHandler.get_preferences()
@@ -121,6 +121,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.blockCountChanged.connect(self.lineNrChanged)
         self.updateRequest.connect(self.updateLineNumberArea)
         self.cursorPositionChanged.connect(self.positionChangedSlot)
+        self.textChanged.connect(self.textChangedSlot)
 
         self.updateLineNumberAreaWidth()
         self.highlightCurrentLine()
@@ -138,6 +139,19 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.setCompleter()
 
         self.treeView = None
+
+    def textChangedSlot(self):
+        txt = self.toPlainText()
+        if bool(Config.value("editor/emptyline")) and not txt.endswith(Constants.LINE_ENDING) \
+                and not txt.endswith(os.linesep):
+            curs = self.textCursor()
+            curs.movePosition(QtGui.QTextCursor.End)
+            curs.insertText(Constants.LINE_ENDING)
+            curs = self.textCursor()
+            curs.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor)
+            if len(curs.selectedText()) == 0:
+                curs.movePosition(QtGui.QTextCursor.PreviousCharacter)
+                self.setTextCursor(curs)
 
     def alter(self, highlighter):
         self.highlighter.deleteLater()
@@ -174,8 +188,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def isSaved(self):
         """Returns True if the file was saved."""
-        return (self.filename != "" and self.toPlainText() == self.filecontents) or \
-               (self.toPlainText() == "" == self.filename)
+        if self.filename != "":
+            return self.toPlainText() == self.filecontents
+        txt = self.toPlainText()
+        if bool(Config.value("editor/emptyline")):
+            txt = txt[:-len(os.linesep)]
+        return txt == ""
 
     def save(self):
         self.filecontents = self.toPlainText()
@@ -730,7 +748,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             if self.treeView is None:
                 self.treeView = QtWidgets.QDialog(self.parent(), flags=QtCore.Qt.Window)
                 layout = QtWidgets.QGridLayout()
-                view = GraphicsView(self.parent())
+                view = GraphicsView(self.mainwindow, self.parent())
                 layout.addWidget(view)
                 self.treeView.setLayout(layout)
             self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
