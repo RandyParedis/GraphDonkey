@@ -819,9 +819,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-460</y>
             <width>689</width>
-            <height>1366</height>
+            <height>1428</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -831,6 +831,9 @@
               <string>Edit Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_undo"/>
+              </item>
               <item row="11" column="0">
                <widget class="QLabel" name="label_58">
                 <property name="text">
@@ -844,24 +847,24 @@
               <item row="11" column="1">
                <widget class="QKeySequenceEdit" name="ks_unindent"/>
               </item>
-              <item row="13" column="0">
+              <item row="15" column="0">
                <widget class="QLabel" name="label_60">
                 <property name="text">
                  <string>Find and Replace:</string>
                 </property>
                </widget>
               </item>
-              <item row="13" column="1">
+              <item row="15" column="1">
                <widget class="QKeySequenceEdit" name="ks_find"/>
               </item>
-              <item row="14" column="0">
+              <item row="16" column="0">
                <widget class="QLabel" name="label_67">
                 <property name="text">
                  <string>Autocomplete:</string>
                 </property>
                </widget>
               </item>
-              <item row="14" column="1">
+              <item row="16" column="1">
                <widget class="QKeySequenceEdit" name="ks_autocomplete"/>
               </item>
               <item row="7" column="0">
@@ -941,9 +944,6 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QKeySequenceEdit" name="ks_undo"/>
-              </item>
               <item row="9" column="1">
                <widget class="QKeySequenceEdit" name="ks_comment"/>
               </item>
@@ -980,6 +980,26 @@
               </item>
               <item row="3" column="1">
                <widget class="QKeySequenceEdit" name="ks_clear"/>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="label_65">
+                <property name="text">
+                 <string>Move Up:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="0">
+               <widget class="QLabel" name="label_66">
+                <property name="text">
+                 <string>Move Down:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QKeySequenceEdit" name="ks_move_up"/>
+              </item>
+              <item row="14" column="1">
+               <widget class="QKeySequenceEdit" name="ks_move_down"/>
               </item>
              </layout>
             </widget>

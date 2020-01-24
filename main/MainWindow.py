@@ -73,6 +73,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Indent.triggered.connect(lambda: self.editorEvent("indent"))
         self.action_Unindent.triggered.connect(lambda: self.editorEvent("unindent"))
         self.action_Auto_Indent.triggered.connect(lambda: self.editorEvent("autoIndent"))
+        self.action_Move_Up.triggered.connect(lambda: self.editorEvent("moveUp"))
+        self.action_Move_Down.triggered.connect(lambda: self.editorEvent("moveDown"))
         self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(lambda: self.editorEvent("complete"))
         self.viewDock.closeEvent = self.viewDockCloseEvent
@@ -106,11 +108,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setUndoEnabled(self, on):
         self.action_Undo.setEnabled(on)
-        self.actionUndo.setEnabled(on)
 
     def setRedoEnabled(self, on):
         self.action_Redo.setEnabled(on)
-        self.actionRedo.setEnabled(on)
 
     def setEditEnabled(self, on):
         if on is False:
@@ -122,9 +122,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Copy.setEnabled(on)
         self.action_Paste.setEnabled(on)
         self.action_Cut.setEnabled(on)
-        self.actionCopy.setEnabled(on)
-        self.actionPaste.setEnabled(on)
-        self.actionCut.setEnabled(on)
         self.action_Duplicate.setEnabled(on)
         self.action_Comment.setEnabled(on)
         self.action_Indent.setEnabled(on)
@@ -158,16 +155,12 @@ class MainWindow(QtWidgets.QMainWindow):
             idx = self.files.currentIndex()
         if idx > -1:
             self.setEditEnabled(True)
-            self.actionClose.setEnabled(True)
             self.action_Close_File.setEnabled(True)
             self.action_Render.setEnabled(True)
-            self.actionRender.setEnabled(True)
             return self.files.widget(idx).editor
         self.setEditEnabled(False)
-        self.actionClose.setEnabled(False)
         self.action_Close_File.setEnabled(False)
         self.action_Render.setEnabled(False)
-        self.actionRender.setEnabled(False)
         return None
 
     def editorWrapper(self):

@@ -179,12 +179,17 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter.rehighlight()
 
     def contextMenuEvent(self, event: QtGui.QContextMenuEvent):
-        # menu = QtWidgets.QMenu(self)
-        # snippets = self.mainwindow.snippets.snippets
-        # for name in snippets:
-        #     menu.addAction(name, lambda: self.insertPlainText(snippets[name]))
-        # menu.exec_(event.globalPos())
-        pass
+        menu = QtWidgets.QMenu(self)
+        menu.addAction(self.mainwindow.action_Undo)
+        menu.addAction(self.mainwindow.action_Redo)
+        menu.addSeparator()
+        menu.addAction(self.mainwindow.action_Copy)
+        menu.addAction(self.mainwindow.action_Paste)
+        menu.addAction(self.mainwindow.action_Cut)
+        menu.addAction(self.mainwindow.action_Delete)
+        menu.addSeparator()
+        menu.addAction(self.mainwindow.action_Select_All)
+        menu.exec_(event.globalPos())
 
     def isSaved(self):
         """Returns True if the file was saved."""
@@ -278,6 +283,17 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 cursor.setPosition(bsel)
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
+        elif event.key() == QtCore.Qt.Key_Home:
+            cursor = self.textCursor()
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            if len(txt.strip()) == 0 != len(txt):
+                cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            else:
+                cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+                cursor.movePosition(QtGui.QTextCursor.NextWord)
+                # cursor.movePosition(QtGui.QTextCursor.NextCharacter, n = len(txt) - len(txt.strip()))
+            self.setTextCursor(cursor)
         elif event.key() not in [QtCore.Qt.Key_Delete]:
             k = event.key()
             keys = [QtCore.Qt.Key_ParenLeft, QtCore.Qt.Key_BraceLeft, QtCore.Qt.Key_BracketLeft]
@@ -522,6 +538,51 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             return state, line
 
         self.lines(indentLine, indent)
+
+    def moveUp(self):
+        curs = self.textCursor()
+        curs.beginEditBlock()
+        start = curs.selectionStart()
+        end = curs.selectionEnd()
+        curs.setPosition(start)
+        curs.movePosition(QtGui.QTextCursor.PreviousBlock)
+        curs.movePosition(QtGui.QTextCursor.StartOfLine)
+        curs.movePosition(QtGui.QTextCursor.PreviousCharacter)
+        curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        curs.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        txt = curs.selectedText()
+        curs.removeSelectedText()
+        start -= len(txt)
+        end -= len(txt)
+        curs.setPosition(end)
+        curs.movePosition(QtGui.QTextCursor.EndOfLine)
+        curs.insertText(txt)
+        curs.setPosition(start)
+        curs.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+        curs.endEditBlock()
+        self.setTextCursor(curs)
+
+    def moveDown(self):
+        curs = self.textCursor()
+        curs.beginEditBlock()
+        start = curs.selectionStart()
+        end = curs.selectionEnd()
+        curs.setPosition(end)
+        curs.movePosition(QtGui.QTextCursor.NextBlock)
+        curs.movePosition(QtGui.QTextCursor.StartOfLine)
+        curs.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        txt = curs.selectedText()
+        curs.removeSelectedText()
+        curs.setPosition(start)
+        curs.movePosition(QtGui.QTextCursor.StartOfLine)
+        curs.insertText(txt)
+        start += len(txt)
+        end += len(txt)
+        curs.setPosition(start)
+        curs.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+        curs.endEditBlock()
+        self.setTextCursor(curs)
 
     def complete(self):
         cursor = self.textCursor()

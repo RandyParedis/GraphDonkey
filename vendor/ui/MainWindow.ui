@@ -142,6 +142,8 @@
     <addaction name="action_Indent"/>
     <addaction name="action_Unindent"/>
     <addaction name="action_Auto_Indent"/>
+    <addaction name="action_Move_Up"/>
+    <addaction name="action_Move_Down"/>
     <addaction name="separator"/>
     <addaction name="action_Find"/>
     <addaction name="action_Autocomplete"/>
@@ -161,10 +163,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNew"/>
-   <addaction name="actionOpen"/>
-   <addaction name="actionSave"/>
-   <addaction name="actionClose"/>
+   <addaction name="action_New"/>
+   <addaction name="action_Open"/>
+   <addaction name="action_Save"/>
+   <addaction name="action_Close_File"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
@@ -176,11 +178,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionUndo"/>
-   <addaction name="actionRedo"/>
-   <addaction name="actionCopy"/>
-   <addaction name="actionCut"/>
-   <addaction name="actionPaste"/>
+   <addaction name="action_Undo"/>
+   <addaction name="action_Redo"/>
+   <addaction name="action_Copy"/>
+   <addaction name="action_Paste"/>
+   <addaction name="action_Cut"/>
   </widget>
   <widget class="QToolBar" name="toolBar_3">
    <property name="windowTitle">
@@ -192,9 +194,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionPreferences"/>
-   <addaction name="actionSnippets"/>
-   <addaction name="actionFind"/>
+   <addaction name="action_Preferences"/>
+   <addaction name="action_Snippets"/>
+   <addaction name="action_Find"/>
   </widget>
   <widget class="QToolBar" name="toolBar_4">
    <property name="windowTitle">
@@ -206,44 +208,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionRender"/>
+   <addaction name="action_Render"/>
   </widget>
-  <action name="actionNew">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/document-new.png</normaloff>:/icons/tango/document-new.png</iconset>
-   </property>
-   <property name="text">
-    <string>New</string>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/document-open.png</normaloff>:/icons/tango/document-open.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/media-floppy.png</normaloff>:/icons/tango/media-floppy.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="actionRender">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/applications-internet.png</normaloff>:/icons/tango/applications-internet.png</iconset>
-   </property>
-   <property name="text">
-    <string>Render</string>
-   </property>
-  </action>
   <action name="action_New">
    <property name="icon">
     <iconset resource="../icons/tango.qrc">
@@ -372,24 +338,6 @@
     <string>&amp;Redo</string>
    </property>
   </action>
-  <action name="actionUndo">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-undo.png</normaloff>:/icons/tango/edit-undo.png</iconset>
-   </property>
-   <property name="text">
-    <string>Undo</string>
-   </property>
-  </action>
-  <action name="actionRedo">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-redo.png</normaloff>:/icons/tango/edit-redo.png</iconset>
-   </property>
-   <property name="text">
-    <string>Redo</string>
-   </property>
-  </action>
   <action name="action_GraphDonkey">
    <property name="text">
     <string>About Graph&amp;Donkey</string>
@@ -493,90 +441,9 @@
     <string>&amp;Close File</string>
    </property>
   </action>
-  <action name="actionClose">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/process-stop.png</normaloff>:/icons/tango/process-stop.png</iconset>
-   </property>
-   <property name="text">
-    <string>Close</string>
-   </property>
-  </action>
-  <action name="actionPreferences">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/preferences-system.png</normaloff>:/icons/tango/preferences-system.png</iconset>
-   </property>
-   <property name="text">
-    <string>Preferences</string>
-   </property>
-   <property name="toolTip">
-    <string>Open Preferences</string>
-   </property>
-  </action>
-  <action name="actionSnippets">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/applications-accessories.png</normaloff>:/icons/tango/applications-accessories.png</iconset>
-   </property>
-   <property name="text">
-    <string>Snippets</string>
-   </property>
-   <property name="toolTip">
-    <string>Open Snippets</string>
-   </property>
-  </action>
-  <action name="actionFind">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-find-replace.png</normaloff>:/icons/tango/edit-find-replace.png</iconset>
-   </property>
-   <property name="text">
-    <string>Find</string>
-   </property>
-   <property name="toolTip">
-    <string>Find and Replace</string>
-   </property>
-  </action>
   <action name="action_Save_All">
    <property name="text">
     <string>Sa&amp;ve All</string>
-   </property>
-  </action>
-  <action name="actionCopy">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-copy.png</normaloff>:/icons/tango/edit-copy.png</iconset>
-   </property>
-   <property name="text">
-    <string>Copy</string>
-   </property>
-   <property name="toolTip">
-    <string>Copy</string>
-   </property>
-  </action>
-  <action name="actionCut">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-cut.png</normaloff>:/icons/tango/edit-cut.png</iconset>
-   </property>
-   <property name="text">
-    <string>Cut</string>
-   </property>
-   <property name="toolTip">
-    <string>Cut</string>
-   </property>
-  </action>
-  <action name="actionPaste">
-   <property name="icon">
-    <iconset resource="../icons/tango.qrc">
-     <normaloff>:/icons/tango/edit-paste.png</normaloff>:/icons/tango/edit-paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Paste</string>
-   </property>
-   <property name="toolTip">
-    <string>Paste</string>
    </property>
   </action>
   <action name="action_View_Parse_Tree">
@@ -652,6 +519,30 @@
     <string>S&amp;ave Rendered View...</string>
    </property>
   </action>
+  <action name="action_Move_Up">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/go-up.png</normaloff>:/icons/tango/go-up.png</iconset>
+   </property>
+   <property name="text">
+    <string>Move Up</string>
+   </property>
+   <property name="toolTip">
+    <string>Move Up</string>
+   </property>
+  </action>
+  <action name="action_Move_Down">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/go-down.png</normaloff>:/icons/tango/go-down.png</iconset>
+   </property>
+   <property name="text">
+    <string>Move Down</string>
+   </property>
+   <property name="toolTip">
+    <string>Move Down</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../icons/tango.qrc"/>
@@ -668,216 +559,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>870</x>
-     <y>335</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionUndo</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Undo</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRedo</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Redo</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionNew</sender>
-   <signal>triggered()</signal>
-   <receiver>action_New</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionOpen</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Open</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSave</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Save</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionClose</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Close_File</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPreferences</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Preferences</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSnippets</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Snippets</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionFind</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Find</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRender</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Render</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionCopy</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Copy</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionCut</sender>
-   <signal>triggered()</signal>
-   <receiver>actionCut</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPaste</sender>
-   <signal>triggered()</signal>
-   <receiver>action_Paste</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>1007</x>
+     <y>396</y>
     </hint>
    </hints>
   </connection>

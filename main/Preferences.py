@@ -155,7 +155,7 @@ class Preferences(QtWidgets.QDialog):
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
             "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
-            "Zoom_To_Fit", "GraphDonkey", "Qt"
+            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down"
         ]
 
         def pressEvent(kseq, event):
@@ -304,6 +304,8 @@ class Preferences(QtWidgets.QDialog):
             self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/indent", "TAB")))
             self.ks_unindent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/unindent", "SHIFT+TAB")))
             self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/auto_indent", "CTRL+SHIFT+I")))
+            self.ks_move_up.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/move_up", "CTRL+SHIFT+UP")))
+            self.ks_move_down.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/move_down", "CTRL+SHIFT+DOWN")))
             self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/find", "CTRL+F")))
             self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/autocomplete", "CTRL+SPACE")))
             self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
@@ -432,6 +434,8 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/indent", self.ks_indent.keySequence().toString())
             self.preferences.setValue("ks/unindent", self.ks_unindent.keySequence().toString())
             self.preferences.setValue("ks/auto_indent", self.ks_auto_indent.keySequence().toString())
+            self.preferences.setValue("ks/move_up", self.ks_move_up.keySequence().toString())
+            self.preferences.setValue("ks/move_down", self.ks_move_down.keySequence().toString())
             self.preferences.setValue("ks/find", self.ks_find.keySequence().toString())
             self.preferences.setValue("ks/autocomplete", self.ks_autocomplete.keySequence().toString())
             self.preferences.setValue("ks/show_render_area", self.ks_show_render_area.keySequence().toString())
