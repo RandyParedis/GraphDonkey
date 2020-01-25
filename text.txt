@@ -10,7 +10,11 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    - Convertion function: Open new file with other filetype, transformed from the original
+    - Line ending recognition! (LF, CR, CRLF)
+    - Plugins:
+        - Converter in TYPES ==> transformer
+        - Smart Line Indentation (TYPES)
+        - requirements.txt in plugin folder ==> Usable with executable (pyinstaller)?
     - Features:
         - Listen on host:port address?
         - Macros?

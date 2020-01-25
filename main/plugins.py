@@ -187,7 +187,8 @@ class PluginLoader:
         for p in ps:
             if filetype in p.types:
                 ta = p.types[filetype].get("converter", {})
-                if set(ta).intersection(ens):
+                ta = set(ta).intersection(ens)
+                if len(ta) > 0:
                     en.append(list(ta))
         return [i for s in en for i in s]
 

@@ -115,14 +115,14 @@
     <addaction name="action_Reset_Zoom"/>
     <addaction name="action_Zoom_To_Fit"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="action_GraphDonkey"/>
     <addaction name="action_Qt"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menu_Edit">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
@@ -148,10 +148,16 @@
     <addaction name="action_Find"/>
     <addaction name="action_Autocomplete"/>
    </widget>
+   <widget class="QMenu" name="menu_Transform">
+    <property name="title">
+     <string>&amp;Transform</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
-   <addaction name="menuEdit"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menu_View"/>
-   <addaction name="menuHelp"/>
+   <addaction name="menu_Transform"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="toolBar_1">
    <property name="windowTitle">

@@ -69,7 +69,7 @@ TYPES = {
             {
                 "regex": {
                     "pattern": keywords,
-                    "caseInsensitive": True
+                    "insensitive": True
                 },
                 "format": "keyword"
             },
@@ -86,16 +86,12 @@ TYPES = {
                 "format": "number"
             },
             {
-                "start": '"',
-                "end": '"',
+                "regex": {
+                    "pattern": r"((<)|\")(?:(?(2)(.|<)*?|[^\"\\]*(?:\\.[^\"\\]*)*))(?(2)>|\")",
+                    "single": True
+                },
                 "format": "string",
-                "exclude": '\\\\"'
-            },
-            {
-                "start": '<',
-                "end": '>',
-                "format": "html",
-                "exclude": "</?[^<>/%s]*>" % Constants.LINE_ENDING
+                "global": True
             },
             {
                 "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
@@ -106,9 +102,12 @@ TYPES = {
                 "format": "comment"
             },
             {
-                "start": "/\\*",
-                "end": "\\*/",
-                "format": "comment"
+                "regex": {
+                    "pattern": "/\\*.*?\\*/",
+                    "single": True
+                },
+                "format": "comment",
+                "global": True
             }
         ],
         "converter": {

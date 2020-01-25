@@ -3,6 +3,7 @@
 Author: Randy Paredis
 Date:   12/14/2019
 """
+import math
 
 from PyQt5 import QtGui, QtCore
 from main.extra import Constants
@@ -49,56 +50,59 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
     def setRules(self, rules):
         def obtainRegex(value):
             if isinstance(value, str):
-                return QtCore.QRegExp(value)
+                return QtCore.QRegularExpression(value)
             elif isinstance(value, dict):
                 reg = obtainRegex(value["pattern"])
-                if value.get("caseInsensitive", False):
-                    reg.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+                ptns = QtCore.QRegularExpression.NoPatternOption
+                if value.get("insensitive", False):
+                    ptns |= QtCore.QRegularExpression.CaseInsensitiveOption
+                if value.get("single", False):
+                    ptns |= QtCore.QRegularExpression.DotMatchesEverythingOption
+                if value.get("multiline", False):
+                    ptns |= QtCore.QRegularExpression.MultilineOption
+                if value.get("extended", False):
+                    ptns |= QtCore.QRegularExpression.ExtendedPatternSyntaxOption
+                if value.get("unicode", False):
+                    ptns |= QtCore.QRegularExpression.UseUnicodePropertiesOption
+                if value.get("ungreedy", False):
+                    ptns |= QtCore.QRegularExpression.InvertedGreedinessOption
+                reg.setPatternOptions(ptns)
                 return reg
             elif isinstance(value, list):
                 return obtainRegex("\\b(%s)\\b" % "|".join(["(%s)" % x for x in value]))
             return None
 
-        state = 1
         for rule in rules:
             if "regex" in rule and "format" in rule:
                 regex = obtainRegex(rule["regex"])
                 fmt = getattr(self, "format_%s" % rule["format"])
                 if regex is not None:
-                    self.highlightingRules.append((regex, fmt))
-            elif "start" in rule and "end" in rule and "format" in rule:
-                start = obtainRegex(rule["start"])
-                end = obtainRegex(rule["end"])
-                exclude = obtainRegex(rule.get("exclude", None))
-                fmt = getattr(self, "format_%s" % rule["format"])
-                if start is not None and end is not None:
-                    self.highlightingRules.append((start, end, state, fmt(), exclude))
-                    state *= 2
+                    self.highlightingRules.append((regex, fmt, rule.get("global", False)))
             else:
                 raise ValueError("Invalid Highlighting Rule %s" % str(rule))
 
-    def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
-        startIndex = 0
-        pbs = self.previousBlockState()
-        if pbs == -1 or not pbs & blockstate:
-            startIndex = startexp.indexIn(text)
-
-        while startIndex >= 0:
-            begin = startIndex + 1
-            if skipexp:
-                skipIndex = skipexp.lastIndexIn(text)
-                if skipIndex != -1:
-                    begin = skipIndex + skipexp.matchedLength()
-            endIndex = endexp.indexIn(text, begin)
-
-            if endIndex == -1:
-                self.setCurrentBlockState(self.currentBlockState() | blockstate)
-                length = len(text) - startIndex
-            else:
-                length = endIndex - startIndex + endexp.matchedLength()
-
-            self.setFormat(startIndex, length, format)
-            startIndex = startexp.indexIn(text, startIndex + length)
+    # def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
+    #     startIndex = 0
+    #     pbs = self.previousBlockState()
+    #     if pbs == -1 or not pbs & blockstate:
+    #         startIndex = startexp.indexIn(text)
+    #
+    #     while startIndex >= 0:
+    #         begin = startIndex + 1
+    #         if skipexp:
+    #             skipIndex = skipexp.lastIndexIn(text)
+    #             if skipIndex != -1:
+    #                 begin = skipIndex + skipexp.matchedLength()
+    #         endIndex = endexp.indexIn(text, begin)
+    #
+    #         if endIndex == -1:
+    #             self.setCurrentBlockState(self.currentBlockState() | blockstate)
+    #             length = len(text) - startIndex
+    #         else:
+    #             length = endIndex - startIndex + endexp.matchedLength()
+    #
+    #         self.setFormat(startIndex, length, format)
+    #         startIndex = startexp.indexIn(text, startIndex + length)
 
     def storeErrors(self):
         self.editor.errors = []
@@ -141,17 +145,32 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         self.setCurrentBlockState(0)
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
+            bpos = self.currentBlock().position()
+            blen = self.currentBlock().length()
             for rule in self.highlightingRules:
-                if len(rule) == 2:
-                    pattern, formatter = rule
-                    expression = QtCore.QRegExp(pattern)
-                    index = expression.indexIn(text)
-                    while index >= 0:
-                        length = expression.matchedLength()
-                        self.setFormat(index, length, formatter())
-                        index = expression.indexIn(text, index + length)
+                expression, formatter, g = rule
+                if g:
+                    it = expression.globalMatch(self.editor.toPlainText())
+                    while it.hasNext():
+                        match = it.next()
+                        index = match.capturedStart()
+                        length = match.capturedLength()
+                        if bpos <= index <= index + length <= bpos + blen:
+                            self.setFormat(index - bpos, length, formatter())
+                        elif bpos <= index:
+                            self.setFormat(index - bpos, bpos + blen - index, formatter())
+                        elif index <= bpos <= bpos + blen <= index + length:
+                            self.setFormat(0, blen, formatter())
+                        elif index <= bpos <= index + length <= bpos + blen:
+                            self.setFormat(0, index + length - bpos, formatter())
                 else:
-                    self.multilineHighlighter(text, *rule)
+                    match = expression.match(text)
+                    index = match.capturedStart()
+                    while match.isValid() and index >= 0:
+                        length = match.capturedLength()
+                        self.setFormat(index, length, formatter())
+                        match = expression.match(text, index + length)
+                        index = match.capturedStart()
 
     @staticmethod
     def format_keyword():

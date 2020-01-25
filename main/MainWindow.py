@@ -29,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.viewDockWidgetContents.layout().addWidget(self.view)
         self.view.zoomed.connect(self.zoomed)
 
+        self.transformationActions = []
         self.disableDisplay = []
         self.lockDisplay(False)
 
@@ -91,6 +92,20 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
+
+        # Set Transformation Functions
+        trns = []
+        for p in pluginloader.get():
+            for t in p.types:
+                for c in p.types[t].get("converter", {}):
+                    trns.append((t, c, p.types[t]["converter"][c]))
+        for fr, to, convfunc in trns:
+            action = QtWidgets.QAction("%s > %s" % (fr, to))
+            action.triggered.connect(lambda b, fnc=convfunc, to=to: self.transform(fnc, to))
+            action.setData(fr)
+            self.menu_Transform.addAction(action)
+            self.transformationActions.append(action)
+        self.tabChanged(self.files.currentIndex())
 
     def setStatusBar(self, status: StatusBar):
         if self.statusBar() and isinstance(self.statusBar(), StatusBar):
@@ -176,6 +191,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.displayGraph()
             self.setUndoEnabled(edit.document().isUndoAvailable())
             self.setRedoEnabled(edit.document().isRedoAvailable())
+            ft = edit.wrapper.filetype.currentText()
+            for ac in self.transformationActions:
+                ac.setEnabled(ac.data() == ft)
 
     def changeTab(self, index):
         if self.files.count() > 0:
@@ -551,6 +569,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.find.le_find.setText(sel)
             self.find.le_replace.setText("")
         self.find.show()
+
+    def transform(self, func, to):
+        self.lockDisplay()
+        editor = self.editor()
+        txt = editor.toPlainText()
+        res = func(txt, editor.highlighter.parser.parse(txt))
+        self.new()
+        self.editor().setPlainText(res)
+        self.editor().wrapper.setType(to)
+        self.releaseDisplay()
 
     def checkUpdates(self):
         checker = UpdateChecker(self)
