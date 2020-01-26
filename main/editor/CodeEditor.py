@@ -277,21 +277,21 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.insertPlainText(Constants.LINE_ENDING)
             self.autoIndent()
             cursor = self.textCursor()
+            cursor.beginEditBlock()
             pos = cursor.position()
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText().lstrip()
-            if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
+            if len(txt) > 0 and txt[0] in Constants.BRACKETS_CLOSE:
                 cursor.setPosition(pos)
                 cursor.insertText(Constants.LINE_ENDING)
-                cursor.movePosition(QtGui.QTextCursor.Up)
-                cursor.movePosition(QtGui.QTextCursor.EndOfLine)
-                cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.KeepAnchor)
+                cursor.movePosition(QtGui.QTextCursor.Up, QtGui.QTextCursor.KeepAnchor)
                 self.setTextCursor(cursor)
                 self.autoIndent()
-                bsel = cursor.selectionStart()
-                cursor.setPosition(bsel)
+                cursor.setPosition(pos)
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
+                self.indent()
+            cursor.endEditBlock()
         elif event.key() == QtCore.Qt.Key_Home:
             cursor = self.textCursor()
             cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
@@ -419,6 +419,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.setPosition(posS)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
+        if posS == posE:
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
         otxt = cursor.selectedText()
         txt = otxt.split(Constants.LINE_ENDING)
         add = 0
@@ -431,7 +433,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.setPosition(posS)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
-        if cursor.selectedText() == Constants.LINE_ENDING:
+        if cursor.selectedText() == Constants.LINE_ENDING or posS == posE:
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
         cursor.insertText(ntxt)
         cursor.setPosition(posS + add)
@@ -504,10 +506,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         posS = cursor.selectionStart()
         cursor.setPosition(posS)
         s = cursor.movePosition(QtGui.QTextCursor.Up)
+        linenr = 0
         indent = 0
         tw = int(Config.value("editor/tabwidth"))
         sot = bool(Config.value("editor/spacesOverTabs"))
         if s:
+            linenr = cursor.blockNumber() + 1
             cursor.movePosition(QtGui.QTextCursor.StartOfLine)
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText()
@@ -518,35 +522,25 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                     indent += tw
                 else:
                     break
-            txt = txt.lstrip()
-            for c in txt:
-                if c in Constants.INDENT_OPEN:
-                    indent += tw
-                elif c in Constants.INDENT_CLOSE:
-                    indent -= tw
 
         if not sot:
             indent //= tw
 
+        vis = self.highlighter.parser.visitor
 
         def indentLine(line, state):
+            vobt = vis.obtain(state, linenr)
             txt = line.lstrip()
-            if len(txt) > 0 and txt[0] in Constants.INDENT_CLOSE:
-                state -= tw if sot else 1
             if sot:
-                line = (" " * state) + txt
+                inc = indent + (vobt * tw)
+                line = (" " * inc) + txt
             else:
-                line = ("\t" * state) + txt
-            for c in txt:
-                if c in Constants.INDENT_CLOSE:
-                    state -= tw if sot else 1
-                    if state < 0:
-                        state = 0
-                elif c in Constants.INDENT_OPEN:
-                    state += tw if sot else 1
+                inc = indent + vobt
+                line = ("\t" * inc) + txt
+            state += 1
             return state, line
 
-        self.lines(indentLine, indent)
+        self.lines(indentLine, linenr + 1)
 
     def moveUp(self):
         curs = self.textCursor()
@@ -634,11 +628,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             for i in range(len(infos)):
                 info = infos[i]
                 curPos = curs.positionInBlock()
-                if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_OPEN:
-                    if self.matchOpenParenthesis(Constants.INDENT_OPEN.index(info.char), curs.block(), i + 1):
+                if info.pos in [curPos, curPos - 1] and info.char in Constants.BRACKETS_OPEN:
+                    if self.matchOpenParenthesis(Constants.BRACKETS_OPEN.index(info.char), curs.block(), i + 1):
                         self.highlightParenthesis(pos + info.pos)
-                if info.pos in [curPos, curPos - 1] and info.char in Constants.INDENT_CLOSE:
-                    if self.matchCloseParenthesis(Constants.INDENT_CLOSE.index(info.char), curs.block(), i - 1):
+                if info.pos in [curPos, curPos - 1] and info.char in Constants.BRACKETS_CLOSE:
+                    if self.matchCloseParenthesis(Constants.BRACKETS_CLOSE.index(info.char), curs.block(), i - 1):
                         self.highlightParenthesis(pos + info.pos)
 
     def matchOpenParenthesis(self, cidx, block, i, num=0):
@@ -649,10 +643,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         for j in range(i, len(infos)):
             info = infos[j]
 
-            if info.char == Constants.INDENT_OPEN[cidx]:
+            if info.char == Constants.BRACKETS_OPEN[cidx]:
                 num += 1
                 continue
-            if info.char == Constants.INDENT_CLOSE[cidx]:
+            if info.char == Constants.BRACKETS_CLOSE[cidx]:
                 if num == 0:
                     self.highlightParenthesis(docPos + info.pos)
                     return True
@@ -674,10 +668,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 break
             info = infos[j]
 
-            if info.char == Constants.INDENT_CLOSE[cidx]:
+            if info.char == Constants.BRACKETS_CLOSE[cidx]:
                 num += 1
                 continue
-            if info.char == Constants.INDENT_OPEN[cidx]:
+            if info.char == Constants.BRACKETS_OPEN[cidx]:
                 if num == 0:
                     self.highlightParenthesis(docPos + info.pos)
                     return True

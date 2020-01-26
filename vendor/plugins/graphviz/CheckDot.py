@@ -32,7 +32,7 @@ class CheckDotVisitor(CheckVisitor):
     def exit_a_list(self, _):
         self.a_list = False
 
-    def enter_start(self, _):
+    def enter_start(self, T):
         self.a_list = False
 
     def exit_stmt_list(self, tree: Tree):
@@ -42,4 +42,22 @@ class CheckDotVisitor(CheckVisitor):
     def exit_port(self, tree: Tree):
         if self.encapsulates(tree):
             self.completer.add(["n", "ne", "e", "se", "s", "sw", "w", "nw", "c", "_"])
+
+    def enter_scope(self, tree):
+        self.indent(tree)
+
+    def enter_edge_stmt(self, tree):
+        self.indent(tree)
+
+    def enter_ba_list(self, tree):
+        self.indent(tree)
+
+    def enter_attr_list(self, tree):
+        self.indent(tree)
+
+    def STRING(self, T):
+        self.indent(T)
+
+    def HTML(self, T):
+        self.indent(T)
 

@@ -81,29 +81,6 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
             else:
                 raise ValueError("Invalid Highlighting Rule %s" % str(rule))
 
-    # def multilineHighlighter(self, text, startexp, endexp, blockstate, format, skipexp=None):
-    #     startIndex = 0
-    #     pbs = self.previousBlockState()
-    #     if pbs == -1 or not pbs & blockstate:
-    #         startIndex = startexp.indexIn(text)
-    #
-    #     while startIndex >= 0:
-    #         begin = startIndex + 1
-    #         if skipexp:
-    #             skipIndex = skipexp.lastIndexIn(text)
-    #             if skipIndex != -1:
-    #                 begin = skipIndex + skipexp.matchedLength()
-    #         endIndex = endexp.indexIn(text, begin)
-    #
-    #         if endIndex == -1:
-    #             self.setCurrentBlockState(self.currentBlockState() | blockstate)
-    #             length = len(text) - startIndex
-    #         else:
-    #             length = endIndex - startIndex + endexp.matchedLength()
-    #
-    #         self.setFormat(startIndex, length, format)
-    #         startIndex = startexp.indexIn(text, startIndex + length)
-
     def storeErrors(self):
         self.editor.errors = []
         text = self.editor.toPlainText()
@@ -132,7 +109,7 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
 
     def storeParenthesis(self, text:str):
         data = TextBlockData()
-        for c in Constants.INDENT_OPEN + Constants.INDENT_CLOSE:
+        for c in Constants.BRACKETS_OPEN + Constants.BRACKETS_CLOSE:
             leftpos = text.find(c)
             while leftpos != -1:
                 info = ParenthesisInfo(c, leftpos)

@@ -98,8 +98,47 @@ class CheckVisitor:
         self.line = -1
         self.column = -1
         self.completer = CompletionStorage()
+        self.scope = {}
         self.parser = parser
         self.errors = []
+
+    def indent(self, tree: Tree, n=1):
+        """Sets the indentation level for the lines in this scope.
+
+        Args:
+            tree (Any):     The Tree/Token to set the indentation level on.
+            n (int):        The increase for the new indentation level.
+                            Only set this value if you want to increase the
+                            indentation with more than 1 level for the scope
+                            defined by the tree.
+                            This is not an absolute value, but rather a
+                            relative attribute, i.e. it's the *increase* of
+                            the indentation.
+                            Defaults to 1.
+        """
+        self.scope[tree.line] = self.scope.get(tree.line, 0) + n
+        self.scope[tree.end_line] = self.scope.get(tree.end_line, 0) - n
+
+    def obtain(self, line, start=1):
+        """Get the indentation level for a specific line of code.
+
+        Args:
+            line (int):     The line for which to determine the absolute
+                            indentation level. It will accumulate all
+                            previous indentations and interpolates the
+                            value for empty lines. This value is 1-based.
+            start (int):    The line from which to start accumulating
+                            the indentation level. This value is 1-based.
+                            Defaults to 1.
+
+        Returns:
+            The absolute indentation level of the line as an int.
+        """
+        indent = 0
+        for i in range(start, line):
+            if i in self.scope:
+                indent += self.scope[i]
+        return indent
 
     def visit(self, tree):
         """Main visit function to be called. DO NOT CHANGE!
@@ -172,5 +211,6 @@ class CheckVisitor:
         """Clear the visitor."""
         self.errors.clear()
         self.completer.clear()
+        self.scope.clear()
         self.line = -1
         self.column = -1

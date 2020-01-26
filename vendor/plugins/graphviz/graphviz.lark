@@ -14,11 +14,13 @@ WS: /[ \t\f\r\n]/+
 %ignore COMMENT_MLT
 
 start: graph
-graph: STRICT? (GRAPH|DIGRAPH) id? "{" stmt_list "}"
+graph: STRICT? (GRAPH|DIGRAPH) id? scope "}"
+scope: "{" stmt_list
 stmt_list: (stmt ";"?)*
 stmt: node_stmt | edge_stmt | attr_stmt | attr | subgraph
 attr_stmt: (GRAPH | NODE | EDGE) attr_list
-attr_list: "[" a_list? "]" attr_list?
+attr_list: ba_list "]" attr_list?
+ba_list: "[" a_list?
 a_list: (attr (";" | ",")?)*
 attr: id "=" id
 edge_stmt: (node_id | subgraph) edge_rhs attr_list?
@@ -27,7 +29,7 @@ edgeop: DIOP | UNOP
 node_stmt: node_id attr_list?
 node_id: id port?
 port: (":" id (":" compass_pt)?) | (":" compass_pt)
-subgraph: (SUBGRAPH id?)? "{" stmt_list "}"
+subgraph: (SUBGRAPH id?)? scope "}"
 compass_pt: "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw" | "c" | "_"
 
 // Operators

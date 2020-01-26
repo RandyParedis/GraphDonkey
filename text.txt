@@ -11,7 +11,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     - Plugins:
-        - Smart Line Indentation (TYPES)
         - requirements.txt in plugin folder ==> Usable with executable (pyinstaller)?
     - Features:
         - Listen on host:port address?
@@ -19,6 +18,7 @@ TODO LIST
     - Check for Updates?
         - Other program (wizard) that includes updates, preference clearing, uninstalling
     - Styles/themes via CSS vs INI
+        - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
     - Add tests!
     - Fix in-code TODOs
 
