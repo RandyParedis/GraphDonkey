@@ -142,6 +142,8 @@ class PluginLoader:
     def load(self, failOnDuplicate=False):
         self.plugins.clear()
         for filename in os.listdir(IOHandler.dir_plugins()):
+            if filename == ".dependencies":
+                continue
             dname = IOHandler.dir_plugins(filename)
             if os.path.isdir(dname):
                 plugin = Plugin(IOHandler.join(dname, "__init__.py"))

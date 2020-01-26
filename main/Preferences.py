@@ -53,13 +53,15 @@ class Preferences(QtWidgets.QDialog):
             for e in p.engines:
                 self.combo_engine.addItem(e)
             self.pluginlist.layout().addWidget(PluginButton(p, self.pluginviewer, preferences=self))
-        eq = [2, 3]
-        seq = sum(eq)
-        w = self.splitter.width()
-        eq = [x / seq * w for x in eq]
-        self.splitter.setSizes(eq)
+        self._setPluginSplitter()
         self.pluginlist.findChild(PluginButton).click()
         self.filterPlugins.textChanged.connect(self.pluginFilter)
+
+    def _setPluginSplitter(self):
+        w = self.splitter.width()
+        eq = [3, 5]
+        eq = [i / sum(eq) * w for i in eq]
+        self.splitter.setSizes(eq)
 
     def pluginFilter(self, txt):
         fields = self.pluginlist.findChildren(PluginButton)
@@ -455,6 +457,9 @@ class Preferences(QtWidgets.QDialog):
 
         # PLUGINS
         if True:
+            pll = self.pluginlist.findChildren(PluginButton)
+            if len(pll) > 0:
+                pll[0].click()
             self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
             for eid in self.pluginUi:
                 ui = self.pluginUi[eid]

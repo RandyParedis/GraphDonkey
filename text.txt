@@ -11,7 +11,7 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     - Plugins:
-        - requirements.txt in plugin folder ==> Usable with executable (pyinstaller)?
+        - When no internet connection, disable all plugins that have unmet requirements
     - Features:
         - Listen on host:port address?
         - Macros?

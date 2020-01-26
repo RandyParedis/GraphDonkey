@@ -27,7 +27,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tab_general">
       <attribute name="title">
@@ -305,8 +305,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>703</width>
-            <height>509</height>
+            <width>403</width>
+            <height>243</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -517,7 +517,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>689</width>
+            <width>366</width>
             <height>881</height>
            </rect>
           </property>
@@ -819,8 +819,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-460</y>
-            <width>689</width>
+            <y>0</y>
+            <width>271</width>
             <height>1428</height>
            </rect>
           </property>
@@ -1317,7 +1317,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>612</width>
+                <width>468</width>
                 <height>16</height>
                </rect>
               </property>
@@ -1349,21 +1349,39 @@
            </item>
           </layout>
          </widget>
-         <widget class="QScrollArea" name="pluginviewscroll">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="pluginviewer">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>85</width>
-             <height>509</height>
-            </rect>
+         <widget class="QWidget" name="plugindescription" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-           <layout class="QGridLayout" name="gridLayout_24"/>
-          </widget>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QScrollArea" name="pluginviewscroll">
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="pluginviewer">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>229</width>
+                <height>509</height>
+               </rect>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_24"/>
+             </widget>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
