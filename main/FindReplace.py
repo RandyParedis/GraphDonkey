@@ -63,7 +63,7 @@ class FindReplace(QtWidgets.QDialog):
     def get(self):
         text = self.le_find.text()
         if not self.useRegEx():
-            text = re.sub(r"[.*+()\[\]{}<>^$?-]", "\\\\\g<0>", text)
+            text = QtCore.QRegularExpression.escape(text)
         if self.wholeWords():
             text = r"\b" + text.replace(" ", r"\b") + r"\b"
         options = QtCore.QRegularExpression.NoPatternOption

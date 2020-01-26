@@ -37,9 +37,14 @@ class StatusBar(QtWidgets.QStatusBar):
         self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         self.leCombo = QtWidgets.QComboBox()
-        self.leCombo.addItem("Posix (LF)", '\n')
-        self.leCombo.addItem("Mac (CR)", '\r')
-        self.leCombo.addItem("Windows (CRLF)", '\r\n')
+        self.seps = {
+            "Posix (LF)": '\n',
+            "Mac OS [Pre-OSX] (CR)": '\r',
+            "Windows (CRLF)": '\r\n'
+        }
+        for name in self.seps:
+            self.leCombo.addItem(name, self.seps[name])
+        self.setLineSep(os.linesep)
 
         self.encCombo = QtWidgets.QComboBox()
         self.encCombo.addItem("UTF-8", "utf-8")
@@ -62,6 +67,10 @@ class StatusBar(QtWidgets.QStatusBar):
         self.addPermanentWidget(rdr, 1)
         self.addPermanentWidget(self.rendererCombo, 0)
         self.addPermanentWidget(QtWidgets.QLabel(" "))
+
+    def setLineSep(self, sep):
+        seps = {self.seps[n]: n for n in self.seps}
+        self.leCombo.setCurrentText(seps.get(sep, ""))
 
 class EditorWrapper(QtWidgets.QWidget):
     def __init__(self, parent):

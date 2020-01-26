@@ -13,7 +13,7 @@ from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
-import os, sys, chardet
+import os, sys, chardet, re
 
 from main.plugins import PluginLoader
 
@@ -38,7 +38,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
-        self.setStatusBar(StatusBar(None))
+        self.setStatusBar(QtWidgets.QStatusBar())
 
         self.preferences = Preferences(self)
         self.preferences.apply()
@@ -97,8 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         trns = []
         for p in pluginloader.get():
             for t in p.types:
-                for c in p.types[t].get("converter", {}):
-                    trns.append((t, c, p.types[t]["converter"][c]))
+                for c in p.types[t].get("transformer", {}):
+                    trns.append((t, c, p.types[t]["transformer"][c]))
         for fr, to, convfunc in trns:
             action = QtWidgets.QAction("%s > %s" % (fr, to))
             action.triggered.connect(lambda b, fnc=convfunc, to=to: self.transform(fnc, to))
@@ -372,6 +372,20 @@ class MainWindow(QtWidgets.QMainWindow):
             valid = True
             try:
                 self.newTab(fileName)
+
+                # Detect line separator
+                with open(fileName, "r", newline='') as file:
+                    text = file.read()
+                    if "\r\n" in text:
+                        linesep = '\r\n'
+                    elif "\n" in text:
+                        linesep = '\n'
+                    elif "\r" in text:
+                        linesep = '\r'
+                    else:
+                        linesep = os.linesep
+
+                # Actually open the file
                 with open(fileName, "rb") as myfile:
                     data = myfile.read()
                     enc = chardet.detect(data)
@@ -386,10 +400,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         et = 'utf-8'
                     data = data.decode(et)
                 self.editor().wrapper.encoding.setCurrentText(et.upper())
+                self.editor().wrapper.statusBar.setLineSep(linesep)
                 self.editor().setText(data)
                 self.updateRecents(fileName)
                 self.editor().filename = fileName
-                self.editor().filecontents = data
+                self.editor().filecontents = data.replace(linesep, "\n")
                 self.setEditorType(Constants.lookup(ext, exts, ""))
             except IOError as e:
                 self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
@@ -532,7 +547,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.files.removeTab(idx)
         if old >= self.files.count():
             old = self.files.count() - 1
-        self.changeTab(old)
+        if old == -1:
+            self.view.clear()
+            self.setStatusBar(QtWidgets.QStatusBar())
+        else:
+            self.changeTab(old)
         self.updateTitle()
 
     def forceDisplay(self):

@@ -53,7 +53,7 @@ TYPES = {
                 "global": True
             }
         ],
-        "converter": {
+        "transformer": {
             "Graphviz": convert
         }
     }

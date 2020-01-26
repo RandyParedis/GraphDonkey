@@ -86,7 +86,7 @@ class Plugin:
         if typeid in self.types:
             tp = self.types[typeid]
             parser = Parser(tp.get("grammar", ""), tp.get("parser", "earley"))
-            parser.converter = tp.get("converter", {})
+            parser.converter = tp.get("transformer", {})
             visitor = self.getVisitorClass(typeid)
             if visitor is not None:
                 parser.visitor = visitor(parser)
@@ -186,7 +186,7 @@ class PluginLoader:
         ens = set(self.getEngines(active))
         for p in ps:
             if filetype in p.types:
-                ta = p.types[filetype].get("converter", {})
+                ta = p.types[filetype].get("transformer", {})
                 ta = set(ta).intersection(ens)
                 if len(ta) > 0:
                     en.append(list(ta))

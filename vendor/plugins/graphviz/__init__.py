@@ -110,7 +110,7 @@ TYPES = {
                 "global": True
             }
         ],
-        "converter": {
+        "transformer": {
             "Graphviz": lambda x, T: x
         }
     }
