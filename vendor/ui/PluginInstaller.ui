@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>485</width>
+    <height>146</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Plugin Installer</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QProgressBar" name="progress">
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="pb_cancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="main">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Installing all requirements for the plugin &lt;span style=&quot; font-weight:600;&quot;&gt;test&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QLabel" name="info">
+     <property name="text">
+      <string>Checking requirements...</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pb_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>435</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>242</x>
+     <y>74</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

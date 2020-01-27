@@ -10,13 +10,15 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    - Plugins:
-        - When no internet connection, disable all plugins that have unmet requirements
+    - Check for Updates?
+        - Other program (wizard) that includes
+            - updates
+            - installing all plugin reqs
+            - preference clearing
+            - uninstalling
     - Features:
         - Listen on host:port address?
         - Macros?
-    - Check for Updates?
-        - Other program (wizard) that includes updates, preference clearing, uninstalling
     - Styles/themes via CSS vs INI
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
     - Add tests!

@@ -24,10 +24,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_general">
       <attribute name="title">
@@ -305,8 +305,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>403</width>
-            <height>243</height>
+            <width>703</width>
+            <height>509</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -517,7 +517,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>366</width>
+            <width>689</width>
             <height>881</height>
            </rect>
           </property>
@@ -820,7 +820,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>271</width>
+            <width>689</width>
             <height>1428</height>
            </rect>
           </property>
@@ -1271,118 +1271,115 @@
       <attribute name="title">
        <string>&amp;Plugins</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_23">
-       <item row="0" column="0">
-        <widget class="QSplitter" name="splitter">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="childrenCollapsible">
-          <bool>false</bool>
-         </property>
-         <widget class="QWidget" name="pluginlistwrapper" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLineEdit" name="filterPlugins">
-             <property name="placeholderText">
-              <string>Filter...</string>
+      <layout class="QHBoxLayout" name="gridLayout_8" stretch="2,3">
+       <item>
+        <widget class="QWidget" name="pluginlistwrapper" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="filterPlugins">
+            <property name="placeholderText">
+             <string>Filter...</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QScrollArea" name="pluginlistscroll">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+            <widget class="QWidget" name="pluginlist">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>278</width>
+               <height>16</height>
+              </rect>
              </property>
-             <property name="clearButtonEnabled">
-              <bool>true</bool>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QScrollArea" name="pluginlistscroll">
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-             </property>
-             <widget class="QWidget" name="pluginlist">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>468</width>
-                <height>16</height>
-               </rect>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="spacing">
+               <number>0</number>
               </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+              <property name="leftMargin">
+               <number>0</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-              </layout>
-             </widget>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+             </layout>
             </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="plugindescription" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QScrollArea" name="pluginviewscroll">
-             <property name="widgetResizable">
-              <bool>true</bool>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="plugindescription" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QScrollArea" name="pluginviewscroll">
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOff</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="pluginviewer">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>417</width>
+               <height>509</height>
+              </rect>
              </property>
-             <widget class="QWidget" name="pluginviewer">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>229</width>
-                <height>509</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_24"/>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_24"/>
             </widget>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

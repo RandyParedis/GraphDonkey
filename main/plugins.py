@@ -9,12 +9,13 @@ Date:   01/09/2020
 from main.extra.IOHandler import IOHandler
 from main.editor.Parser import Parser
 from main.editor.Highlighter import BaseHighlighter
-import os
+import sys, ast
 
 class Plugin:
     def __init__(self, filename):
         self.filename = filename
         self._dir = IOHandler.directory(self.filename)
+        self.requirements = set()
         self.name = ""
         self.description = ""
         self.attrs = []
@@ -23,6 +24,7 @@ class Plugin:
         self.engines = {}
         self.preferences = {}
         self.enabled = True
+        self.deps = True
         self.load()
 
     def path(self, *paths):
@@ -32,12 +34,26 @@ class Plugin:
         self.name = ""
         self.description = ""
         self.icon = ""
+        self.requirements.clear()
         self.attrs.clear()
         self.types.clear()
         self.engines.clear()
+        self.deps = True
+
+        rf = os.path.join(self._dir, "requirements.txt")
+        if os.path.isfile(rf):
+            with open(rf, 'r') as reqs:
+                self.requirements = set([x for x in reqs.read().split("\n") if "#" not in x and len(x) > 0])
 
         _locals = {}
-        exec(open(self.filename).read(), {}, _locals)
+        with open(self.filename) as file:
+            contents = file.read()
+
+        module = ast.parse(contents)
+        doc = ast.get_docstring(module)
+        if doc is None:
+            doc = ""
+        _locals['__doc__'] = doc
 
         doc = _locals['__doc__'].splitlines()
         if isinstance(doc, list) and len(doc) > 0:
@@ -66,15 +82,21 @@ class Plugin:
                         self.attrs.pop(i)
 
             self.description = "\n".join(doc[idx:])
-        if "TYPES" in _locals:
-            self.types = _locals["TYPES"]
-            for t in self.types:
-                if "grammar" in self.types[t]:
-                    self.types[t]["grammar"] = self.path(self.types[t]["grammar"])
-        if "ENGINES" in _locals:
-            self.engines = _locals["ENGINES"]
-        if "ICON" in _locals:
-            self.icon = self.path(_locals["ICON"])
+
+        try:
+            exec(open(self.filename).read(), {}, _locals)
+            if "TYPES" in _locals:
+                self.types = _locals["TYPES"]
+                for t in self.types:
+                    if "grammar" in self.types[t]:
+                        self.types[t]["grammar"] = self.path(self.types[t]["grammar"])
+            if "ENGINES" in _locals:
+                self.engines = _locals["ENGINES"]
+            if "ICON" in _locals:
+                self.icon = self.path(_locals["ICON"])
+        except ModuleNotFoundError as e:
+            self.disable()
+            self.deps = False
 
     def enable(self, on=True):
         self.enabled = on
@@ -139,6 +161,10 @@ class PluginLoader:
         self.plugins = {}
         self.load()
 
+    def reload(self):
+        for p in self.get(False):
+            p.load()
+
     def load(self, failOnDuplicate=False):
         self.plugins.clear()
         for filename in os.listdir(IOHandler.dir_plugins()):
@@ -148,7 +174,7 @@ class PluginLoader:
             if os.path.isdir(dname):
                 plugin = Plugin(IOHandler.join(dname, "__init__.py"))
                 if len(plugin.name) == 0:
-                    raise KeyError("Plugin name cannot be empty!")
+                    continue
                 elif plugin.name not in self.plugins:
                     self.plugins[plugin.name] = plugin
                 elif failOnDuplicate:
@@ -158,7 +184,7 @@ class PluginLoader:
         if active:
             return [self.plugins[p] for p in self.plugins if self.plugins[p].enabled]
         else:
-            return self.plugins
+            return self.plugins.values()
 
     def getFileTypes(self, active=True):
         res = { "": ("No File Type", BaseHighlighter) }
@@ -195,7 +221,7 @@ class PluginLoader:
         return [i for s in en for i in s]
 
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, QtCore, uic
 
 class Settings(QtWidgets.QGroupBox):
     def __init__(self, pathname, parent=None):
@@ -209,6 +235,82 @@ class Settings(QtWidgets.QGroupBox):
 
     def rectify(self):
         raise NotImplementedError()
+
+
+import subprocess, os
+from main.extra.Threading import WorkerThread
+
+class PluginInstaller(QtWidgets.QDialog):
+    installed = QtCore.pyqtSignal(bool)
+
+    def __init__(self, plugin, update=False, parent=None):
+        super(PluginInstaller, self).__init__(parent)
+        uic.loadUi(IOHandler.dir_ui("PluginInstaller.ui"), self)
+        self.plugin = plugin
+        self.upd = update
+        self.main.setText("Installing all requirements for the plugin <b>%s</b>.<br/>" % self.plugin.name)
+        self.cmd = ["python3", "-m", "pip"]
+        self.depfol = IOHandler.dir_plugins(".dependencies")
+        self.success = False
+        self.thread = WorkerThread(self.run)
+        self.thread.finished.connect(self.end)
+        self.freeze()
+
+    def freeze(self):
+        """Loads all requirements that are already installed."""
+        out = subprocess.check_output(self.cmd + ["freeze"]).decode("utf-8").split("\n")
+        if os.path.isdir(self.depfol):
+            out += subprocess.check_output(self.cmd + ["freeze", "--path", self.depfol]).decode("utf-8").split("\n")
+        return set(out)
+
+    def reject(self):
+        if self.thread.isRunning():
+            self.thread.terminate()
+        QtWidgets.QDialog.reject(self)
+
+    def show(self):
+        QtWidgets.QDialog.show(self)
+        self.thread.start()
+
+    def run(self):
+        self.progress.reset()
+        try:
+            self.info.setText("Obtaining requirements...")
+            self.repaint()
+            req = self.plugin.requirements - self.freeze()
+            lr = len(req)
+            if lr != 0:
+                self.connection()
+                i = 0
+                for r in req:
+                    self.install(r)
+                    i += 1
+                    self.progress.setValue(i // lr)
+                    self.repaint()
+                self.info.setText("Installed all requirements.")
+            else:
+                self.info.setText("All requirements were already satisfied.")
+            self.progress.setValue(100)
+            self.success = True
+        except Exception as e:
+            # TODO: show error message
+            self.success = False
+
+    def end(self):
+        self.installed.emit(self.success)
+        self.pb_cancel.setText("Finish")
+        self.repaint()
+
+    def connection(self):
+        self.info.setText("Waiting for a valid internet connection...")
+
+    def install(self, req):
+        self.info.setText("Installing %s..." % req)
+        cmd = self.cmd + ["install", req, '-t', IOHandler.dir_plugins(self.depfol)]
+        if not self.upd:
+            cmd += ["--upgrade"]
+        subprocess.check_call(cmd)
+
 
 
 if __name__ == '__main__':

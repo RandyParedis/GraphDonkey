@@ -19,7 +19,7 @@ def bool(name: str):
         return False
     return name
 
-from main.plugins import PluginLoader
+from main.plugins import PluginLoader, PluginInstaller
 pluginloader = PluginLoader.instance()
 
 
@@ -48,20 +48,15 @@ class Preferences(QtWidgets.QDialog):
 
     def _setupPlugins(self):
         self.pluginUi = {}
-        ps = pluginloader.get()
+        ps = pluginloader.get(False)
         for p in ps:
             for e in p.engines:
                 self.combo_engine.addItem(e)
             self.pluginlist.layout().addWidget(PluginButton(p, self.pluginviewer, preferences=self))
-        self._setPluginSplitter()
-        self.pluginlist.findChild(PluginButton).click()
+        pb = self.pluginlist.findChild(PluginButton)
+        if pb:
+            pb.click()
         self.filterPlugins.textChanged.connect(self.pluginFilter)
-
-    def _setPluginSplitter(self):
-        w = self.splitter.width()
-        eq = [3, 5]
-        eq = [i / sum(eq) * w for i in eq]
-        self.splitter.setSizes(eq)
 
     def pluginFilter(self, txt):
         fields = self.pluginlist.findChildren(PluginButton)
@@ -330,7 +325,7 @@ class Preferences(QtWidgets.QDialog):
             plst = pluginloader.get()
             pls = self.preferences.value("plugin/enabled", [p.name for p in plst])
             for plugin in plst:
-                plugin.enable(plugin.name in pls)
+                plugin.enable(pls is not None and plugin.name in pls)
             for eid in self.pluginUi:
                 ui = self.pluginUi[eid]
                 grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
@@ -456,17 +451,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 
         # PLUGINS
-        if True:
-            pll = self.pluginlist.findChildren(PluginButton)
-            if len(pll) > 0:
-                pll[0].click()
-            self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
-            for eid in self.pluginUi:
-                ui = self.pluginUi[eid]
-                grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
-                self.preferences.beginGroup(grp)
-                ui.apply()
-                self.preferences.endGroup()
+        self.applyPlugins()
 
         self.preferences.sync()
 
@@ -565,6 +550,19 @@ class Preferences(QtWidgets.QDialog):
             cursor.setPosition(cstart)
             cursor.setPosition(cend, QtGui.QTextCursor.KeepAnchor)
             editor.setTextCursor(cursor)
+
+    def applyPlugins(self):
+        pll = self.pluginlist.findChildren(PluginButton)
+        if len(pll) > 0:
+            pll[0].click()
+        self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
+        for eid in self.pluginUi:
+            ui = self.pluginUi[eid]
+            grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
+            self.preferences.beginGroup(grp)
+            ui.apply()
+            self.preferences.endGroup()
+        self.parent().updateFileTypes()
 
     def open(self):
         self.rectify()
@@ -720,7 +718,7 @@ class PluginButton(QtWidgets.QLabel):
                     box.preferences = self.prefs.preferences
                     box.plugin = self.plugin
                     self.prefs.pluginUi[e] = box
-            lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, 1)
+            lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles
@@ -744,27 +742,61 @@ class PluginButton(QtWidgets.QLabel):
             lo.itemAt(i).widget().setParent(None)
         header = QtWidgets.QLabel(self.getHeader(20, 14))
         header.setTextFormat(QtCore.Qt.RichText)
-        header.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        header.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         header.setWordWrap(True)
-        lo.addWidget(header, 0, 0, 1, 1)
+        lo.addWidget(header, 0, 0, 1, 2)
 
-        cb = QtWidgets.QCheckBox("Enable Plugin")
-        cb.setChecked(self.plugin.enabled)
-        cb.toggled.connect(self.plugin.enable)
-        lo.addWidget(cb, 1, 0, 1, 1)
+        if self.plugin.deps:
+            cb = QtWidgets.QCheckBox("Enable Plugin")
+            cb.setChecked(self.plugin.enabled)
+            cb.toggled.connect(self.plugin.enable)
+            lo.addWidget(cb, 1, 0, 1, 1)
+            pb = QtWidgets.QPushButton("Update Dependencies")
+            pb.clicked.connect(self.update_)
+            lo.addWidget(pb, 1, 1, 1, 1)
+        else:
+            pb = QtWidgets.QPushButton("Install Dependencies")
+            pb.clicked.connect(self.install)
+            lo.addWidget(pb, 1, 0, 1, 2)
+
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.HLine)
         line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        lo.addWidget(line, 2, 0, 1, 1)
+        lo.addWidget(line, 2, 0, 1, 2)
 
         desc = QtWidgets.QLabel(self.getDesc())
         desc.setTextFormat(QtCore.Qt.RichText)
         desc.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
         desc.setOpenExternalLinks(True)
         desc.setWordWrap(True)
-        lo.addWidget(desc, 3, 0, 3, 1)
+        lo.addWidget(desc, 3, 0, 3, 2)
 
         self.setOptions()
 
     def click(self):
         self.mousePressEvent(None)
+
+    def install(self):
+        installer = PluginInstaller(self.plugin, self)
+        installer.installed.connect(self.installed)
+        installer.show()
+
+    def update_(self):
+        installer = PluginInstaller(self.plugin, update=True, parent=self)
+        installer.installed.connect(self.installed)
+        installer.show()
+
+    def installed(self, succ):
+        if succ:
+            pluginloader.reload()
+            self.plugin.enable()
+            self.setText(self.getHeader(16, 12))
+            self.click()
+
+            # set plugin preferences once more
+            for e in self.plugin.engines:
+                self.prefs.pluginUi[e].rectify()
+
+            # set all mainwindow settings
+            mw = self.prefs.parent()
+            mw.updateFileTypes()

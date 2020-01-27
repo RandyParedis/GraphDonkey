@@ -159,10 +159,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def canDisplay(self):
         return len(self.disableDisplay) == 0
 
-    def setEditorType(self, type):
-        idx = self.files.currentIndex()
-        if idx >= 0:
-            wrapper = self.files.widget(idx)
+    def setEditorType(self, type, idx=-1):
+        if idx == -1:
+            idx = self.files.currentIndex()
+        wrapper = self.files.widget(idx)
+        if wrapper is not None:
             wrapper.setType(type)
 
     def editor(self, idx=-1):
@@ -364,48 +365,64 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newTab("undefined *")
         self.updateTitle()
 
+    def updateFileTypes(self):
+        for i in range(self.files.count()):
+            self.updateFileType(i)
+
+    def updateFileType(self, indx=-1):
+        edit = self.editor(indx)
+        if edit is None:
+            return
+
+        for i in range(self.files.count()):
+            self.editor(i).wrapper.setTypes()
+
+        fn = edit.filename
+
+        ext = fn.split(".")[-1]
+        exts = pluginloader.getFileExtensions()
+
+        # Detect line separator
+        with open(fn, "r", newline='') as file:
+            text = file.read()
+            if "\r\n" in text:
+                linesep = '\r\n'
+            elif "\n" in text:
+                linesep = '\n'
+            elif "\r" in text:
+                linesep = '\r'
+            else:
+                linesep = os.linesep
+
+        # Actually open the file
+        with open(fn, "rb") as myfile:
+            data = myfile.read()
+            enc = chardet.detect(data)
+            et = enc['encoding']
+            lan = enc['language']
+            idx = self.editor().wrapper.encoding.findText(et.upper())
+            if idx == -1:
+                self.warn("Unknown File Encoding", "Cannot identify encoding.\n"
+                                                   "Detected as %s.\n"
+                                                   "Reverting to UTF-8."
+                          % (et.upper() + ("" if len(lan) == 0 else " (%s)" % lan)))
+                et = 'utf-8'
+            data = data.decode(et)
+        edit.wrapper.encoding.setCurrentText(et.upper())
+        edit.wrapper.statusBar.setLineSep(linesep)
+        edit.setText(data)
+        edit.filecontents = data.replace(linesep, "\n")
+        self.setEditorType(Constants.lookup(ext, exts, ""), indx)
+
     def openFile(self, fileName):
         self.lockDisplay()
         if fileName and fileName != "":
-            ext = fileName.split(".")[-1]
-            exts = pluginloader.getFileExtensions()
             valid = True
             try:
                 self.newTab(fileName)
-
-                # Detect line separator
-                with open(fileName, "r", newline='') as file:
-                    text = file.read()
-                    if "\r\n" in text:
-                        linesep = '\r\n'
-                    elif "\n" in text:
-                        linesep = '\n'
-                    elif "\r" in text:
-                        linesep = '\r'
-                    else:
-                        linesep = os.linesep
-
-                # Actually open the file
-                with open(fileName, "rb") as myfile:
-                    data = myfile.read()
-                    enc = chardet.detect(data)
-                    et = enc['encoding']
-                    lan = enc['language']
-                    idx = self.editor().wrapper.encoding.findText(et.upper())
-                    if idx == -1:
-                        self.warn("Unknown File Encoding", "Cannot identify encoding.\n"
-                                                           "Detected as %s.\n"
-                                                           "Reverting to UTF-8."
-                                  % (et.upper() + ("" if len(lan) == 0 else " (%s)" % lan)))
-                        et = 'utf-8'
-                    data = data.decode(et)
-                self.editor().wrapper.encoding.setCurrentText(et.upper())
-                self.editor().wrapper.statusBar.setLineSep(linesep)
-                self.editor().setText(data)
-                self.updateRecents(fileName)
                 self.editor().filename = fileName
-                self.editor().filecontents = data.replace(linesep, "\n")
-                self.setEditorType(Constants.lookup(ext, exts, ""))
+                self.updateFileType()
+                self.updateRecents(fileName)
             except IOError as e:
                 self.warn("I/O Error", "%s\nPlease retry.\nFilename: %s" % (str(e), fileName))
                 self.closeFile()
