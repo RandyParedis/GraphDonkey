@@ -176,7 +176,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
         if bool(Config.value("editor/parentheses")):
-            self.matchParenthesis()
+            self.matchBrackets()
         if bool(Config.value("editor/useParser", True)):
             self.highlightErrors()
         self.highlightMatches()
@@ -249,16 +249,28 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         curs = self.textCursor()
         s = curs.selectionStart()
         e = curs.selectionEnd()
-        curs.setPosition(s)
         curs.beginEditBlock()
+        curs.setPosition(s)
         self.setTextCursor(curs)
         self.insertPlainText(o)
-        curs.setPosition(e + 1)
-        self.setTextCursor(curs)
-        self.insertPlainText(c)
+
+        mc = True
+        if s == e:
+            ci = curs.block().userData().indexOf(curs.positionInBlock())
+            cpos = self.getClosingBracketPos((o, c), curs.block(), ci)
+            if cpos >= 0:
+                curs.setPosition(cpos)
+                oi = curs.block().userData().indexOf(curs.positionInBlock())
+                opos = self.getOpeningBracketPos((o, c), curs.block(), oi - 1)
+                if opos == s or opos == -1:
+                    mc = False
+        if mc:
+            curs.setPosition(e + len(o))
+            self.setTextCursor(curs)
+            self.insertPlainText(c)
+        curs.setPosition(s + len(o))
+        curs.setPosition(e + len(o), QtGui.QTextCursor.KeepAnchor)
         curs.endEditBlock()
-        curs.setPosition(s + 1)
-        curs.setPosition(e + 1, QtGui.QTextCursor.KeepAnchor)
         self.setTextCursor(curs)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
@@ -324,7 +336,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         elif event.key() not in [QtCore.Qt.Key_Delete]:
             if bool(Config.value("editor/pairedBrackets")):
                 et = event.text()
-                if et in [x[0] for x in paired]:
+                if et in [x[0] for x in paired]:    # OPEN
                     pair = [x for x in paired if et in x][0]
                     if pair[0] == pair[1]:
                         curs = self.textCursor()
@@ -344,7 +356,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                             self.encapsulateText(*pair)
                     else:
                         self.encapsulateText(*pair)
-                elif et in [x[1] for x in paired]:
+                elif et in [x[1] for x in paired]:  # CLOSE
                     pair = [x for x in paired if et in x][0]
                     curs = self.textCursor()
                     s = curs.selectionStart()
@@ -636,7 +648,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                     self.completer.popup().verticalScrollBar().sizeHint().width())
         self.completer.complete(cr)
 
-    def matchParenthesis(self):
+    def matchBrackets(self):
         paired = pluginloader.getPairedBrackets(self.wrapper.filetype.currentText())
         bopen = [x[0] for x in paired]
         bclose = [x[1] for x in paired]
@@ -647,49 +659,33 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             infos = data.parenthesis
 
             pos = curs.block().position()
+            curPos = curs.positionInBlock()
+            block = curs.block()
             for i in range(len(infos)):
                 info = infos[i]
-                curPos = curs.positionInBlock()
-                if info.pos in [curPos, curPos - 1]:
+                if info.at(curPos):
                     oidx = bopen.index(info.char) if info.char in bopen else -1
-                    cidx = bclose.index(info.char) if info.char in bclose else -2
-                    if info.char in bopen and info.char in bclose and oidx == cidx:
-                        # TODO: same brackets
-                        if self.matchOpenParenthesis(paired[oidx], curs.block(), i + 1):
-                            self.highlightParenthesis(pos + info.pos)
-                        elif self.matchCloseParenthesis(paired[cidx], curs.block(), i - 1):
-                            self.highlightParenthesis(pos + info.pos)
+                    cidx = bclose.index(info.char) if info.char in bclose else -1
                     if info.char in bopen:
-                        if self.matchOpenParenthesis(paired[oidx], curs.block(), i + 1):
-                            self.highlightParenthesis(pos + info.pos)
+                        cpos = self.getClosingBracketPos(paired[oidx], block, i + 1)
+                        if cpos >= 0:
+                            curs.setPosition(cpos)
+                            j = curs.block().userData().indexOf(curs.positionInBlock())
+                            opos = self.getOpeningBracketPos(paired[oidx], curs.block(), j - 1)
+                            if info.pos == opos - pos:
+                                self.highlightBrackets(opos, len(paired[oidx][0]))
+                                self.highlightBrackets(cpos, len(paired[oidx][1]))
                     if info.char in bclose:
-                        if self.matchCloseParenthesis(paired[cidx], curs.block(), i - 1):
-                            self.highlightParenthesis(pos + info.pos)
+                        opos = self.getOpeningBracketPos(paired[cidx], block, i - 1)
+                        if opos >= 0:
+                            curs.setPosition(opos)
+                            j = curs.block().userData().indexOf(curs.positionInBlock())
+                            cpos = self.getClosingBracketPos(paired[cidx], curs.block(), j + 1)
+                            if info.pos == cpos - pos:
+                                self.highlightBrackets(cpos, len(paired[cidx][1]))
+                                self.highlightBrackets(opos, len(paired[cidx][0]))
 
-    def matchOpenParenthesis(self, pair, block, i, num=0):
-        data = block.userData()
-        infos = data.parenthesis
-
-        docPos = block.position()
-        for j in range(i, len(infos)):
-            info = infos[j]
-
-            if info.char == pair[0]:
-                num += 1
-                continue
-            if info.char == pair[1]:
-                if num == 0:
-                    self.highlightParenthesis(docPos + info.pos)
-                    return True
-                num -= 1
-
-        block = block.next()
-        if block.isValid():
-            return self.matchOpenParenthesis(pair, block, 0, num)
-
-        return False
-
-    def matchCloseParenthesis(self, pair, block, i, num=0):
+    def getOpeningBracketPos(self, pair, block, i, num=0):
         data = block.userData()
         infos = data.parenthesis
 
@@ -699,29 +695,50 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 break
             info = infos[j]
 
-            if info.char == pair[1]:
+            if info.char == pair[1] and pair[0] != pair[1]:
                 num += 1
                 continue
             if info.char == pair[0]:
                 if num == 0:
-                    self.highlightParenthesis(docPos + info.pos)
-                    return True
+                    return docPos + info.pos
                 num -= 1
 
         block = block.previous()
         if block.isValid():
-            return self.matchCloseParenthesis(pair, block, 0, num)
+            return self.getOpeningBracketPos(pair, block, 0, num)
 
-        return False
+        return -1
 
-    def highlightParenthesis(self, pos):
+    def getClosingBracketPos(self, pair, block, i, num=0):
+        data = block.userData()
+        infos = data.parenthesis
+
+        docPos = block.position()
+        for j in range(i, len(infos)):
+            info = infos[j]
+
+            if info.char == pair[0] and pair[0] != pair[1]:
+                num += 1
+                continue
+            if info.char == pair[1]:
+                if num == 0:
+                    return docPos + info.pos
+                num -= 1
+
+        block = block.next()
+        if block.isValid():
+            return self.getClosingBracketPos(pair, block, 0, num)
+
+        return -1
+
+    def highlightBrackets(self, pos, size=1):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(QtGui.QColor(Config.value("col/clnb")))
         selection.format.setForeground(QtGui.QColor(Config.value("col/clnf")))
 
         curs = self.textCursor()
         curs.setPosition(pos)
-        curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor, size)
         selection.cursor = curs
 
         selections = self.extraSelections()

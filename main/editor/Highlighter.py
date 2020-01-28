@@ -15,13 +15,16 @@ from lark import UnexpectedToken, UnexpectedCharacters, Token
 
 Config = IOHandler.get_preferences()
 
-class ParenthesisInfo:
+class BracketInfo:
     def __init__(self, char, pos):
         self.char = char
         self.pos = pos
 
+    def at(self, pos):
+        return self.pos <= pos <= self.pos + len(self.char)
+
     def __repr__(self):
-        return "ParenthesisInfo <%s, %i>" % (self.char, self.pos)
+        return "BracketInfo <%s, %i>" % (self.char, self.pos)
 
 class TextBlockData(QtGui.QTextBlockUserData):
     def __init__(self):
@@ -34,11 +37,11 @@ class TextBlockData(QtGui.QTextBlockUserData):
             i += 1
         self.parenthesis.insert(i, info)
 
-    def isOpenFold(self, bopen):
-        return len(self.parenthesis) > 0 and self.parenthesis[-1].char in bopen
-
-    def isCloseFold(self, bclose):
-        return len(self.parenthesis) > 0 and self.parenthesis[0].char in bclose
+    def indexOf(self, pos):
+        for i in range(len(self.parenthesis)):
+            if pos <= self.parenthesis[i].pos:
+                return i
+        return -1
 
 class BaseHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -107,7 +110,7 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
             if bool(Config.value("editor/autorender")):
                 self.editor.mainwindow.displayGraph()
 
-    def storeParenthesis(self, text:str):
+    def storeBrackets(self, text:str):
         from main.plugins import PluginLoader
         paired = PluginLoader.instance().getPairedBrackets(self.editor.wrapper.filetype.currentText())
         flattened = list(set([x for p in paired for x in p]))
@@ -116,13 +119,13 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         for c in flattened:
             leftpos = text.find(c)
             while leftpos != -1:
-                info = ParenthesisInfo(c, leftpos)
+                info = BracketInfo(c, leftpos)
                 data.insert(info)
                 leftpos = text.find(c, leftpos + 1)
         self.setCurrentBlockUserData(data)
 
     def highlightBlock(self, text):
-        self.storeParenthesis(text)
+        self.storeBrackets(text)
         self.setCurrentBlockState(0)
         sh = bool(Config.value("editor/syntaxHighlighting", True))
         if sh:
