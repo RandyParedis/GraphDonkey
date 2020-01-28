@@ -112,7 +112,14 @@ TYPES = {
         ],
         "transformer": {
             "Graphviz": lambda x, T: x
-        }
+        },
+        "snippets": {
+            "FSA Start Node": "start [label=\"\", shape=none, width=0];",
+            "FSA End Node": "end [shape=doublecircle];"
+        },
+        "paired": [
+            ("{", "}"), ("[", "]"), ("<", ">"), ('"', '"')
+        ]
     }
 }
 

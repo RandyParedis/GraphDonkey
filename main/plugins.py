@@ -149,6 +149,8 @@ class Plugin:
         return "Plugin <%s, %s>" % (self.name, self.enabled)
 
 
+from main.extra import Constants
+
 class PluginLoader:
     _instance = None
     @staticmethod
@@ -219,6 +221,12 @@ class PluginLoader:
                 if len(ta) > 0:
                     en.append(list(ta))
         return [i for s in en for i in s]
+
+    def getPairedBrackets(self, filetype, active=True):
+        types = {}
+        for d in [x.types for x in self.get(active)]:
+            types.update(d)
+        return types.get(filetype, {}).get("paired", Constants.BRACKETS)
 
 
 from PyQt5 import QtWidgets, QtCore, uic

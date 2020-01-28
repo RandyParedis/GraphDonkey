@@ -34,11 +34,11 @@ class TextBlockData(QtGui.QTextBlockUserData):
             i += 1
         self.parenthesis.insert(i, info)
 
-    def isOpenFold(self):
-        return len(self.parenthesis) > 0 and self.parenthesis[-1].char in Constants.INDENT_OPEN
+    def isOpenFold(self, bopen):
+        return len(self.parenthesis) > 0 and self.parenthesis[-1].char in bopen
 
-    def isCloseFold(self):
-        return len(self.parenthesis) > 0 and self.parenthesis[0].char in Constants.INDENT_CLOSE
+    def isCloseFold(self, bclose):
+        return len(self.parenthesis) > 0 and self.parenthesis[0].char in bclose
 
 class BaseHighlighter(QtGui.QSyntaxHighlighter):
     def __init__(self, parent=None, editor=None):
@@ -108,8 +108,12 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 self.editor.mainwindow.displayGraph()
 
     def storeParenthesis(self, text:str):
+        from main.plugins import PluginLoader
+        paired = PluginLoader.instance().getPairedBrackets(self.editor.wrapper.filetype.currentText())
+        flattened = list(set([x for p in paired for x in p]))
+
         data = TextBlockData()
-        for c in Constants.BRACKETS_OPEN + Constants.BRACKETS_CLOSE:
+        for c in flattened:
             leftpos = text.find(c)
             while leftpos != -1:
                 info = ParenthesisInfo(c, leftpos)

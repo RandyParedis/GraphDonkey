@@ -10,20 +10,41 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    - Check for Updates?
-        - Other program (wizard) that includes
-            - updates
-            - installing all plugin reqs
-            - preference clearing
-            - uninstalling
+    [0.2.0]
+    - See 'Known Bugs'
+        ==> Paired Brackets via AST?
+    - Auto-Indent not working correctly for Graphviz file type
+    - Check on Windows
+    [0.2.1]
+    - First time using GraphDonkey?
+        - Enabling of plugins
+        - Theme choser
+    - Other program (wizard) that includes
+        - updates
+        - installing all plugin reqs
+        - preference clearing
+        - uninstalling
+    [0.2.2]
     - Features:
         - Listen on host:port address?
         - Macros?
-    - Styles/themes via CSS vs INI
+    - Other plugins by default
+        - Extend flowchart language (function/procedure calls)
+    [0.2.3]
+    - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
+    [0.3.0]
+    - More complex rendering mechanics
+        - text/HTML
+        - OGDF
+            (Add pre-transform to Engine, i.e. 'transform from one file type to another')
+        - 3D
+    []
     - Add tests!
     - Fix in-code TODOs
 
 Version 1.0.0 name ideas:
     - Wishing Table (ref to "the Wishing Table, Gold-Ass and the Cudgel in the Sack")
     - Wannabe Unicorn
+    - Carrot-on-a-Stick
+    - Land of Toys

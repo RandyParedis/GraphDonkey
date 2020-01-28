@@ -13,13 +13,7 @@ APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
 LINE_ENDING = "\u2029"  # Qt Handles all line endings internally => only need to replace on save
 
-BRACKETS_OPEN = ['{', '[', '(']
-BRACKETS_CLOSE = ['}', ']', ')']
-
-
-################################
-#       FILE TYPE CONFIG       #
-################################
+BRACKETS = [("(", ")"), ("{", "}"), ("[", "]"), ('"', '"'), ("'", "'")]
 
 FILE_TYPES = {
     "Windows Bitmap Format": ["bmp"],

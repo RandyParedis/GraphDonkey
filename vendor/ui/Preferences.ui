@@ -240,8 +240,11 @@
           </item>
           <item row="5" column="3" colspan="2">
            <widget class="QCheckBox" name="check_pairedBrackets">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether or not to pair brackets like () {} &amp;lt;&amp;gt; &amp;quot;&amp;quot; ''...&lt;/p&gt;&lt;p&gt;Which brackets are paired is completely filetype-dependant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
-             <string>Pair separators () {} [] &quot;&quot; ''</string>
+             <string>Pair brackets</string>
             </property>
            </widget>
           </item>
