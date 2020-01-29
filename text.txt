@@ -22,9 +22,11 @@ TODO LIST
         - installing all plugin reqs
         - preference clearing
         - uninstalling
+    - Reselect the first plugin in Preferences window without it being a different size.
     [0.2.2]
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
+        - Goto Line
         - Listen on host:port address?
         - Macros?
     - Other plugins by default

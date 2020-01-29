@@ -34,6 +34,79 @@
        <string>&amp;General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Other</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,0">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_69">
+            <property name="text">
+             <string>Interface Font:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="num_recents">
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_autohide">
+            <property name="text">
+             <string>Automatically hide tabs when there are less than two.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Limit Recent Files Menu to</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>entries.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_70">
+            <property name="text">
+             <string>Interface Font Size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QFontComboBox" name="font_interface"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="num_font_interface">
+            <property name="suffix">
+             <string> pt</string>
+            </property>
+            <property name="minimum">
+             <number>8</number>
+            </property>
+            <property name="maximum">
+             <number>40</number>
+            </property>
+            <property name="value">
+             <number>12</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -75,46 +148,6 @@
               </widget>
              </item>
             </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Other</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,0">
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="num_recents">
-            <property name="suffix">
-             <string/>
-            </property>
-            <property name="value">
-             <number>5</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Limit Recent Files Menu to</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>entries.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="3">
-           <widget class="QCheckBox" name="check_autohide">
-            <property name="text">
-             <string>Automatically hide tabs when there are less than two.</string>
-            </property>
            </widget>
           </item>
          </layout>
@@ -183,7 +216,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="num_font">
+           <widget class="QSpinBox" name="num_font_editor">
             <property name="suffix">
              <string> pt</string>
             </property>
@@ -308,8 +341,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>703</width>
-            <height>509</height>
+            <width>693</width>
+            <height>499</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -520,8 +553,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>689</width>
-            <height>881</height>
+            <width>672</width>
+            <height>872</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_17">
@@ -823,8 +856,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>689</width>
-            <height>1428</height>
+            <width>672</width>
+            <height>1335</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -1313,7 +1346,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>278</width>
+               <width>273</width>
                <height>16</height>
               </rect>
              </property>
@@ -1374,8 +1407,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>417</width>
-               <height>509</height>
+               <width>411</width>
+               <height>499</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24"/>

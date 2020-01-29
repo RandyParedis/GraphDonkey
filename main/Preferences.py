@@ -53,16 +53,23 @@ class Preferences(QtWidgets.QDialog):
             for e in p.engines:
                 self.combo_engine.addItem(e)
             self.pluginlist.layout().addWidget(PluginButton(p, self.pluginviewer, preferences=self))
-        pb = self.pluginlist.findChild(PluginButton)
-        if pb:
-            pb.click()
         self.filterPlugins.textChanged.connect(self.pluginFilter)
+        self.pluginFilter("")
 
     def pluginFilter(self, txt):
         fields = self.pluginlist.findChildren(PluginButton)
         for field in fields:
             field.setVisible(field.matches(txt))
-        [x for x in fields if x.isVisible()][0].click()
+        vis = [x for x in fields if x.isVisible()]
+        if len(vis) > 0:
+            vis[0].click()
+        else:
+            lo = self.pluginviewer.layout()
+            for i in reversed(range(lo.count())):
+                lo.itemAt(i).widget().setParent(None)
+            lbl = QtWidgets.QLabel("No Plugin Selected.")
+            lbl.setAlignment(QtCore.Qt.AlignCenter)
+            lo.addWidget(lbl, 0, 0, -1, -1)
 
     def parseDisable(self, b):
         if not b:
@@ -191,6 +198,7 @@ class Preferences(QtWidgets.QDialog):
     def rectify(self):
         # GENERAL
         if True:
+            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.GeneralFont)
             self.check_rememberLayout.setChecked(bool(self.preferences.value("rememberLayout", True)))
             self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
             restore = int(self.preferences.value("restore", 0))
@@ -207,12 +215,15 @@ class Preferences(QtWidgets.QDialog):
                 self.radio_ws_restore.setChecked(False)
                 self.radio_ws_none.setChecked(True)
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
+            self.font_interface.setCurrentFont(QtGui.QFont(self.preferences.value("font", defFont.family())))
+            self.num_font_interface.setValue(int(self.preferences.value("fontsize", 12)))
+
 
         # EDITOR
         if True:
             defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
             self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("editor/font", defFont.family())))
-            self.num_font.setValue(int(self.preferences.value("editor/fontsize", 12)))
+            self.num_font_editor.setValue(int(self.preferences.value("editor/fontsize", 12)))
             self.num_tabwidth.setValue(int(self.preferences.value("editor/tabwidth", 4)))
             self.check_lineNumbers.setChecked(bool(self.preferences.value("editor/showLineNumbers", True)))
             self.check_highlightLine.setChecked(bool(self.preferences.value("editor/highlightCurrentLine", True)))
@@ -236,7 +247,7 @@ class Preferences(QtWidgets.QDialog):
             self.num_zoom_level_max.setValue(int(self.preferences.value("view/zoomMax", 450)))
             self.num_zoom_factor.setValue(float(self.preferences.value("view/zoomFactor", 2.0)))
 
-        # APPEARANCE
+        # THEME AND COLORS
         if True:
             self.combo_style.setCurrentIndex(int(self.preferences.value("col/style", 0)))
             self.combo_theme.setCurrentText(self.preferences.value("col/theme", "Light Lucy"))
@@ -347,11 +358,13 @@ class Preferences(QtWidgets.QDialog):
             else:
                 self.preferences.setValue("restore", 2)
             self.preferences.setValue("recents", self.num_recents.value())
+            self.preferences.setValue("font", self.font_interface.currentFont().family())
+            self.preferences.setValue("fontsize", self.num_font_interface.value())
 
         # EDITOR
         if True:
             self.preferences.setValue("editor/font", self.font_editor.currentFont().family())
-            self.preferences.setValue("editor/fontsize", self.num_font.value())
+            self.preferences.setValue("editor/fontsize", self.num_font_editor.value())
             self.preferences.setValue("editor/showLineNumbers", self.check_lineNumbers.isChecked())
             self.preferences.setValue("editor/highlightCurrentLine", self.check_highlightLine.isChecked())
             self.preferences.setValue("editor/syntaxHighlighting", self.check_syntax.isChecked())
@@ -374,7 +387,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("view/zoomMax", self.num_zoom_level_max.value())
             self.preferences.setValue("view/zoomFactor", self.num_zoom_factor.value())
 
-        # APPEARANCE
+        # THEME AND COLORS
         if True:
             self.preferences.setValue("col/style", self.combo_style.currentIndex())
             self.preferences.setValue("col/theme", self.combo_theme.currentText())
@@ -450,17 +463,21 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 
-        # PLUGINS
-        self.applyPlugins()
-
         self.preferences.sync()
 
         self.parent().lockDisplay()
+        self.applyGeneral()
         self.applyEditor()
         self.applyView()
         self.applyStyle()
         self.applyShortcuts()
+        self.applyPlugins()
         self.parent().releaseDisplay()
+
+    def applyGeneral(self):
+        font = self.font_interface.currentFont()
+        font.setPointSize(self.num_font_interface.value())
+        QtWidgets.QApplication.instance().setFont(font)
 
     def applyShortcuts(self):
         for action in self.shortcuts:
@@ -513,7 +530,7 @@ class Preferences(QtWidgets.QDialog):
             font = QtGui.QFont()
             font.setFamily(self.font_editor.currentFont().family())
             font.setFixedPitch(self.check_monospace.isChecked())
-            font.setPointSize(self.num_font.value())
+            font.setPointSize(self.num_font_editor.value())
             editor.setFont(font)
 
             # TAB WIDTH
@@ -552,9 +569,12 @@ class Preferences(QtWidgets.QDialog):
             editor.setTextCursor(cursor)
 
     def applyPlugins(self):
-        pll = self.pluginlist.findChildren(PluginButton)
-        if len(pll) > 0:
-            pll[0].click()
+        # TODO: Select the first plugin, BUT this gives issues on Windows:
+        #       the font size changes (it feels as if Rich Text QLabels are not
+        #       rendered correctly when invisible)
+        # pll = self.pluginlist.findChildren(PluginButton)
+        # if len(pll) > 0:
+        #     pll[0].click()
         self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
         for eid in self.pluginUi:
             ui = self.pluginUi[eid]
@@ -697,7 +717,7 @@ class PluginButton(QtWidgets.QLabel):
         attrs = "<table width='100%%' cellspacing=10>%s</table>" %\
                 ("".join(["<tr><td width='20%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
                           (k, self.transform(v)) for k, v in self.plugin.attrs]))
-        return desc + "<br>" + attrs + "<br>"
+        return "<font size=%i>%s<br>%s<br></font>" % (self.font().pixelSize() // 2, desc, attrs)
 
     def matches(self, txt):
         return txt in self.plugin.name or txt in self.plugin.description

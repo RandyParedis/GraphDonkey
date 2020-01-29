@@ -152,7 +152,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
     def textChangedSlot(self):
         txt = self.toPlainText()
         if bool(Config.value("editor/emptyline")) and not txt.endswith(Constants.LINE_ENDING) \
-                and not txt.endswith(os.linesep):
+                and not txt.endswith('\n'):
             curs = self.textCursor()
             curs.movePosition(QtGui.QTextCursor.End)
             curs.insertText(Constants.LINE_ENDING)
