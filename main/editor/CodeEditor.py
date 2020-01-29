@@ -295,7 +295,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             pos = cursor.position()
             cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText().lstrip()
-            if len(txt) > 0 and txt[0] in [x[1] for x in paired]:
+            cursor.setPosition(pos)
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
+            if len(txt) > 0 and txt[0] in [x[1] for x in paired] and len(cursor.selectedText()) == 0:
                 cursor.setPosition(pos)
                 cursor.insertText(Constants.LINE_ENDING)
                 cursor.movePosition(QtGui.QTextCursor.Up, QtGui.QTextCursor.KeepAnchor)
@@ -304,7 +306,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 cursor.setPosition(pos)
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
-                self.indent()
             cursor.endEditBlock()
         elif event.key() == QtCore.Qt.Key_Home:
             cursor = self.textCursor()
@@ -445,8 +446,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.setPosition(posS)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
-        if posS == posE:
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
         otxt = cursor.selectedText()
         txt = otxt.split(Constants.LINE_ENDING)
         add = 0

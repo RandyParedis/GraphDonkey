@@ -11,7 +11,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     [0.2.0]
-    - Auto-Indent not working correctly for Graphviz file type (SEE BUGS.MD)
     - Check on Windows
     - Documentation - Home: remove temporary 'invalid docs' note
     [0.2.1]
@@ -33,6 +32,8 @@ TODO LIST
     [0.2.3]
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
+    - Indentation indicators?
+    - Column indicator?
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML

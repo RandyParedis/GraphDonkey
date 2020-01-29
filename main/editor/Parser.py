@@ -105,19 +105,50 @@ class CheckVisitor:
     def indent(self, tree: Tree, n=1):
         """Sets the indentation level for the lines in this scope.
 
+        All children of the tree will be annotated with an additional indent.
+        This is done as follows:
+            - If the tree spans over a single line, do nothing.
+            - Otherwise, mark the first line to increase the indent and denote
+              the last line to decrease the indent. This last line is the line
+              before the one on which the scope ends, UNLESS the scope starts
+              at this line. This is done to allow the closing scope tokens
+              to be indented visually at the upper scope level.
+
         Args:
             tree (Any):     The Tree/Token to set the indentation level on.
             n (int):        The increase for the new indentation level.
-                            Only set this value if you want to increase the
-                            indentation with more than 1 level for the scope
-                            defined by the tree.
-                            This is not an absolute value, but rather a
-                            relative attribute, i.e. it's the *increase* of
-                            the indentation.
-                            Defaults to 1.
+                            Only set this value if you want to increase the indentation with
+                            more than 1 level for the scope defined by the tree.
+                            This is not an absolute value, but rather a relative attribute,
+                            i.e. it's the *increase* of the indentation. Defaults to 1.
+
+        Examples:
+            Let '{' denote the opening of a scope and '}' denote its closing. The '.'
+            will indicate an indentation level.
+            Let '#' denote the beginning of a line comment, allowing for more clarity.
+            The following code fragment indicates how the scopes will be set.
+
+            ---
+
+            {       # Opens a scope, increasing the indent with n
+            .   some text within the scope
+            .   { open and close }  # No annotation of its children
+            .   {   # Opens another scope
+            .   .   you can do other things here.
+            .   .   even opening yet another scope
+            .   .   { text here     # Open another scope with text immediately here
+            .   .   }   # Close the new scope at this line!
+            .   }   # Closes the inner scope at the previous line
+            .   some other text
+            .   This can also be code
+            }       # Closes a scope, setting the decrease of the indent to the previous line
         """
-        self.scope[tree.line] = self.scope.get(tree.line, 0) + n
-        self.scope[tree.end_line] = self.scope.get(tree.end_line, 0) - n
+        if tree.line != tree.end_line:
+            self.scope[tree.line] = self.scope.get(tree.line, 0) + n
+            el = tree.end_line - 1
+            if tree.line == el:
+                el += 1
+            self.scope[el] = self.scope.get(el, 0) - n
 
     def obtain(self, line, start=1):
         """Get the indentation level for a specific line of code.

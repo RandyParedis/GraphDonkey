@@ -26,6 +26,7 @@ class CheckDotVisitor(CheckVisitor):
         self.completer.add(it)
 
     def enter_a_list(self, tree: Tree):
+        self.indent(tree)
         if self.encapsulates(tree):
             self.a_list = True
 
@@ -44,15 +45,6 @@ class CheckDotVisitor(CheckVisitor):
             self.completer.add(["n", "ne", "e", "se", "s", "sw", "w", "nw", "c", "_"])
 
     def enter_scope(self, tree):
-        self.indent(tree)
-
-    def enter_edge_stmt(self, tree):
-        self.indent(tree)
-
-    def enter_ba_list(self, tree):
-        self.indent(tree)
-
-    def enter_attr_list(self, tree):
         self.indent(tree)
 
     def STRING(self, T):

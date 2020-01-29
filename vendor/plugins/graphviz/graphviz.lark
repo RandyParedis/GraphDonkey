@@ -14,14 +14,13 @@ WS: /[ \t\f\r\n]/+
 %ignore COMMENT_MLT
 
 start: graph
-graph: STRICT? (GRAPH|DIGRAPH) id? scope RBRC
-scope: LBRC stmt_list
+graph: STRICT? (GRAPH|DIGRAPH) id? scope
+scope: LBRC stmt_list RBRC
 stmt_list: (stmt ";"?)*
 stmt: node_stmt | edge_stmt | attr_stmt | attr | subgraph
 attr_stmt: (GRAPH | NODE | EDGE) attr_list
-attr_list: ba_list RSQB attr_list?
-ba_list: LSQB a_list?
-a_list: (attr (";" | ",")?)*
+attr_list: a_list attr_list?
+a_list: LSQB (attr (";" | ",")?)* RSQB
 attr: id "=" id
 edge_stmt: (node_id | subgraph) edge_rhs attr_list?
 edge_rhs: edgeop (node_id | subgraph) edge_rhs?
@@ -29,7 +28,7 @@ edgeop: DIOP | UNOP
 node_stmt: node_id attr_list?
 node_id: id port?
 port: (":" id (":" compass_pt)?) | (":" compass_pt)
-subgraph: (SUBGRAPH id?)? scope RBRC
+subgraph: (SUBGRAPH id?)? scope
 compass_pt: "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw" | "c" | "_"
 
 // Operators and brackets
