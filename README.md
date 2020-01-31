@@ -14,8 +14,8 @@ Simply type your text in the editor, enjoy its user-friendly features and see yo
 code come to life in the visualizer.
 
 **Latest Release Version:** _Jack-in-a-Box_ (`v0.2.0`)<br/>
-**Executable OS:** Only `Linux` at this point in time
-(maybe Mac as well, but cannot confirm)<br/>
+**Executable OS:** `Linux` and `Windows`<br>
+&emsp; _(Cannot confirm other OS at this point in time)_<br>
 **Author:** Randy Paredis
 
 ### Features
@@ -60,8 +60,8 @@ be amazed!
 
 ### Bundled with
 By default, `GraphDonkey` comes bundled with:
-* The [Graphviz][gv] rendering engine to bring your graphs to life, complete with a
-full grammar checker for the `Graphviz dot` language.
+* The [Graphviz](wiki/Graphviz) rendering engine to bring your graphs to life,
+complete with a full grammar checker for the [`Graphviz dot` language][gv].
 * A [Flowchart / Pseudocode](wiki/Flowcharts) language that not only allows you
 to type clean and understandable pseudocode, but also see it visualized as a
 flowchart.

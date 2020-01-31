@@ -25,6 +25,7 @@ class Plugin:
         self.preferences = {}
         self.enabled = True
         self.deps = True
+        self.reqs = True
         self.load()
 
     def path(self, *paths):
@@ -237,6 +238,11 @@ class Settings(QtWidgets.QGroupBox):
         uic.loadUi(pathname, self)
         self.preferences = None
         self.plugin = None
+        self.check()
+
+    def check(self):
+        """Allows for checking the system validity needed for this plugin."""
+        pass
 
     def apply(self):
         raise NotImplementedError()
@@ -246,7 +252,7 @@ class Settings(QtWidgets.QGroupBox):
 
 
 import subprocess, os
-from main.extra.Threading import WorkerThread
+from main.extra.Threading import WorkerThread, time
 
 class PluginInstaller(QtWidgets.QDialog):
     installed = QtCore.pyqtSignal(bool)
@@ -266,9 +272,9 @@ class PluginInstaller(QtWidgets.QDialog):
 
     def freeze(self):
         """Loads all requirements that are already installed."""
-        out = subprocess.check_output(self.cmd + ["freeze"]).decode("utf-8").split("\n")
+        out = subprocess.check_output(self.cmd + ["freeze"], shell=True).decode("utf-8").split("\n")
         if os.path.isdir(self.depfol):
-            out += subprocess.check_output(self.cmd + ["freeze", "--path", self.depfol]).decode("utf-8").split("\n")
+            out += subprocess.check_output(self.cmd + ["freeze", "--path", self.depfol], shell=True).decode("utf-8").split("\n")
         return set(out)
 
     def reject(self):
@@ -284,7 +290,7 @@ class PluginInstaller(QtWidgets.QDialog):
         self.progress.reset()
         try:
             self.info.setText("Obtaining requirements...")
-            self.repaint()
+            time.sleep(0.01)
             req = self.plugin.requirements - self.freeze()
             lr = len(req)
             if lr != 0:
@@ -294,10 +300,11 @@ class PluginInstaller(QtWidgets.QDialog):
                     self.install(r)
                     i += 1
                     self.progress.setValue(i // lr)
-                    self.repaint()
+                    time.sleep(0.01)
                 self.info.setText("Installed all requirements.")
             else:
                 self.info.setText("All requirements were already satisfied.")
+            time.sleep(0.01)
             self.progress.setValue(100)
             self.success = True
         except Exception as e:
@@ -318,7 +325,6 @@ class PluginInstaller(QtWidgets.QDialog):
         if not self.upd:
             cmd += ["--upgrade"]
         subprocess.check_call(cmd)
-
 
 
 if __name__ == '__main__':

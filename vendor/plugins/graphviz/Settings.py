@@ -11,13 +11,24 @@ class GraphvizSettings(Settings):
         super(GraphvizSettings, self).__init__(pathname, parent)
         self.setUp()
 
+    def check(self):
+        cmd = [self.combo_engine.currentText(), "-V"]
+        try:
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+        except subprocess.CalledProcessError as e:
+            if e.returncode != 0:
+                raise RuntimeError("It seems Graphviz package is not installed on your system, but"
+                                   " is required when using this plugin. Take a look at "
+                                   "<a href='https://graphviz.gitlab.io/download/'>the Graphviz download page</a> "
+                                   "to learn more on how to install it.")
+
     def setUp(self):
         self.combo_engine.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
         self.combo_format.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())
         self.combo_renderer.currentTextChanged.connect(lambda x: self.setGraphvizFormatter())
         cmd = [self.combo_engine.currentText(), "-T:"]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             self.combo_format.clear()
             fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: ":" not recognized. Use one of: '):] \
@@ -32,7 +43,7 @@ class GraphvizSettings(Settings):
         fmt = self.combo_format.currentText()
         cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             self.setGraphviz(e, fmt, 1, self.combo_renderer)
             self.setGraphvizFormatter()
@@ -41,7 +52,7 @@ class GraphvizSettings(Settings):
         fmt = self.combo_format.currentText()
         cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as e:
             self.setGraphviz(e, fmt, 2, self.combo_formatter,
                              lambda f: f.split(":")[1] == self.combo_renderer.currentText())

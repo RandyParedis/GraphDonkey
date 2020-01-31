@@ -18,7 +18,7 @@ def convert(text: str):
 def export(text: str, extension: str):
     try:
         cmd = [Config.value("plugin/graphviz/engine"), "-T%s:" % extension]
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
     except subprocess.CalledProcessError as e:
         fmts = e.output.decode("utf-8").replace("\n", "") \
             [len('Format: "%s:" not recognized. Use one of: ' % extension):].split(" ")

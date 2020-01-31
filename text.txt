@@ -4,15 +4,16 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 https://ogdf.uos.de
 
 Creating a package:
-    pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ -y
+    Linux:
+        pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ --add-data ./README.md:README.md -y
+    Windows:
+        python3 -m pip install --upgrade 'setuptools<45.0.0'
+        pyinstaller __main__.py -n GraphDonkey --add-data ".\vendor\;.\vendor" --add-data ".\README.md;README.md" -i .\vendor\icons\app.ico -yw
 
 Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    [0.2.0]
-    - Check on Windows
-    - Documentation - Home: remove temporary 'invalid docs' note
     [0.2.1]
     - First time using GraphDonkey?
         - Enabling of plugins
@@ -27,6 +28,7 @@ TODO LIST
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
         - Goto Line
+        - Restart
         - Listen on host:port address?
         - Macros?
     - Other plugins by default
@@ -41,7 +43,7 @@ TODO LIST
         - text/HTML
         - OGDF
             (Add pre-transform to Engine, i.e. 'transform from one file type to another')
-        - 3D
+        - 3D (graphics engine from Computer Graphics?)
     []
     - Add tests!
     - Fix in-code TODOs

@@ -8,6 +8,7 @@ from main.extra.IOHandler import IOHandler
 from main.extra import Constants
 import configparser
 import markdown
+from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import glob
 import re
 import os
@@ -217,7 +218,6 @@ class Preferences(QtWidgets.QDialog):
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
             self.font_interface.setCurrentFont(QtGui.QFont(self.preferences.value("font", defFont.family())))
             self.num_font_interface.setValue(int(self.preferences.value("fontsize", 12)))
-
 
         # EDITOR
         if True:
@@ -681,7 +681,17 @@ class PluginButton(QtWidgets.QLabel):
         self.setTextFormat(QtCore.Qt.RichText)
         self.setText(self.getHeader(16, 12))
 
-        self.setOptions()
+        self.installer = None
+
+        try:
+            self.setOptions()
+        except Exception as e:
+            # self.error(str(e))
+            self.plugin.deps = False
+
+    def error(self, msg):
+        self.prefs.parent().error("Plugin Error", "<p>%s</p><p>You cannot use the '<i>%s</i>' plugin for now.</p>" %
+                                  (msg, self.plugin.name))
 
     def getHeader(self, size=None, small=None):
         ic = ""
@@ -712,7 +722,7 @@ class PluginButton(QtWidgets.QLabel):
             return author if len(author) > 0 else version if len(version) > 0 else ""
 
     def getDesc(self):
-        desc = markdown.markdown(self.plugin.description, extensions=['legacy_em'])
+        desc = markdown.markdown(self.plugin.description, extensions=[legacy_em()])
 
         attrs = "<table width='100%%' cellspacing=10>%s</table>" %\
                 ("".join(["<tr><td width='20%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
@@ -727,7 +737,7 @@ class PluginButton(QtWidgets.QLabel):
         m = re.match(r"^https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$", txt)
         if m is not None:
             return "<a href='%s'>%s</a>" % (txt, txt)
-        return markdown.markdown(txt, extensions=['legacy_em'])
+        return markdown.markdown(txt, extensions=[legacy_em()])
 
     def setOptions(self):
         lo = self.viewer.layout()
@@ -738,7 +748,7 @@ class PluginButton(QtWidgets.QLabel):
                     box.preferences = self.prefs.preferences
                     box.plugin = self.plugin
                     self.prefs.pluginUi[e] = box
-            lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
+                lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles
@@ -791,24 +801,34 @@ class PluginButton(QtWidgets.QLabel):
         desc.setWordWrap(True)
         lo.addWidget(desc, 3, 0, 3, 2)
 
-        self.setOptions()
+        if self.plugin.deps and self.plugin.enabled:
+            self.setOptions()
 
     def click(self):
         self.mousePressEvent(None)
 
     def install(self):
-        installer = PluginInstaller(self.plugin, self)
-        installer.installed.connect(self.installed)
-        installer.show()
+        self.installer = PluginInstaller(self.plugin, self)
+        self.installer.installed.connect(self.installed)
+        self.installer.show()
 
     def update_(self):
-        installer = PluginInstaller(self.plugin, update=True, parent=self)
-        installer.installed.connect(self.installed)
-        installer.show()
+        self.installer = PluginInstaller(self.plugin, update=True, parent=self)
+        self.installer.installed.connect(self.installed)
+        self.installer.show()
 
     def installed(self, succ):
         if succ:
             pluginloader.reload()
+            for e in self.plugin.engines:
+                try:
+                    self.plugin.getPreferencesUi(e)
+                except Exception as e:
+                    self.error(str(e))
+                    self.plugin.deps = False
+                    self.installer.reject()
+                    self.click()
+                    return
             self.plugin.enable()
             self.setText(self.getHeader(16, 12))
             self.click()

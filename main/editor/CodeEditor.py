@@ -710,6 +710,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         return -1
 
     def getClosingBracketPos(self, pair, block, i, num=0):
+        if i < 0:
+            return -1
         data = block.userData()
         infos = data.parenthesis
 

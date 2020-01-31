@@ -13,7 +13,8 @@ from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
 from main.UpdateChecker import UpdateChecker
-import os, sys, chardet, re
+from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
+import os, sys, chardet, markdown
 
 from main.plugins import PluginLoader
 
@@ -624,7 +625,6 @@ class MainWindow(QtWidgets.QMainWindow):
         checker.exec_()
 
     def aboutGraphDonkey(self):
-        import markdown
         with open(IOHandler.dir_root("README.md")) as file:
             ctns = "\n\n".join(file.read().split("\n\n")[2:5])
         QtWidgets\
@@ -632,7 +632,7 @@ class MainWindow(QtWidgets.QMainWindow):
             .about(self,
                    "About GraphDonkey",
                    "%s<p>Current version is <b>%s</b>.</p><p>Created and Maintained by <b>Randy Paredis</b>." %
-                   (markdown.markdown(ctns, extensions=['legacy_em']),
+                   (markdown.markdown(ctns, extensions=[legacy_em()]),
                     Constants.APP_VERSION_NAME + " v" + Constants.APP_VERSION))
 
     def aboutQt(self):
@@ -641,6 +641,6 @@ class MainWindow(QtWidgets.QMainWindow):
 class TabPressEater(QtCore.QObject):
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.KeyPress and \
-            event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
+                event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
             return True
         return QtCore.QObject.eventFilter(self, obj, event)

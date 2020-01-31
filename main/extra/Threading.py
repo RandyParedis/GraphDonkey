@@ -17,5 +17,5 @@ class WorkerThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        time.sleep(0.01) # << Make sure the thread is at least this amount of time active
+        time.sleep(0.01)  # << Make sure the thread is at least this amount of time active
         self.func()
