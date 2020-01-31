@@ -571,7 +571,7 @@ class Preferences(QtWidgets.QDialog):
     def applyPlugins(self):
         # TODO: Select the first plugin, BUT this gives issues on Windows:
         #       the font size changes (it feels as if Rich Text QLabels are not
-        #       rendered correctly when invisible)
+        #       rendered correctly when invisible on Windows)
         # pll = self.pluginlist.findChildren(PluginButton)
         # if len(pll) > 0:
         #     pll[0].click()
@@ -722,12 +722,20 @@ class PluginButton(QtWidgets.QLabel):
             return author if len(author) > 0 else version if len(version) > 0 else ""
 
     def getDesc(self):
+        from sys import platform
         desc = markdown.markdown(self.plugin.description, extensions=[legacy_em()])
 
-        attrs = "<table width='100%%' cellspacing=10>%s</table>" %\
+        if platform == "win32":
+            size = self.font().pixelSize() // 2
+        elif platform == "linux":
+            size = self.font().pointSize() // 4
+        else:
+            size = 12
+
+        attrs = "<table width='100%%' cellspacing=10>%s</table>" % \
                 ("".join(["<tr><td width='20%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
                           (k, self.transform(v)) for k, v in self.plugin.attrs]))
-        return "<font size=%i>%s<br>%s<br></font>" % (self.font().pixelSize() // 2, desc, attrs)
+        return "<font size=%i>%s<br>%s<br></font>" % (size, desc, attrs)
 
     def matches(self, txt):
         return txt in self.plugin.name or txt in self.plugin.description

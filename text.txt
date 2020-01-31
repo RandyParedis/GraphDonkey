@@ -3,13 +3,6 @@ https://stackoverflow.com/questions/14885481/how-to-highlight-a-string-of-text-w
 
 https://ogdf.uos.de
 
-Creating a package:
-    Linux:
-        pyinstaller __main__.py -n GraphDonkey --add-data ./vendor/:vendor/ --add-data ./README.md:README.md -y
-    Windows:
-        python3 -m pip install --upgrade 'setuptools<45.0.0'
-        pyinstaller __main__.py -n GraphDonkey --add-data ".\vendor\;.\vendor" --add-data ".\README.md;README.md" -i .\vendor\icons\app.ico -yw
-
 Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
@@ -36,6 +29,8 @@ TODO LIST
     [0.2.3]
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
+        - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
+        - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
     - Indentation indicators?
     - Column indicator?
     [0.3.0]

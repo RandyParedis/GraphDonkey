@@ -11,6 +11,12 @@ from main.editor.Parser import Parser
 from main.editor.Highlighter import BaseHighlighter
 import sys, ast
 
+def command(cmd):
+    if sys.platform == 'linux':
+        return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    if sys.platform == 'win32':
+        return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+
 class Plugin:
     def __init__(self, filename):
         self.filename = filename
@@ -272,9 +278,9 @@ class PluginInstaller(QtWidgets.QDialog):
 
     def freeze(self):
         """Loads all requirements that are already installed."""
-        out = subprocess.check_output(self.cmd + ["freeze"], shell=True).decode("utf-8").split("\n")
+        out = command(self.cmd + ["freeze"]).decode("utf-8").split("\n")
         if os.path.isdir(self.depfol):
-            out += subprocess.check_output(self.cmd + ["freeze", "--path", self.depfol], shell=True).decode("utf-8").split("\n")
+            out += command(self.cmd + ["freeze", "--path", self.depfol]).decode("utf-8").split("\n")
         return set(out)
 
     def reject(self):

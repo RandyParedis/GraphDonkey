@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   01/09/2020
 """
-from main.plugins import Settings
+from main.plugins import Settings, command
 import subprocess
 
 class GraphvizSettings(Settings):
@@ -14,7 +14,7 @@ class GraphvizSettings(Settings):
     def check(self):
         cmd = [self.combo_engine.currentText(), "-V"]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+            command(cmd)
         except subprocess.CalledProcessError as e:
             if e.returncode != 0:
                 raise RuntimeError("It seems Graphviz package is not installed on your system, but"
@@ -28,7 +28,7 @@ class GraphvizSettings(Settings):
         self.combo_renderer.currentTextChanged.connect(lambda x: self.setGraphvizFormatter())
         cmd = [self.combo_engine.currentText(), "-T:"]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+            command(cmd)
         except subprocess.CalledProcessError as e:
             self.combo_format.clear()
             fmts = e.output.decode("utf-8").replace("\n", "")[len('Format: ":" not recognized. Use one of: '):] \
@@ -43,7 +43,7 @@ class GraphvizSettings(Settings):
         fmt = self.combo_format.currentText()
         cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+            command(cmd)
         except subprocess.CalledProcessError as e:
             self.setGraphviz(e, fmt, 1, self.combo_renderer)
             self.setGraphvizFormatter()
@@ -52,7 +52,7 @@ class GraphvizSettings(Settings):
         fmt = self.combo_format.currentText()
         cmd = [self.combo_engine.currentText(), "-T%s:" % fmt]
         try:
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+            command(cmd)
         except subprocess.CalledProcessError as e:
             self.setGraphviz(e, fmt, 2, self.combo_formatter,
                              lambda f: f.split(":")[1] == self.combo_renderer.currentText())
