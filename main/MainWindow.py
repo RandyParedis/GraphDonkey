@@ -12,7 +12,7 @@ from main.extra.IOHandler import IOHandler
 from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
-from main.UpdateChecker import UpdateChecker
+from main.UpdateWizard import UpdateWizard
 from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import os, sys, chardet, markdown
 
@@ -90,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Zoom_Out.triggered.connect(self.view.zoomOut)
         self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
         self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
-        # self.action_CheckUpdates.triggered.connect(self.checkUpdates)
+        self.action_Installation_Wizard.triggered.connect(self.installationWizard)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
@@ -620,9 +620,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor().wrapper.setType(to)
         self.releaseDisplay()
 
-    def checkUpdates(self):
-        checker = UpdateChecker(self)
-        checker.exec_()
+    def installationWizard(self):
+        wiz = UpdateWizard(self)
+        app = QtWidgets.QApplication.instance()
+        app.setQuitOnLastWindowClosed(False)
+        self.close()
+        app.setQuitOnLastWindowClosed(True)
+        wiz.show()
 
     def aboutGraphDonkey(self):
         with open(IOHandler.dir_root("README.md")) as file:

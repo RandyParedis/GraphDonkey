@@ -160,7 +160,7 @@ class Preferences(QtWidgets.QDialog):
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
             "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
-            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down"
+            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down", "Installation_Wizard"
         ]
 
         def pressEvent(kseq, event):
@@ -327,7 +327,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_zoom_out.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_out", "CTRL+-")))
             self.ks_reset_zoom.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/reset_zoom", "CTRL+0")))
             self.ks_zoom_to_fit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_to_fit", "")))
-            # self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
+            self.ks_installation_wizard.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/installation_wizard", "")))
             self.ks_graphdonkey.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/graphdonkey", "")))
             self.ks_qt.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/qt", "")))
 
@@ -459,7 +459,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/zoom_out", self.ks_zoom_out.keySequence().toString())
             self.preferences.setValue("ks/reset_zoom", self.ks_reset_zoom.keySequence().toString())
             self.preferences.setValue("ks/zoom_to_fit", self.ks_zoom_to_fit.keySequence().toString())
-            # self.preferences.setValue("ks/updates", self.ks_updates.keySequence().toString())
+            self.preferences.setValue("ks/installation_wizard", self.ks_installation_wizard.keySequence().toString())
             self.preferences.setValue("ks/graphdonkey", self.ks_graphdonkey.keySequence().toString())
             self.preferences.setValue("ks/qt", self.ks_qt.keySequence().toString())
 

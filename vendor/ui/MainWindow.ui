@@ -119,6 +119,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_Installation_Wizard"/>
+    <addaction name="separator"/>
     <addaction name="action_GraphDonkey"/>
     <addaction name="action_Qt"/>
    </widget>
@@ -547,6 +549,11 @@
    </property>
    <property name="toolTip">
     <string>Move Down</string>
+   </property>
+  </action>
+  <action name="action_Installation_Wizard">
+   <property name="text">
+    <string>Installation &amp;Wizard</string>
    </property>
   </action>
  </widget>

@@ -16,7 +16,8 @@ TODO LIST
         - installing all plugin reqs
         - preference clearing
         - uninstalling
-    - Reselect the first plugin in Preferences window without it being a different size.
+    - Reselect the first plugin in Preferences window without its description being a different size.
+    - "Report Issue" window
     [0.2.2]
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
@@ -24,8 +25,7 @@ TODO LIST
         - Restart
         - Listen on host:port address?
         - Macros?
-    - Other plugins by default
-        - Extend flowchart language (function/procedure calls)
+    - Other plugins by default (see Future.md)
     [0.2.3]
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter

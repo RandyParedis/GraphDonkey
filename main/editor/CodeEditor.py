@@ -334,7 +334,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                         curs.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor, 2)
                         self.setTextCursor(curs)
             QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
-        elif event.key() not in [QtCore.Qt.Key_Delete]:
+        elif event.key() not in [QtCore.Qt.Key_Delete, QtCore.Qt.Key_Tab]:
             if bool(Config.value("editor/pairedBrackets")):
                 et = event.text()
                 if et in [x[0] for x in paired]:    # OPEN
