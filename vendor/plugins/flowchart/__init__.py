@@ -22,7 +22,7 @@ TYPES = {
         "highlighting": [
             {
                 "regex": {
-                    "pattern": "\\b(%s)\\b" % "|".join(["(%s)" % x for x in keywords]),
+                    "pattern": keywords,
                     "insensitive": True
                 },
                 "format": "keyword"

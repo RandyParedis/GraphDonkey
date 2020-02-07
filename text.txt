@@ -8,11 +8,9 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     [0.2.1] {Magical Update}
-    - First time using GraphDonkey?
+    - First time using GraphDonkey
         - Enabling of plugins
         - Theme choser
-    - Reselect the first plugin in Preferences window without its description being a different size.
-    - "Report Issue" window
     [0.2.2] {Universal Update}
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
@@ -30,6 +28,7 @@ TODO LIST
     - Tree Indentation guides
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
+    - [BUG]: On apply of preferences: cursor is reset to end of file!!!
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML
@@ -39,6 +38,7 @@ TODO LIST
     []
     - Add tests!
     - Fix in-code TODOs
+    - Hints on startup?
 
 Version 1.0.0 name ideas:
     - Wishing Table (ref to "the Wishing Table, Gold-Ass and the Cudgel in the Sack")

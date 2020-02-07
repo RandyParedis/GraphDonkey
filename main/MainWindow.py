@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   14/12/2019
 """
-from PyQt5 import QtWidgets, QtCore, QtGui, uic
+from PyQt5 import QtWidgets, QtCore, QtGui, QtNetwork, uic
 
 from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
@@ -90,7 +90,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Zoom_Out.triggered.connect(self.view.zoomOut)
         self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
         self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
-        self.action_Installation_Wizard.triggered.connect(self.installationWizard)
+        self.action_Report_Issue.triggered.connect(self.reportIssue)
+        self.action_Updates.triggered.connect(self.updatesWizard)
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
@@ -620,7 +621,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor().wrapper.setType(to)
         self.releaseDisplay()
 
-    def installationWizard(self):
+    def reportIssue(self):
+        QtGui.QDesktopServices().openUrl(QtCore.QUrl("https://github.com/RandyParedis/GraphDonkey/issues/new/choose"))
+
+    def updatesWizard(self):
         wiz = UpdateWizard(self)
         app = QtWidgets.QApplication.instance()
         app.setQuitOnLastWindowClosed(False)

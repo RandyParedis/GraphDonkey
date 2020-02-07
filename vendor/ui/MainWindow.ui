@@ -119,7 +119,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="action_Installation_Wizard"/>
+    <addaction name="action_Report_Issue"/>
+    <addaction name="action_Updates"/>
     <addaction name="separator"/>
     <addaction name="action_GraphDonkey"/>
     <addaction name="action_Qt"/>
@@ -551,9 +552,14 @@
     <string>Move Down</string>
    </property>
   </action>
-  <action name="action_Installation_Wizard">
+  <action name="action_Updates">
    <property name="text">
     <string>&amp;Updates and Uninstall</string>
+   </property>
+  </action>
+  <action name="action_Report_Issue">
+   <property name="text">
+    <string>Report &amp;Issue</string>
    </property>
   </action>
  </widget>
