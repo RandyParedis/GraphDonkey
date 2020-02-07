@@ -12,7 +12,7 @@ TODO LIST
         - Enabling of plugins
         - Theme choser
     - Other program (wizard) that includes
-        - updates
+        - updates       https://api.github.com/repos/RandyParedis/GraphDonkey/releases/latest
         - installing all plugin reqs
         - preference clearing
         - uninstalling

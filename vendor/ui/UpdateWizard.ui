@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>598</width>
     <height>457</height>
    </rect>
   </property>
@@ -49,13 +49,6 @@
        <string>What do you want to do?</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="3" column="0">
-        <widget class="QRadioButton" name="rd_clear">
-         <property name="text">
-          <string>I want to clear the GraphDonkey configuration files.</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QRadioButton" name="rd_updates">
          <property name="text">
@@ -66,14 +59,14 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QRadioButton" name="rd_plugin">
+       <item row="2" column="0">
+        <widget class="QRadioButton" name="rd_clear">
          <property name="text">
-          <string>I want to install or update all plugin dependencies.</string>
+          <string>I want to clear the GraphDonkey configuration files.</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <widget class="QRadioButton" name="rd_uninstall">
          <property name="text">
           <string>I want to uninstall GraphDonkey.</string>
@@ -190,17 +183,17 @@
     <string notr="true">1</string>
    </attribute>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="1" column="0">
-     <widget class="QProgressBar" name="progressBar">
+    <item row="2" column="0">
+     <widget class="QProgressBar" name="prog_updates">
       <property name="value">
        <number>0</number>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QPushButton" name="pb_update">
       <property name="text">
-       <string>Install</string>
+       <string>Update</string>
       </property>
      </widget>
     </item>
@@ -217,43 +210,10 @@
       </property>
      </widget>
     </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="pluginPage">
-   <property name="title">
-    <string>Update Plugin Dependencies</string>
-   </property>
-   <property name="subTitle">
-    <string>Updates all necessary dependencies for your plugins</string>
-   </property>
-   <attribute name="pageId">
-    <string notr="true">2</string>
-   </attribute>
-   <layout class="QGridLayout" name="gridLayout_4">
-    <item row="1" column="0">
-     <widget class="QProgressBar" name="progressBar_2">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="pushButton_2">
+    <item row="1" column="0" colspan="2">
+     <widget class="QLabel" name="lbl_updates_info">
       <property name="text">
-       <string>Update</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Plugins are the core of GraphDonkey. They allow you to use numerous file types and rendering possibilities.&lt;/p&gt;&lt;p&gt;Most plugins may require additional libraries to be installed on your system. You can install these via the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; window, but this wizard allows you to do it all-in-one.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Note:&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt; These libraries will only be installed locally&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Note:&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt; This requires you to have an active internet connection&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::RichText</enum>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
+       <string/>
       </property>
      </widget>
     </item>
