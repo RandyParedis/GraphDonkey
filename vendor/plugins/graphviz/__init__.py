@@ -10,7 +10,7 @@ and web design, machine learning, and in visual interfaces for other technical d
 This plugin includes:
 
 *   Syntax Highlighting and (LALR) Parsing for Graphviz-Files
-*   A rendering engine for Graphviz (which can be used by other plugins. This engine allows:
+*   A rendering engine for Graphviz. This engine allows:
     + Rendering in `dot`, `neato`, `twopi`, `circo`, `fdp`, `sfdp`, `patchwork` and `osage`
     + Exporting to numerous filetypes
     + Rendering AST structures to be shown

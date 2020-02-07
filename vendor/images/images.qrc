@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="images">
+    <file alias="burning-berta">burning-berta.png</file>
+    <file alias="dark-doris">dark-doris.png</file>
+    <file alias="fierce-fiona">fierce-fiona.png</file>
+    <file alias="light-lucy">light-lucy.png</file>
+    <file alias="vicious-victoria">vicious-victoria.png</file>
+  </qresource>
+</RCC>

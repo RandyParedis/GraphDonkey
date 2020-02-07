@@ -553,7 +553,7 @@
   </action>
   <action name="action_Installation_Wizard">
    <property name="text">
-    <string>Installation &amp;Wizard</string>
+    <string>&amp;Updates and Uninstall</string>
    </property>
   </action>
  </widget>

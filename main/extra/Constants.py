@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon, QImage
 from main.extra.IOHandler import IOHandler
 
 APP_NAME = "GraphDonkey"
-APP_VERSION = "0.1.9"
+APP_VERSION = "0.2.0"
 APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 
