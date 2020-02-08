@@ -11,6 +11,8 @@ from main.editor.Parser import Parser
 from main.editor.Highlighter import BaseHighlighter
 import sys, ast
 
+_ioh = IOHandler
+
 def command(cmd):
     if sys.platform == 'linux':
         return subprocess.check_output(cmd, stderr=subprocess.STDOUT)
