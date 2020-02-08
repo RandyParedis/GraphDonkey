@@ -281,9 +281,9 @@ class PluginInstaller(QtWidgets.QDialog):
 
     def freeze(self):
         """Loads all requirements that are already installed."""
-        out = command(self.cmd + ["freeze"]).decode("utf-8").split("\n")
+        out = command(self.cmd + ["freeze"]).decode("utf-8").split(os.linesep)
         if os.path.isdir(self.depfol):
-            out += command(self.cmd + ["freeze", "--path", self.depfol]).decode("utf-8").split("\n")
+            out += command(self.cmd + ["freeze", "--path", self.depfol]).decode("utf-8").split(os.linesep)
         return set(out)
 
     def reject(self):

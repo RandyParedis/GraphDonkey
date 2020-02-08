@@ -193,7 +193,7 @@ class UpdateWizard(QtWidgets.QWizard):
                     name = member.filename.replace(baseName, "", 1)
                     if name == "": continue
                     loc = IOHandler.join(target, name)
-                    if loc.endswith(os.sep):
+                    if loc.endswith(os.sep) or loc[-1] == '/':
                         os.mkdir(loc)
                     else:
                         with open(loc, "wb") as outfile:

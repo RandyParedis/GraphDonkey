@@ -45,9 +45,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateTitle()
         self.setStatusBar(QtWidgets.QStatusBar())
 
-        # if len(Config.allKeys()) == 0:
-        wiz = WelcomeWizard()
-        wiz.exec_()
+        if len(Config.allKeys()) == 0:
+            wiz = WelcomeWizard()
+            wiz.exec_()
 
         self.preferences = Preferences(self)
         self.preferences.apply()
