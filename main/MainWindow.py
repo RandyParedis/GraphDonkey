@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   14/12/2019
 """
-from PyQt5 import QtWidgets, QtCore, QtGui, QtNetwork, uic
+from PyQt5 import QtWidgets, QtCore, QtGui, uic
 
 from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
@@ -12,14 +12,18 @@ from main.extra.IOHandler import IOHandler
 from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
 from main.extra import Constants, tabPathnames
-from main.UpdateWizard import UpdateWizard
+from main.wizards.UpdateWizard import UpdateWizard
 from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import os, sys, chardet, markdown
+from main.extra.qrc import tango
 
 from main.plugins import PluginLoader
+from main.wizards.WelcomeWizard import WelcomeWizard
 
 Config = IOHandler.get_preferences()
 pluginloader = PluginLoader.instance()
+
+rccv = tango.rcc_version
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -40,6 +44,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
         self.setStatusBar(QtWidgets.QStatusBar())
+
+        # if len(Config.allKeys()) == 0:
+        wiz = WelcomeWizard()
+        wiz.exec_()
 
         self.preferences = Preferences(self)
         self.preferences.apply()
@@ -276,7 +284,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if cursors is None:
                 cursors = []
             for file in range(len(files)):
-                succ = self.openFile(files[file])
+                succ = self.openFile(files[file], True)
                 if succ and file < len(cursors):
                     curs = self.editor().textCursor()
                     curs.setPosition(cursors[file][0])
@@ -419,12 +427,14 @@ class MainWindow(QtWidgets.QMainWindow):
         edit.filecontents = data.replace(linesep, "\n")
         self.setEditorType(Constants.lookup(ext, exts, ""), indx)
 
-    def openFile(self, fileName):
+    def openFile(self, fileName, ignoreopen=False):
         self.lockDisplay()
         if fileName and fileName != "":
             valid = True
             try:
-                self.newTab(fileName)
+                edit = self.editor()
+                if ignoreopen or edit is None or (edit.filename == "" and not edit.isSaved()):
+                    self.newTab(fileName)
                 self.editor().filename = fileName
                 self.updateFileType()
                 self.updateRecents(fileName)

@@ -202,9 +202,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def isSaved(self):
         """Returns True if the file was saved."""
-        if self.filename != "":
-            return self.toPlainText() == self.filecontents
         txt = self.toPlainText()
+        if self.filename != "":
+            return txt == self.filecontents
         if bool(Config.value("editor/emptyline")):
             txt = txt[:-len(os.linesep)]
         return txt == ""

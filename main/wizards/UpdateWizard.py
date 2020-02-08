@@ -16,7 +16,6 @@ import sys, glob, os, json, time
 UPDATE_URL = "https://api.github.com/repos/RandyParedis/GraphDonkey/releases/latest"
 
 def version_lt(v1, v2):
-    # TODO: write a test for this method call
     M1, m1, s1 = [int(x) for x in v1.split(".")]
     M2, m2, s2 = [int(x) for x in v2.split(".")]
     return (s1 < s2 and m1 <= m2 and M1 <= M2) or (m1 < m2 and M1 <= M2) or (M1 < M2)

@@ -12,7 +12,7 @@ Date:   01/01/2020
 """
 
 from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
-from main.extra import IOHandler, isSVG, Constants, tango
+from main.extra import IOHandler, isSVG, Constants
 import os
 
 Config = IOHandler.IOHandler.get_preferences()

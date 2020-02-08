@@ -8,9 +8,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     [0.2.1] {Magical Update}
-    - First time using GraphDonkey
-        - Enabling of plugins
-        - Theme choser
     [0.2.2] {Universal Update}
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)

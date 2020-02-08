@@ -350,7 +350,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_7" columnstretch="1,1">
         <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="check_graphviz">
           <property name="title">
            <string>Enable the Graphviz plugin.</string>
           </property>
@@ -384,7 +384,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QGroupBox" name="groupBox_3">
+         <widget class="QGroupBox" name="check_flowchart">
           <property name="title">
            <string>Enable the Flowchart plugin.</string>
           </property>

@@ -251,41 +251,11 @@ class Preferences(QtWidgets.QDialog):
         if True:
             self.combo_style.setCurrentIndex(int(self.preferences.value("col/style", 0)))
             self.combo_theme.setCurrentText(self.preferences.value("col/theme", "Light Lucy"))
-            # lst = self.names_general + self.names_editor + self.names_syntax
-            # for i in range(len(lst)):
-            #     name = lst[i]
-            #     cname = name.replace("_", ".")
-            #     getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
-
-            # BUILTIN STANDARD THEME IN CASE SOMEONE MESSES WITH THE FILES:
-            self.col_foreground.setColor(QtGui.QColor(self.preferences.value("col/foreground", "#000000")))
-            self.col_window.setColor(QtGui.QColor(self.preferences.value("col/window", "#efefef")))
-            self.col_base.setColor(QtGui.QColor(self.preferences.value("col/base", "#ffffff")))
-            self.col_alternateBase.setColor(QtGui.QColor(self.preferences.value("col/alternateBase", "#f7f7f7")))
-            self.col_tooltipBase.setColor(QtGui.QColor(self.preferences.value("col/tooltipBase", "#ffffdc")))
-            self.col_tooltipText.setColor(QtGui.QColor(self.preferences.value("col/tooltipText", "#000000")))
-            self.col_text.setColor(QtGui.QColor(self.preferences.value("col/text", "#000000")))
-            self.col_button.setColor(QtGui.QColor(self.preferences.value("col/button", "#efefef")))
-            self.col_buttonText.setColor(QtGui.QColor(self.preferences.value("col/buttonText", "#000000")))
-            self.col_brightText.setColor(QtGui.QColor(self.preferences.value("col/brightText", "#dcdcff")))
-            self.col_highlight.setColor(QtGui.QColor(self.preferences.value("col/highlight", "#30acc6")))
-            self.col_highlightedText.setColor(QtGui.QColor(self.preferences.value("col/highlightedText", "#ffffff")))
-            self.col_link.setColor(QtGui.QColor(self.preferences.value("col/link", "#0000ff")))
-            self.col_visitedLink.setColor(QtGui.QColor(self.preferences.value("col/visitedLink", "#5500ff")))
-            self.col_cline.setColor(QtGui.QColor(self.preferences.value("col/cline", "#fffeb5")))
-            self.col_lnf.setColor(QtGui.QColor(self.preferences.value("col/lnf", "#000000")))
-            self.col_lnb.setColor(QtGui.QColor(self.preferences.value("col/lnb", "#f7f7f7")))
-            self.col_clnf.setColor(QtGui.QColor(self.preferences.value("col/clnf", "#ffffff")))
-            self.col_clnb.setColor(QtGui.QColor(self.preferences.value("col/clnb", "#30acc6")))
-            self.col_find.setColor(QtGui.QColor(self.preferences.value("col/find", "#8be9fd")))
-            self.col_keyword.setColor(QtGui.QColor(self.preferences.value("col/keyword", "#800000")))
-            self.col_attribute.setColor(QtGui.QColor(self.preferences.value("col/attribute", "#000080")))
-            self.col_number.setColor(QtGui.QColor(self.preferences.value("col/number", "#ff00ff")))
-            self.col_string.setColor(QtGui.QColor(self.preferences.value("col/string", "#158724")))
-            self.col_html.setColor(QtGui.QColor(self.preferences.value("col/html", "#158724")))
-            self.col_comment.setColor(QtGui.QColor(self.preferences.value("col/comment", "#0000ff")))
-            self.col_hash.setColor(QtGui.QColor(self.preferences.value("col/hash", "#0000ff")))
-            self.col_error.setColor(QtGui.QColor(self.preferences.value("col/error", "#ff0000")))
+            lst = self.names_general + self.names_editor + self.names_syntax
+            for i in range(len(lst)):
+                name = lst[i]
+                cname = name.replace("_", ".")
+                getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
 
         # SHORTCUTS
         if True:
@@ -335,9 +305,11 @@ class Preferences(QtWidgets.QDialog):
         # PLUGINS
         if True:
             plst = pluginloader.get()
-            pls = self.preferences.value("plugin/enabled", [p.name for p in plst])
+            pls = self.preferences.value("plugin/enabled", None)
+            if pls is None:
+                pls = [p.name for p in plst]
             for plugin in plst:
-                plugin.enable(pls is not None and plugin.name in pls)
+                plugin.enable(plugin.name in pls)
             for eid in self.pluginUi:
                 ui = self.pluginUi[eid]
                 grp = "plugin/%s" % re.sub(r"[^a-z ]", "", ui.plugin.name.lower()).replace(" ", "")
@@ -574,9 +546,9 @@ class Preferences(QtWidgets.QDialog):
         # TODO: Select the first plugin, BUT this gives issues on Windows:
         #       the font size changes (it feels as if Rich Text QLabels are not
         #       rendered correctly when invisible on Windows)
-        # pll = self.pluginlist.findChildren(PluginButton)
-        # if len(pll) > 0:
-        #     pll[0].click()
+        pll = self.pluginlist.findChildren(PluginButton)
+        if len(pll) > 0:
+            pll[0].click()
         self.preferences.setValue("plugin/enabled", [p.name for p in pluginloader.get()])
         for eid in self.pluginUi:
             ui = self.pluginUi[eid]
@@ -724,20 +696,13 @@ class PluginButton(QtWidgets.QLabel):
             return author if len(author) > 0 else version if len(version) > 0 else ""
 
     def getDesc(self):
-        from sys import platform
         desc = markdown.markdown(self.plugin.description, extensions=[legacy_em()])
 
-        if platform == "win32":
-            size = self.font().pixelSize() // 2
-        elif platform == "linux":
-            size = self.font().pointSize() // 4
-        else:
-            size = 12
-
+        size = "%ipt" % self.font().pointSize()
         attrs = "<table width='100%%' cellspacing=10>%s</table>" % \
                 ("".join(["<tr><td width='20%%' align='right'><b>%s</b></td><td>%s</td></tr>" %
                           (k, self.transform(v)) for k, v in self.plugin.attrs]))
-        return "<font size=%i>%s<br>%s<br></font>" % (size, desc, attrs)
+        return "<span style='font-size: %s;'>%s<br>%s<br></font>" % (size, desc, attrs)
 
     def matches(self, txt):
         return txt in self.plugin.name or txt in self.plugin.description
@@ -820,12 +785,12 @@ class PluginButton(QtWidgets.QLabel):
     def install(self):
         self.installer = PluginInstaller(self.plugin, self)
         self.installer.installed.connect(self.installed)
-        self.installer.show()
+        self.installer.exec_()
 
     def update_(self):
         self.installer = PluginInstaller(self.plugin, update=True, parent=self)
         self.installer.installed.connect(self.installed)
-        self.installer.show()
+        self.installer.exec_()
 
     def installed(self, succ):
         if succ:

@@ -19,6 +19,7 @@ from PyQt5 import QtWidgets
 from main.extra import Constants
 from main.MainWindow import MainWindow
 
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName(Constants.APP_NAME)

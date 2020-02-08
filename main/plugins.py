@@ -195,6 +195,9 @@ class PluginLoader:
         else:
             return self.plugins.values()
 
+    def getPlugin(self, name: str):
+        return self.plugins.get(name, None)
+
     def getFileTypes(self, active=True):
         res = { "": ("No File Type", BaseHighlighter) }
         ps = self.get(active)
@@ -288,9 +291,9 @@ class PluginInstaller(QtWidgets.QDialog):
             self.thread.terminate()
         QtWidgets.QDialog.reject(self)
 
-    def show(self):
-        QtWidgets.QDialog.show(self)
+    def exec_(self):
         self.thread.start()
+        QtWidgets.QDialog.exec_(self)
 
     def run(self):
         self.progress.reset()
