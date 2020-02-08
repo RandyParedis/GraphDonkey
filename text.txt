@@ -7,7 +7,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    [0.2.1] {Magical Update}
     [0.2.2] {Universal Update}
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)

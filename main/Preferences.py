@@ -217,7 +217,7 @@ class Preferences(QtWidgets.QDialog):
                 self.radio_ws_none.setChecked(True)
             self.num_recents.setValue(int(self.preferences.value("recents", 5)))
             self.font_interface.setCurrentFont(QtGui.QFont(self.preferences.value("font", defFont.family())))
-            self.num_font_interface.setValue(int(self.preferences.value("fontsize", 12)))
+            self.num_font_interface.setValue(int(self.preferences.value("fontsize", 11)))
 
         # EDITOR
         if True:
@@ -543,9 +543,6 @@ class Preferences(QtWidgets.QDialog):
             editor.setTextCursor(cursor)
 
     def applyPlugins(self):
-        # TODO: Select the first plugin, BUT this gives issues on Windows:
-        #       the font size changes (it feels as if Rich Text QLabels are not
-        #       rendered correctly when invisible on Windows)
         pll = self.pluginlist.findChildren(PluginButton)
         if len(pll) > 0:
             pll[0].click()
