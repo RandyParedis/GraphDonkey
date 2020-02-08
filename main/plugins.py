@@ -101,7 +101,7 @@ class Plugin:
                 self.engines = _locals["ENGINES"]
             if "ICON" in _locals:
                 self.icon = self.path(_locals["ICON"])
-        except ModuleNotFoundError as e:
+        except ImportError as e:
             self.disable()
             self.deps = False
 

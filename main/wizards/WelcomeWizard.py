@@ -41,6 +41,9 @@ class WelcomeWizard(QtWidgets.QWizard):
                 pli.exec_()
 
         pluginloader.reload()
+
+        # Technically not required, seeing as it should be empty
+        # But for testing purposes, it was set here.
         Config.setValue("plugin/enabled", None)
 
         super(WelcomeWizard, self).accept()
