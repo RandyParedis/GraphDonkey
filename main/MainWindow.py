@@ -182,9 +182,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if idx > -1:
             self.setEditEnabled(True)
             self.action_Close_File.setEnabled(True)
+            self.action_Export.setEnabled(True)
             self.action_Render.setEnabled(True)
             return self.files.widget(idx).editor
         self.setEditEnabled(False)
+        self.action_Export.setEnabled(False)
         self.action_Close_File.setEnabled(False)
         self.action_Render.setEnabled(False)
         return None
@@ -433,7 +435,7 @@ class MainWindow(QtWidgets.QMainWindow):
             valid = True
             try:
                 edit = self.editor()
-                if ignoreopen or edit is None or (edit.filename == "" and not edit.isSaved()):
+                if ignoreopen or edit is None or not (edit.filename == "" and edit.isSaved()):
                     self.newTab(fileName)
                 self.editor().filename = fileName
                 self.updateFileType()
@@ -484,6 +486,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.updateTitle()
             except Exception as e:
                 self.error("Error", str(e))
+        if editor is not None:
+            editor.stoppedTyping()
 
     def saveAll(self):
         old = self.files.currentIndex()
@@ -515,8 +519,14 @@ class MainWindow(QtWidgets.QMainWindow):
                                           "Please try another extension." % rext)
 
     def export(self):
-        ename = Config.value("view/engine")
+        # SHOULD ONLY BE POSSIBLE WHEN A FILE IS OPEN
+        edit = self.editor()
+        if edit is None:
+            return
+        ename = edit.wrapper.engine.currentText()
         engine = pluginloader.getEngines().get(ename, None)
+        if engine is None:
+            return
         export = engine.get("export", {})
         _exts = export.get("extensions", [])
         if "exporter" not in export or len(_exts) == 0:

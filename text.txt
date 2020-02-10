@@ -7,14 +7,18 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    [0.2.2] {Universal Update}
+    [0.2.2] {Bugfixes}
+    - Bugfixes:
+        - Add possibility to set millisecond delay after typing via preferences
+        - See Bugs.md
+    [0.2.3] {Universalisation}
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
         - Goto Line
         - Restart
         - Listen on host:port address
     - Other plugins by default (see Future.md)
-    [0.2.3] {Styling Update}
+    [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai

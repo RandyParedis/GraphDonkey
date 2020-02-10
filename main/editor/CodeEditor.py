@@ -149,6 +149,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.treeView = None
 
+        # Optimize performance of user experience; big files are slow when editing every change event
+        self.stTimer = QtCore.QTimer(self)
+        self.stTimer.setSingleShot(True)
+        self.stTimer.timeout.connect(self.stoppedTyping)
+
     def textChangedSlot(self):
         txt = self.toPlainText()
         if bool(Config.value("editor/emptyline")) and not txt.endswith(Constants.LINE_ENDING) \
@@ -171,14 +176,17 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         return self.highlighter.parser.convert(self.toPlainText(), engine,
                                                line=curs.block().blockNumber() + 1, col=curs.columnNumber())
 
-    def positionChangedSlot(self):
+    def stoppedTyping(self):
         self.highlighter.storeErrors()
+        if bool(Config.value("editor/useParser", True)):
+            self.highlightErrors()
+
+    def positionChangedSlot(self):
+        self.stTimer.start(100)
         if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
         if bool(Config.value("editor/parentheses")):
             self.matchBrackets()
-        if bool(Config.value("editor/useParser", True)):
-            self.highlightErrors()
         self.highlightMatches()
         self.updateIndicator()
         self.mainwindow.updateTitle()
