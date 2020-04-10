@@ -123,7 +123,6 @@ class Trie:
     def __len__(self):
         return len(self.children)
 
-
 class CompletionStorage:
     """Helper class to allow for a simple interaction with all autocompletable values.
 

@@ -12,6 +12,8 @@
 Author: Randy Paredis
 Date:   12/14/2019
 """
+from dbm import error
+
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 from main.extra import Constants, left
@@ -182,7 +184,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.highlightErrors()
 
     def positionChangedSlot(self):
-        self.stTimer.start(100)
+        self.stTimer.start(int(Config.value("editor/autoreparse", 100)))
         if bool(Config.value("editor/highlightCurrentLine")):
             self.highlightCurrentLine()
         if bool(Config.value("editor/parentheses")):
@@ -243,13 +245,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         comp, _ = self.highlighter.parser.visitor.completer.get(completion)
         if len(comp) == 0:
             text = completion
-        else:
+        else: # In case of snippets, use the value (not the name)
             text = comp[0][0] if comp[0][2] is None else comp[0][2]
         cursor = self.textCursor()
-        extra = len(self.completer.completionPrefix())
-        if extra > 0:
-            cursor.movePosition(QtGui.QTextCursor.PreviousCharacter, n=extra)
-        cursor.movePosition(QtGui.QTextCursor.EndOfWord, QtGui.QTextCursor.KeepAnchor)
+        cursor.select(QtGui.QTextCursor.WordUnderCursor)
         cursor.insertText(text)
         self.setTextCursor(cursor)
 
@@ -623,7 +622,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def complete(self):
         cursor = self.textCursor()
-        cursor.select(QtGui.QTextCursor.WordUnderCursor)
+        cursor.setPosition(cursor.selectionStart())
+        cursor.movePosition(QtGui.QTextCursor.StartOfWord, QtGui.QTextCursor.KeepAnchor)
         prefix = cursor.selectedText()
 
         ctr = self.highlighter.parser.visitor.completer
@@ -635,11 +635,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         snps = self.mainwindow.snippets.snippets
         for n in snps.get(tp, {}):
             ctr.add(n, Types.SNIPPET, snps[tp].get(n, None))
-        completions, prefix = self.highlighter.parser.visitor.completer.get(prefix)
+        completions, prefix = ctr.get(prefix)
 
         mdl = self.completer.model()
         mdl.clear()
         for c in completions:
+            if c[0] == prefix: continue
             it = QtGui.QStandardItem(c[0])
             mdl.appendRow(it)
 

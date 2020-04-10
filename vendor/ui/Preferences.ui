@@ -297,7 +297,24 @@
           <string>Parser</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
-          <item row="2" column="0">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_85">
+            <property name="text">
+             <string>Autoreparse Delay (ms):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="num_autoreparse">
+            <property name="minimum">
+             <number>100</number>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="check_autorender">
             <property name="enabled">
              <bool>true</bool>
@@ -307,14 +324,14 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="1" column="0" colspan="2">
            <widget class="QCheckBox" name="check_parse">
             <property name="text">
              <string>Use parser for validity checking</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="0">
+          <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="check_syntax">
             <property name="text">
              <string>Use Syntax Highlighting</string>
@@ -341,8 +358,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>403</width>
-            <height>243</height>
+            <width>703</width>
+            <height>509</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -553,7 +570,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>366</width>
+            <width>689</width>
             <height>881</height>
            </rect>
           </property>
@@ -856,7 +873,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>271</width>
+            <width>689</width>
             <height>1490</height>
            </rect>
           </property>
@@ -1366,7 +1383,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
+               <width>278</width>
                <height>16</height>
               </rect>
              </property>
@@ -1427,8 +1444,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>417</width>
+               <height>509</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24"/>

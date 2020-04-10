@@ -425,7 +425,13 @@ class MainWindow(QtWidgets.QMainWindow):
             data = data.decode(et)
         edit.wrapper.encoding.setCurrentText(et.upper())
         edit.wrapper.statusBar.setLineSep(linesep)
+        c = edit.textCursor()
+        cstr = c.selectionStart()
+        cend = c.selectionEnd()
         edit.setText(data)
+        c.setPosition(cstr)
+        c.setPosition(cend, QtGui.QTextCursor.KeepAnchor)
+        edit.setTextCursor(c)
         edit.filecontents = data.replace(linesep, "\n")
         self.setEditorType(Constants.lookup(ext, exts, ""), indx)
 

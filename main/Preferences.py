@@ -237,6 +237,7 @@ class Preferences(QtWidgets.QDialog):
             self.check_pairedBrackets.setChecked(bool(self.preferences.value("editor/pairedBrackets", True)))
             self.check_emptyline.setChecked(bool(self.preferences.value("editor/emptyline", True)))
             self.parseDisable(self.check_parse.isChecked())
+            self.num_autoreparse.setValue(int(self.preferences.value("editor/autoreparse", 100)))
 
         # VIEW
         if True:
@@ -350,6 +351,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("editor/autorender", self.check_autorender.isChecked())
             self.preferences.setValue("editor/pairedBrackets", self.check_pairedBrackets.isChecked())
             self.preferences.setValue("editor/emptyline", self.check_emptyline.isChecked())
+            self.preferences.setValue("editor/autoreparse", self.num_autoreparse.value())
 
         # VIEW
         if True:

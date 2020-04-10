@@ -7,10 +7,12 @@ Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
 TODO LIST
-    [0.2.2] {Bugfixes}
-    - Bugfixes:
-        - Add possibility to set millisecond delay after typing via preferences
-        - See Bugs.md
+    [0.2.2] {Completion}
+    - Add Captal Completion?
+    - Completion window moves with LEFT and RIGHT keys
+    - Errors clear the render view
+        Error: <stdin>: syntax error in line 15 near '}'
+        Command '['dot', '-Tsvg:svg:core']' returned non-zero exit status 1. [stderr: b"Error: <stdin>: syntax error in line 15 near '}'\n"]
     [0.2.3] {Universalisation}
     - Features:
         - Change case of selection (Uppercase to Lowercase and back again)
@@ -28,8 +30,11 @@ TODO LIST
     - Tree Indentation guides
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
-    - [BUG]: On apply of preferences: cursor is reset to end of file!!!
     [0.3.0]
+    - Change Preferences Loading to dict instead of lines
+        I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
+             - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
+             ==> {"autohide": "check_autohide"}   // Might also require a function for more complex feats
     - More complex rendering mechanics
         - text/HTML
         - OGDF
