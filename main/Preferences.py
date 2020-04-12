@@ -377,6 +377,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("col/buttonText", self.col_buttonText.colorName())
             self.preferences.setValue("col/brightText", self.col_brightText.colorName())
             self.preferences.setValue("col/highlight", self.col_highlight.colorName())
+            self.preferences.setValue("col/highlightedText", self.col_highlightedText.colorName())
             self.preferences.setValue("col/link", self.col_link.colorName())
             self.preferences.setValue("col/visitedLink", self.col_visitedLink.colorName())
             self.preferences.setValue("col/cline", self.col_cline.colorName())

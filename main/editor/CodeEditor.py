@@ -234,7 +234,14 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def setCompleter(self):
         self.completer = QtWidgets.QCompleter(self)
+        table = QtWidgets.QTableView()
+        table.horizontalHeader().hide()
+        table.verticalHeader().hide()
+        table.setShowGrid(False)
+        table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.completer.setPopup(table)
         self.completer.setModel(QtGui.QStandardItemModel())
+        self.completer.setFilterMode(QtCore.Qt.MatchContains)
         self.completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.completer.setWrapAround(False)
@@ -247,6 +254,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             text = completion
         else: # In case of snippets, use the value (not the name)
             text = comp[0][0] if comp[0][2] is None else comp[0][2]
+
         cursor = self.textCursor()
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         cursor.insertText(text)
@@ -285,7 +293,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         if self.completer.popup().isVisible():
             if event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return, QtCore.Qt.Key_Tab]:
-                completion = self.completer.popup().currentIndex().data()
+                completion = self.completer.popup().currentIndex().data(QtCore.Qt.UserRole)
                 self.insertCompletion(completion)
                 self.completer.popup().hide()
             elif event.key() == QtCore.Qt.Key_Escape:
@@ -641,20 +649,29 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         mdl.clear()
         for c in completions:
             if c[0] == prefix: continue
-            it = QtGui.QStandardItem(c[0])
-            mdl.appendRow(it)
+            itc = "<b>%s</b>%s" % (prefix, c[0][len(prefix):])
+            ite = ""
+            if c[2] is not None:
+                ite = "<div align='right'>%s&nbsp;</div>" % c[2]
+            it = QtGui.QStandardItem(itc)
+            it.setData(c[0], QtCore.Qt.UserRole)
+            mdl.appendRow([it, QtGui.QStandardItem(ite)])
 
         if len(completions) == 0:
             return
 
         if prefix != self.completer.completionPrefix():
+            print("here")
             self.completer.setCompletionPrefix(prefix)
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
-
+        if self.completer.popup().currentIndex().row() == -1:
+            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
         cr = self.cursorRect()
         cr.setLeft(cr.left() + self.completer.popup().verticalScrollBar().sizeHint().width() * 3)
-        cr.setWidth(self.completer.popup().sizeHintForColumn(0) * 2 +
-                    self.completer.popup().verticalScrollBar().sizeHint().width())
+        cr.setWidth(self.mainwindow.width() / 4)
+        # TODO: Completer font size
+        self.completer.popup().horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.completer.popup().setItemDelegate(HTMLDelegate(self.completer.popup()))
         self.completer.complete(cr)
 
     def matchBrackets(self):
@@ -927,3 +944,38 @@ class LineNumberArea(QtWidgets.QWidget):
 
     def paintEvent(self, QPaintEvent):
         self.editor.lineNumberAreaPaintEvent(QPaintEvent)
+
+
+class HTMLDelegate(QtWidgets.QStyledItemDelegate):
+    def paint(self, painter, options, QModelIndex):
+        self.initStyleOption(options, QModelIndex)
+        style = QtWidgets.QApplication.style() if options.widget is None else options.widget.style()
+
+        doc = QtGui.QTextDocument()
+        col = Config.value("col/foreground")
+        if self.parent().currentIndex().row() == QModelIndex.row():
+            col = Config.value("col/highlightedText")
+        doc.setHtml("<nobr><font color='%s'>%s</font></nobr>" % (col, options.text))
+        doc.setTextWidth(options.rect.width())
+
+        options.text = ""
+
+        ctx = QtGui.QAbstractTextDocumentLayout.PaintContext()
+
+        textRect = style.subElementRect(QtWidgets.QStyle.SE_ItemViewItemText, options)
+        painter.save()
+        painter.translate(textRect.topLeft())
+        painter.setClipRect(textRect.translated(-textRect.topLeft()))
+        doc.documentLayout().draw(painter, ctx)
+
+        painter.restore()
+
+    def sizeHint(self, options, QModelIndex):
+        self.initStyleOption(options, QModelIndex)
+
+        doc = QtGui.QTextDocument()
+        doc.setHtml(options.text)
+        doc.setTextWidth(options.rect.width())
+
+        return QtCore.QSize(doc.idealWidth(), doc.size().height())
+

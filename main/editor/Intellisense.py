@@ -13,6 +13,7 @@ class Types(Enum):
     """Allows future expansion into different autocompletion types."""
     DEFAULT = 0
     SNIPPET = 1
+    CAPITALS = 2
 
 class Trie:
     def __init__(self, data: str = None, contents=None, prefix: str = '', parent: tuple = None):
@@ -146,13 +147,24 @@ class CompletionStorage:
                             for storing additional information.
                             Defaults to None.
         """
+        def ins(item):
+            self.completions.insert(item, (type, value))
+            self.items.append(item)
+
+            # TODO: make this more powerful and overall better
+            # if type == Types.DEFAULT:
+            #     res = item[0].lower()
+            #     for c in item[1:]:
+            #         if c.isupper():
+            #             res += c.lower()
+            #     if len(res) > 1:
+            #         self.add(res, Types.CAPITALS, item)
+
         if isinstance(items, str):
-            self.completions.insert(items, (type, value))
-            self.items.append(items)
+            ins(items)
         elif isinstance(items, (list, tuple, iter)):
             for it in items:
-                self.completions.insert(it, (type, value))
-                self.items.append(it)
+                ins(it)
 
     def clear(self):
         """Clears the full list of completions. Only use with precaution!"""
