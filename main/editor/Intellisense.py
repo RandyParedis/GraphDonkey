@@ -9,6 +9,9 @@ Date:   01/21/2020
 from enum import Enum
 import re
 
+from main.editor.automata import FSA
+
+
 class Types(Enum):
     """Allows future expansion into different autocompletion types."""
     DEFAULT = 0
@@ -132,7 +135,7 @@ class CompletionStorage:
     to keep future changes working as well.
     """
     def __init__(self):
-        self.completions = Trie()
+        self.completions = FSA()
         self.items = []
 
     def add(self, items, type = Types.DEFAULT, value=None):
@@ -150,15 +153,6 @@ class CompletionStorage:
         def ins(item):
             self.completions.insert(item, (type, value))
             self.items.append(item)
-
-            # TODO: make this more powerful and overall better
-            # if type == Types.DEFAULT:
-            #     res = item[0].lower()
-            #     for c in item[1:]:
-            #         if c.isupper():
-            #             res += c.lower()
-            #     if len(res) > 1:
-            #         self.add(res, Types.CAPITALS, item)
 
         if isinstance(items, str):
             ins(items)
@@ -190,8 +184,5 @@ class CompletionStorage:
             prefix string (all unknown characters are removed)
         """
         prefix = re.sub("[^%s]" % re.escape("".join(self.alphabet())), "", prefix)
-        node = self.completions.find(prefix)
-        if node is not None:
-            nodes = node.list()
-            return [(x.key(), *x.value()) for x in nodes], prefix
-        return [], prefix
+        nodes = self.completions.find(prefix)
+        return [(x.label, *x.data) for x in nodes], prefix

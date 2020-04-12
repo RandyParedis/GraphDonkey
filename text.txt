@@ -9,7 +9,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     [0.2.2] {Completion}
     - Add Captal Completion?
-    - Completion window moves with LEFT and RIGHT keys
     - Shift + Home not working.
     - Errors clear the render view
         Error: <stdin>: syntax error in line 15 near '}'

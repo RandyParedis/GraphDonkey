@@ -661,7 +661,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             return
 
         if prefix != self.completer.completionPrefix():
-            print("here")
             self.completer.setCompletionPrefix(prefix)
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
         if self.completer.popup().currentIndex().row() == -1:
