@@ -22,7 +22,7 @@ from main.editor.Highlighter import BaseHighlighter
 from main.extra.GraphicsView import GraphicsView
 from main.Preferences import bool
 from main.plugins import PluginLoader
-from main.editor.Intellisense import Types
+from main.editor.Intellisense import Types, ICONS
 import os
 
 pluginloader = PluginLoader.instance()
@@ -635,6 +635,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         prefix = cursor.selectedText()
 
         ctr = self.highlighter.parser.visitor.completer
+
+        # Reload the completion set
+        ctr.clear()
+        self.highlighter.storeErrors()
+
         tp = self.wrapper.filetype.currentText()
         for p in pluginloader.get():
             snps = p.types.get(tp, {}).get("snippets", {})
@@ -647,24 +652,27 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         mdl = self.completer.model()
         mdl.clear()
-        for c in completions:
-            if c[0] == prefix: continue
-            itc = "<b>%s</b>%s" % (prefix, c[0][len(prefix):])
+        for px, ty, v in completions:
+            if px == prefix: continue
+            pth = [px.index(x) for x in prefix]
+            itc = "".join(["<b>%s</b>" % px[s] if s in pth else px[s] for s in range(len(px))])
             ite = ""
-            if c[2] is not None:
-                ite = "<div align='right'>%s&nbsp;</div>" % c[2]
+            if v is not None:
+                ite = "<div align='right'>%s&nbsp;</div>" % v
             it = QtGui.QStandardItem(itc)
-            it.setData(c[0], QtCore.Qt.UserRole)
+            ico = ICONS[ty]
+            if ico is not None:
+                it.setIcon(ico)
+            it.setData(px, QtCore.Qt.UserRole)
             mdl.appendRow([it, QtGui.QStandardItem(ite)])
 
         if len(completions) == 0:
             return
 
-        if prefix != self.completer.completionPrefix():
+        if self.completer.popup().currentIndex().row() == -1 or prefix != self.completer.completionPrefix():
             self.completer.setCompletionPrefix(prefix)
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
-        if self.completer.popup().currentIndex().row() == -1:
-            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
+
         cr = self.cursorRect()
         cr.setLeft(cr.left() + self.completer.popup().verticalScrollBar().sizeHint().width() * 3)
         cr.setWidth(self.mainwindow.width() / 4)
@@ -672,6 +680,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.completer.popup().horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.completer.popup().setItemDelegate(HTMLDelegate(self.completer.popup()))
         self.completer.complete(cr)
+
+        if self.completer.popup().currentIndex().row() == -1 or prefix != self.completer.completionPrefix():
+            self.completer.setCompletionPrefix(prefix)
+            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
 
     def matchBrackets(self):
         paired = pluginloader.getPairedBrackets(self.wrapper.filetype.currentText())
@@ -946,6 +958,10 @@ class LineNumberArea(QtWidgets.QWidget):
 
 
 class HTMLDelegate(QtWidgets.QStyledItemDelegate):
+    """Delegate inspired by:
+
+    https://stackoverflow.com/questions/1956542/how-to-make-item-view-render-rich-html-text-in-qt/1956781#1956781
+    """
     def paint(self, painter, options, QModelIndex):
         self.initStyleOption(options, QModelIndex)
         style = QtWidgets.QApplication.style() if options.widget is None else options.widget.style()
@@ -958,13 +974,25 @@ class HTMLDelegate(QtWidgets.QStyledItemDelegate):
         doc.setTextWidth(options.rect.width())
 
         options.text = ""
+        # options.showDecorationSelected = False
+        # options.features ^= QtWidgets.QStyleOptionViewItem.HasDisplay
+        # style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
 
         ctx = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
-        textRect = style.subElementRect(QtWidgets.QStyle.SE_ItemViewItemText, options)
+
         painter.save()
-        painter.translate(textRect.topLeft())
-        painter.setClipRect(textRect.translated(-textRect.topLeft()))
+        rh = options.rect.height()
+        iconSize = QtCore.QSize(rh, rh) * 0.8
+        isize = iconSize * 0.8
+        pt = options.rect.topLeft()
+        o = (rh - isize.height()) / 2
+        pt += QtCore.QPoint(o, o)
+        options.icon.paint(painter, QtCore.QRect(pt, isize))
+        painter.translate(options.rect.left() + iconSize.width(), options.rect.top())
+        clip = QtCore.QRectF(0, 0, options.rect.width() + iconSize.width(), options.rect.height())
+        painter.setClipRect(clip)
+        ctx.clip = clip
         doc.documentLayout().draw(painter, ctx)
 
         painter.restore()

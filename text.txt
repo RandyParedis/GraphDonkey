@@ -8,7 +8,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 
 TODO LIST
     [0.2.2] {Completion}
-    - Add Captal Completion?
     - Shift + Home not working.
     - Errors clear the render view
         Error: <stdin>: syntax error in line 15 near '}'
@@ -27,6 +26,7 @@ TODO LIST
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
     - Add images to documentation AND wizards
     - Add icon to all plugins
+    - Add icon to completer types
     - Tree Indentation guides
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
