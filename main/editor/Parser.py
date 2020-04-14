@@ -43,6 +43,8 @@ class Parser:
             self.errors.append((e, splt[0], exp))
         except UnexpectedEOF as e:
             self.errors.append((EOFToken(text), "Unexpected end-of-input.", set(e.expected)))
+        except Exception as e:
+            self.errors.append(str(e.args))
         return None
 
     def lookup(self, terminal_name):
@@ -51,10 +53,12 @@ class Parser:
         return None
 
     def convert(self, text, engine, line=-1, col=-1):
-        # TODO: what if engine does not exist?
-        T = self.parse(text, line=line, col=col)
-        if T is not None:
-            return self.converter[engine](text, T)
+        try:
+            T = self.parse(text, line=line, col=col)
+            if T is not None:
+                return self.converter[engine](text, T)
+        except Exception as e:
+            self.errors.append(str(e.args))
         return None
 
 

@@ -13,8 +13,11 @@ Config = IOHandler.get_preferences()
 
 def convert(text: str):
     dot = graphviz.Source(text, engine=Config.value("plugin/graphviz/engine"))
-    return dot.pipe(Config.value("plugin/graphviz/format"), Config.value("plugin/graphviz/renderer"),
-                    Config.value("plugin/graphviz/formatter"))
+    try:
+        return dot.pipe(Config.value("plugin/graphviz/format"), Config.value("plugin/graphviz/renderer"),
+                        Config.value("plugin/graphviz/formatter"))
+    except graphviz.backend.CalledProcessError as err:
+        raise Exception(err.stderr.decode('utf-8'))
 
 def export(text: str, extension: str):
     try:

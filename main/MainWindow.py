@@ -612,7 +612,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
-            self.view.clear()
             ename = self.editorWrapper().engine.currentText()
             try:
                 engine = pluginloader.getEngines().get(ename, None)
@@ -621,9 +620,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 res = self.editor().convert(ename)
                 if res is not None:
                     bdata = engine["convert"](res)
+                    self.view.clear()
                     self.view.add(bdata)
             except Exception as e:
-                print(e, file=sys.stderr)
+                print(str(e), file=sys.stderr)
+                self.updateStatus(str(e))
                 return str(e)
         return None
 
@@ -671,6 +672,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def aboutQt(self):
         QtWidgets.QMessageBox.aboutQt(self)
+
 
 class TabPressEater(QtCore.QObject):
     def eventFilter(self, obj, event):

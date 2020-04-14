@@ -33,7 +33,7 @@ class StatusBar(QtWidgets.QStatusBar):
         super(StatusBar, self).__init__(parent)
         self.wrapper = wrapper
         self.statusMessage = QtWidgets.QLabel("")
-        self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBaseline)
 
         self.positionIndicator = QtWidgets.QLabel(":")
         self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -73,6 +73,7 @@ class StatusBar(QtWidgets.QStatusBar):
     def setLineSep(self, sep):
         seps = {self.seps[n]: n for n in self.seps}
         self.leCombo.setCurrentText(seps.get(sep, ""))
+
 
 class EditorWrapper(QtWidgets.QWidget):
     def __init__(self, parent):
@@ -324,6 +325,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             cursor.endEditBlock()
         elif event.key() == QtCore.Qt.Key_Home:
             cursor = self.textCursor()
+            end = cursor.selectionEnd()
             cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText()
             if len(txt.strip()) == 0 != len(txt):
@@ -331,6 +333,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             else:
                 cursor.movePosition(QtGui.QTextCursor.StartOfLine)
                 cursor.movePosition(QtGui.QTextCursor.NextWord)
+            cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
             self.setTextCursor(cursor)
         elif event.key() == QtCore.Qt.Key_Backspace:
             if bool(Config.value("editor/pairedBrackets")):
