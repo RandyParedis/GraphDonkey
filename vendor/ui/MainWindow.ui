@@ -129,6 +129,19 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <widget class="QMenu" name="menuChange_Casing">
+     <property name="title">
+      <string>Change Casing</string>
+     </property>
+     <addaction name="action_UpperCase"/>
+     <addaction name="action_LowerCase"/>
+     <addaction name="action_WordCase"/>
+     <addaction name="action_SentenceCase"/>
+     <addaction name="separator"/>
+     <addaction name="action_DromedaryCase"/>
+     <addaction name="action_PascalCase"/>
+     <addaction name="action_SnakeCase"/>
+    </widget>
     <addaction name="action_Undo"/>
     <addaction name="action_Redo"/>
     <addaction name="separator"/>
@@ -150,6 +163,7 @@
     <addaction name="separator"/>
     <addaction name="action_Find"/>
     <addaction name="action_Autocomplete"/>
+    <addaction name="menuChange_Casing"/>
    </widget>
    <widget class="QMenu" name="menu_Transform">
     <property name="title">
@@ -468,6 +482,9 @@
    <property name="text">
     <string>C&amp;lear</string>
    </property>
+   <property name="toolTip">
+    <string>Clear the currently open file.</string>
+   </property>
   </action>
   <action name="action_Next_File">
    <property name="icon">
@@ -560,6 +577,62 @@
   <action name="action_Report_Issue">
    <property name="text">
     <string>Report &amp;Issue</string>
+   </property>
+  </action>
+  <action name="action_UpperCase">
+   <property name="text">
+    <string>Upper Case</string>
+   </property>
+   <property name="toolTip">
+    <string>Change selection to upper case.</string>
+   </property>
+  </action>
+  <action name="action_LowerCase">
+   <property name="text">
+    <string>Lower Case</string>
+   </property>
+   <property name="toolTip">
+    <string>Change selection to lower case.</string>
+   </property>
+  </action>
+  <action name="action_WordCase">
+   <property name="text">
+    <string>Case Words</string>
+   </property>
+   <property name="toolTip">
+    <string>Change each word in selection to only have the first letter upper case.</string>
+   </property>
+  </action>
+  <action name="action_SentenceCase">
+   <property name="text">
+    <string>Case First Word</string>
+   </property>
+   <property name="toolTip">
+    <string>Change casing of selection to only case first letter of first selected word.</string>
+   </property>
+  </action>
+  <action name="action_DromedaryCase">
+   <property name="text">
+    <string>Dromedary Case</string>
+   </property>
+   <property name="toolTip">
+    <string>Camel casing with first letter capitalized.</string>
+   </property>
+  </action>
+  <action name="action_PascalCase">
+   <property name="text">
+    <string>Pascal Case</string>
+   </property>
+   <property name="toolTip">
+    <string>Camel case with first letter in lower case.</string>
+   </property>
+  </action>
+  <action name="action_SnakeCase">
+   <property name="text">
+    <string>Snake Case</string>
+   </property>
+   <property name="toolTip">
+    <string>Snake case without any capitals.</string>
    </property>
   </action>
  </widget>

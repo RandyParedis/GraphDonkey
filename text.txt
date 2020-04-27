@@ -9,7 +9,6 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     [0.2.3] {Universalisation}
     - Features:
-        - Change case of selection (Uppercase to Lowercase and back again)
         - Goto Line
         - Restart
         - Listen on host:port address

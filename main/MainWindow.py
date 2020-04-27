@@ -87,6 +87,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Move_Down.triggered.connect(lambda: self.editorEvent("moveDown"))
         self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(lambda: self.editorEvent("complete"))
+        self.action_UpperCase.triggered.connect(lambda: self.editorEvent("uppercase"))
+        self.action_LowerCase.triggered.connect(lambda: self.editorEvent("lowercase"))
+        self.action_WordCase.triggered.connect(lambda: self.editorEvent("wordcase"))
+        self.action_SentenceCase.triggered.connect(lambda: self.editorEvent("sentenceCase"))
+        self.action_DromedaryCase.triggered.connect(lambda: self.editorEvent("dromedaryCase"))
+        self.action_PascalCase.triggered.connect(lambda: self.editorEvent("pascalCase"))
+        self.action_SnakeCase.triggered.connect(lambda: self.editorEvent("snakeCase"))
         self.viewDock.closeEvent = self.viewDockCloseEvent
         self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Next_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() + 1))

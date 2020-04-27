@@ -12,6 +12,7 @@
 Author: Randy Paredis
 Date:   12/14/2019
 """
+import re
 from dbm import error
 
 from PyQt5 import QtGui, QtWidgets, QtCore
@@ -687,6 +688,91 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if self.completer.popup().currentIndex().row() == -1 or prefix != self.completer.completionPrefix():
             self.completer.setCompletionPrefix(prefix)
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+    def case(self, trnsf, words=False):
+        cursor = self.textCursor()
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
+        if posS == posE:   # Case Line
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            ntxt = trnsf(txt)
+            posE -= len(txt) - len(ntxt)
+            cursor.insertText(ntxt)
+            cursor.setPosition(posS)
+        else:
+            if words:
+                cursor.setPosition(posS)
+                cursor.movePosition(QtGui.QTextCursor.StartOfWord)
+                cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
+                cursor.movePosition(QtGui.QTextCursor.EndOfWord, QtGui.QTextCursor.KeepAnchor)
+            txt = cursor.selectedText()
+            ntxt = trnsf(txt)
+            posE -= len(txt) - len(ntxt)
+            cursor.insertText(ntxt)
+            cursor.setPosition(posS)
+            cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
+        self.setTextCursor(cursor)
+
+    def uppercase(self):
+        self.case(lambda txt: txt.upper())
+
+    def lowercase(self):
+        self.case(lambda txt: txt.lower())
+
+    def wordcase(self):
+        def words(txt):
+            mc = True
+            res = ""
+            for c in txt:
+                if mc:
+                    res += c.upper()
+                    mc = False
+                else:
+                    res += c.lower()
+                if c in [' ', '\t', '\n', '\r']:
+                    mc = True
+            return res
+        self.case(words, True)
+
+    def sentenceCase(self):
+        self.case(lambda txt: txt[0].upper() + txt[1:].lower() if len(txt) > 0 else txt, True)
+
+    def dromedaryCase(self):
+        self.wordcase()
+        def casing(txt):
+            start = re.search(r'\S', txt).span()[0]
+            end = -re.search(r'\S', "".join(reversed(txt))).span()[0]
+            tr = re.sub(r'\s+', '', txt[start:])
+            if end == 0:
+                return txt[:start] + tr
+            return txt[:start] + tr + txt[end:]
+        self.case(casing, True)
+
+    def pascalCase(self):
+        self.wordcase()
+        def casing(txt):
+            start = re.search(r'\S', txt).span()[0]
+            end = -re.search(r'\S', "".join(reversed(txt))).span()[0]
+            tr = re.sub(r'\s+', '', txt[start:])
+            if len(tr) > 0:
+                tr = tr[0].lower() + tr[1:]
+            if end == 0:
+                return txt[:start] + tr
+            return txt[:start] + tr + txt[end:]
+        self.case(casing, True)
+
+    def snakeCase(self):
+        def casing(txt):
+            txt = txt.lower()
+            start = re.search(r'\S', txt).span()[0]
+            end = -re.search(r'\S', "".join(reversed(txt))).span()[0]
+            tr = re.sub(r'\s+', '_', txt[start:])
+            if end == 0:
+                return txt[:start] + tr
+            return txt[:start] + tr + txt[end:]
+        self.case(casing, True)
 
     def matchBrackets(self):
         paired = pluginloader.getPairedBrackets(self.wrapper.filetype.currentText())
