@@ -13,7 +13,7 @@ with `GraphDonkey`.
 Simply type your text in the editor, enjoy its user-friendly features and see your
 code come to life in the visualizer.
 
-**Latest Release Version:** _Jack-in-a-Box_ (`v0.2.1`)<br/>
+**Latest Release Version:** _Jack-in-a-Box_ (`v0.2.2`)<br/>
 **Executable OS:** `Linux` and `Windows`<br>
 &emsp; _(Cannot confirm other OS at this point in time)_<br>
 **Author:** Randy Paredis
