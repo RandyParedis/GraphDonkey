@@ -161,6 +161,7 @@
     <addaction name="action_Move_Up"/>
     <addaction name="action_Move_Down"/>
     <addaction name="separator"/>
+    <addaction name="action_Goto_Line"/>
     <addaction name="action_Find"/>
     <addaction name="action_Autocomplete"/>
     <addaction name="menuChange_Casing"/>
@@ -633,6 +634,11 @@
    </property>
    <property name="toolTip">
     <string>Snake case without any capitals.</string>
+   </property>
+  </action>
+  <action name="action_Goto_Line">
+   <property name="text">
+    <string>Go to &amp;Line...</string>
    </property>
   </action>
  </widget>

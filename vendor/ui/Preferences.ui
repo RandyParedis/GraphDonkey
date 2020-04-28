@@ -24,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
@@ -872,9 +872,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-791</y>
+            <y>-787</y>
             <width>689</width>
-            <height>1707</height>
+            <height>1738</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -1123,6 +1123,16 @@
               </item>
               <item row="23" column="1">
                <widget class="QKeySequenceEdit" name="ks_snakecase"/>
+              </item>
+              <item row="24" column="0">
+               <widget class="QLabel" name="label_93">
+                <property name="text">
+                 <string>Go to Line:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="24" column="1">
+               <widget class="QKeySequenceEdit" name="ks_goto_line"/>
               </item>
              </layout>
             </widget>

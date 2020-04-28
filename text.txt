@@ -9,9 +9,14 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     [0.2.3] {Universalisation}
     - Features:
-        - Goto Line
         - Restart
         - Listen on host:port address
+    - Change Preferences Loading to dict instead of lines
+            I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
+                 - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
+                 ==> {"autohide": "check_autohide"}   // Might also require a function for more complex feats
+                 The above might be settable via dynamic properties on the designer. If we now use a dictionary
+                 to map special cases, this can be done.
     - Better indentation logic
     - Fix comments: identify indents before/after comment signs
     - Update Graphviz plugin to work better
@@ -29,10 +34,6 @@ TODO LIST
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
     [0.3.0]
-    - Change Preferences Loading to dict instead of lines
-        I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
-             - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
-             ==> {"autohide": "check_autohide"}   // Might also require a function for more complex feats
     - More complex rendering mechanics
         - text/HTML
         - OGDF

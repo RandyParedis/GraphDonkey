@@ -160,7 +160,9 @@ class Preferences(QtWidgets.QDialog):
             "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
             "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
             "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
-            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down", "Updates", "Report_Issue"
+            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down", "Updates", "Report_Issue",
+            "UpperCase", "LowerCase", "WordCase", "SentenceCase", "DromedaryCase", "PascalCase", "SnakeCase",
+            "Goto_Line"
         ]
 
         def pressEvent(kseq, event):
@@ -294,6 +296,7 @@ class Preferences(QtWidgets.QDialog):
             self.ks_dromedarycase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/dromedarycase", "")))
             self.ks_pascalcase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/pascalcase", "")))
             self.ks_snakecase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snakecase", "")))
+            self.ks_goto_line.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/goto_line", "CTRL+L")))
             self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
             self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
             self.ks_save_rendered_view.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_rendered_view", "")))
@@ -438,6 +441,7 @@ class Preferences(QtWidgets.QDialog):
             self.preferences.setValue("ks/dromedarycase", self.ks_dromedarycase.keySequence().toString())
             self.preferences.setValue("ks/pascalcase", self.ks_pascalcase.keySequence().toString())
             self.preferences.setValue("ks/snakecase", self.ks_snakecase.keySequence().toString())
+            self.preferences.setValue("ks/goto_line", self.ks_goto_line.keySequence().toString())
             self.preferences.setValue("ks/show_render_area", self.ks_show_render_area.keySequence().toString())
             self.preferences.setValue("ks/snippets", self.ks_snippets.keySequence().toString())
             self.preferences.setValue("ks/next_file", self.ks_next_file.keySequence().toString())

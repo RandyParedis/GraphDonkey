@@ -774,6 +774,18 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             return txt[:start] + tr + txt[end:]
         self.case(casing, True)
 
+    def goto(self):
+        cursor = self.textCursor()
+        curr = cursor.blockNumber() + 1
+        line, change = QtWidgets.QInputDialog.getInt(self, "Go to Line", "Line:", curr, 1, self.document().lineCount())
+        if change:
+            diff = curr - line
+            if diff > 0:
+                cursor.movePosition(QtGui.QTextCursor.Up, QtGui.QTextCursor.MoveAnchor, diff)
+            elif diff < 0:
+                cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, -diff)
+        self.setTextCursor(cursor)
+
     def matchBrackets(self):
         paired = pluginloader.getPairedBrackets(self.wrapper.filetype.currentText())
         bopen = [x[0] for x in paired]

@@ -85,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Auto_Indent.triggered.connect(lambda: self.editorEvent("autoIndent"))
         self.action_Move_Up.triggered.connect(lambda: self.editorEvent("moveUp"))
         self.action_Move_Down.triggered.connect(lambda: self.editorEvent("moveDown"))
+        self.action_Goto_Line.triggered.connect(lambda: self.editorEvent("goto"))
         self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(lambda: self.editorEvent("complete"))
         self.action_UpperCase.triggered.connect(lambda: self.editorEvent("uppercase"))
@@ -161,6 +162,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Auto_Indent.setEnabled(on)
         self.action_Find.setEnabled(on)
         self.action_Autocomplete.setEnabled(on)
+        self.action_UpperCase.setEnabled(on)
+        self.action_LowerCase.setEnabled(on)
+        self.action_WordCase.setEnabled(on)
+        self.action_SentenceCase.setEnabled(on)
+        self.action_DromedaryCase.setEnabled(on)
+        self.action_PascalCase.setEnabled(on)
+        self.action_SnakeCase.setEnabled(on)
+        self.action_Goto_Line.setEnabled(on)
 
     def lockDisplay(self, disp=False):
         if disp and self.canDisplay():
