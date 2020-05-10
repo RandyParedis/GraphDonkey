@@ -10,11 +10,14 @@ from main.extra import isSVG
 
 class ReturnType(Enum):
     IMAGE = 0
-    DRAWING = 1
+    DRAWING = 1   # <-- Can be solved using PIL.ImageDraw.ImageDraw instead
 
 def display(data, scene):
-    # TODO: check if tuple
-    kind, bdata = data
+    if isinstance(data, (tuple, list)):
+        kind, bdata = data
+    else:
+        kind = ReturnType.IMAGE
+        bdata = data
     if kind == ReturnType.IMAGE:
         if isSVG(bdata):
             svgRenderer = QtSvg.QSvgRenderer(bdata)
@@ -28,5 +31,5 @@ def display(data, scene):
             scene.addPixmap(pixmap)
 
     elif kind == ReturnType.DRAWING:
-        # bdata is a set of elements in {Line, Rectangle, Ellipse, Polygon, Bezier}
+        # bdata is a PIL.ImageDraw.ImageDraw object
         pass

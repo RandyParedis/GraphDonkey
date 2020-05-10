@@ -1,0 +1,65 @@
+
+// Discard Comments and whitespace
+COMMENT_PRE: /^#[^\n]*/
+COMMENT_SNG: "//" /[^\n]/*
+COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
+WS: /[ \t\f\r\n]/+
+
+%ignore WS
+%ignore COMMENT_PRE
+%ignore COMMENT_SNG
+%ignore COMMENT_MLT
+
+start: stmts
+stmts: ((shape | stmt) SEP?)*
+stmt: SEP
+shape: grid | border | point | line | ellipse | rectangle | arc | chord | pieslice | polygon | text
+coord: (NUMBER COMMA NUMBER) | CENTER
+color: COL COLOR
+width: WIDTH NUMBER
+border: BORDER cw
+grid: GRID cw
+point: POINT AT coord cw
+line: LINE FROM coord TO coord cw
+ellipse: ELLIPSE FROM coord TO coord cw filled?
+rectangle: RECTANGLE FROM coord TO coord cw filled?
+polygon: POLYGON FROM coord (TO coord)+ color filled?
+arc: ARC FROM coord TO coord OF angle TO angle cw
+chord: CHORD FROM coord TO coord OF angle TO angle cw filled?
+pieslice: PIESLICE FROM coord TO coord OF angle TO angle cw filled?
+text: TEXT STRING AT coord color? (IN font)?
+cw: (color? width?) | (width? color?)
+filled: FILLED COLOR?
+angle: NUMBER (DEGREES | RADIANS)
+font: NUMBER STRING
+
+SEP: ";"
+COMMA: ","
+NUMBER: /[-]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)/
+NAME: /[A-Za-z_][A-Za-z0-9_]*/
+COLOR: /#([0-9a-f]{6}|[0-9A-F]{6})/
+STRING: "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""
+
+POINT: "point"
+LINE: "line"
+ELLIPSE: "ellipse"
+RECTANGLE: "rectangle"
+POLYGON: "polygon"
+ARC: "arc"
+CHORD: "chord"
+PIESLICE: "pieslice" | "pie"
+TEXT: "text"
+GRID: "grid"
+WIDTH: "width"
+
+COL: "color" | "colour"
+FILLED: "filled"
+BORDER: "border"
+DEGREES: "degrees" | "deg" | "d" | "°"
+RADIANS: "radians" | "rad" | "r"
+CENTER: "center"
+OF: "of"
+AT: "at"
+FROM: "from"
+TO: "to"
+IN: "in"

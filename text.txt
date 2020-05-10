@@ -21,6 +21,7 @@ TODO LIST
     - Fix comments: identify indents before/after comment signs
     - Update Graphviz plugin to work better
         - Add all syntactical errors
+    - Simple (builtin) ImageRenderer
     - Other plugins by default (see Future.md)
     [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html

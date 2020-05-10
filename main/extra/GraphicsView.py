@@ -136,7 +136,10 @@ class GraphicsView(QtWidgets.QWidget):
         self._scene = self._view.scene()
 
     def add(self, bdata):
-        if isSVG(bdata):
+        if isinstance(bdata, QtGui.QImage):
+            pixmap = QtGui.QPixmap.fromImage(bdata)
+            self._scene.addPixmap(pixmap)
+        elif isSVG(bdata):
             svgRenderer = QtSvg.QSvgRenderer(bdata)
             dot = QtSvg.QGraphicsSvgItem()
             dot.setSharedRenderer(svgRenderer)

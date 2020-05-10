@@ -529,6 +529,7 @@ class MainWindow(QtWidgets.QMainWindow):
             rext = Constants.obtain_exts(t)
             if len(rext) == 0:
                 fext = pluginloader.getFileExtensions()
+                # FIXME: TypeError: unhashable type: 'list'
                 rext = fext[next(iter(fext.items()))] if len(fext) > 0 else []
             if ext not in rext:
                 ext = rext[0] if len(rext) > 0 else "txt"
