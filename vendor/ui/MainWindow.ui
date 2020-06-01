@@ -161,8 +161,6 @@
     <addaction name="action_Move_Up"/>
     <addaction name="action_Move_Down"/>
     <addaction name="separator"/>
-    <addaction name="action_Goto_Line"/>
-    <addaction name="action_Find"/>
     <addaction name="action_Autocomplete"/>
     <addaction name="menuChange_Casing"/>
    </widget>
@@ -171,8 +169,16 @@
      <string>&amp;Transform</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_Search">
+    <property name="title">
+     <string>&amp;Search</string>
+    </property>
+    <addaction name="action_Find"/>
+    <addaction name="action_Goto_Line"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Search"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Transform"/>
    <addaction name="menu_Help"/>

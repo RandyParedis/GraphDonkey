@@ -53,7 +53,6 @@ class DotVisitor:
     def visit(self, tree: Tree):
         for child in tree.children:
             if isinstance(child, Tree):
-                print(child)
                 self.nodes[id(child)] = \
                     self.root.node("node_%i" % id(child), child.data + "[%i:%i]" % (child.line, child.column))
                 self.visit(child)

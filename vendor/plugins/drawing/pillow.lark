@@ -1,0 +1,61 @@
+// Pillow DSL
+
+// Discard Comments and whitespace
+COMMENT_PRE: /^#[^\n]*/
+COMMENT_SNG: "//" /[^\n]/*
+COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
+WS: /[ \t\f\r\n]/+
+
+%ignore WS
+%ignore COMMENT_PRE
+%ignore COMMENT_SNG
+%ignore COMMENT_MLT
+
+?start  : stmts
+?stmts  : stmt*
+?stmt   : "{" stmts "}" | define | assign | if_ | for_
+define  : LET NAME SET cond
+assign  : NAME AOP cond
+?cond   : "(" cond ")" | expr | bexpr | var | bool
+?expr   : sum
+bexpr   : NOT cond | expr BOP expr | cond (AND | OR) cond
+
+if_     : IF "(" cond ")" stmt (ELIF "(" cond ")" stmt)* (ELSE stmt)?
+for_    : FOR "(" define SEP cond SEP assign ")" stmt
+
+sum    : (sum (ADD | SUB))? prod
+prod   : (prod (MUL | DIV | MOD))? power
+power  : (power POW)? atom
+?atom   : val | var | "(" sum ")" | SUB atom
+
+var     : NAME
+?val    : STRING | NUMBER | COLOR | point | bool
+point   : "(" pointp ")" | pointp
+pointp  : NUMBER COMMA NUMBER
+?bool   : TRUE | FALSE
+
+LET     : "let"i
+SET     : "=" | ":="
+AOP     : "+=" | "-=" | "*=" | "/=" | "%=" | "="
+ADD     : "+"
+SUB     : "-"
+MUL     : "*"
+DIV     : "/"
+MOD     : "%"i | "mod"i
+POW     : "^"
+BOP     : "<" | "<=" | "==" | "!=" | ">=" | ">"
+AND     : "and"i
+OR      : "or"i
+NOT     : "!"i | "not"i
+COMMA   : ","
+SEP     : ";"
+NUMBER  : /[-]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)/
+NAME    : /[A-Za-z_][A-Za-z0-9_]*/
+COLOR   : /#([0-9a-f]{6}|[0-9A-F]{6})/
+STRING  : "\"" /(?:[^\"\\]|\\.)*/ "\""
+TRUE    : "true"i
+FALSE   : "false"i
+IF      : "if"i
+ELIF    : "elif"i | "elseif"i | "else"i "if"i
+ELSE    : "else"i
+FOR     : "for"i

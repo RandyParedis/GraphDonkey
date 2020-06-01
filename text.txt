@@ -10,7 +10,11 @@ TODO LIST
     [0.2.3] {Universalisation}
     - Features:
         - Restart
+        - Read Only Files
         - Listen on host:port address
+        - Show all errors during parsing
+        - Add Bookmarks?
+        - Add "Search" Menu, which contains "Find & Replace", "Goto Line", "Next Error", "Prev Error" etc...
     - Change Preferences Loading to dict instead of lines
             I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
                  - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
@@ -34,6 +38,8 @@ TODO LIST
     - Tree Indentation guides
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
+    - Auto-update
+    	- https://hackthology.com/how-to-write-self-updating-python-programs-using-pip-and-git.html
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML

@@ -6,7 +6,7 @@ not representable in a graph.
 Author:         Randy Paredis
 Requires:       The `Pillow` package.
 """
-from vendor.plugins.drawing.Engine import convert
+from vendor.plugins.drawing.Engine2 import convert
 from main.extra import Constants
 
 keywords = [
@@ -25,9 +25,9 @@ other = [
 ]
 
 TYPES = {
-    "Drawing": {
-        "extensions": ["draw"],
-        "grammar": "drawing.lark",
+    "Pillow": {
+        "extensions": ["draw", "pil"],
+        "grammar": "pillow.lark",
         "parser": "earley",
         "highlighting": [
             {
@@ -52,7 +52,7 @@ TYPES = {
             },
             {
                 "regex": {
-                    "pattern": r"((<)|\")(?:(?(2)(.|<)*?|[^\"\\]*(?:\\.[^\"\\]*)*))(?(2)>|\")",
+                    "pattern": r"\"(?:[^\"\\]|\\.)*\"",
                     "single": True
                 },
                 "format": "string",

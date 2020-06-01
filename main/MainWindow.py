@@ -115,8 +115,10 @@ class MainWindow(QtWidgets.QMainWindow):
         trns = []
         for p in pluginloader.get():
             for t in p.types:
-                for c in p.types[t].get("transformer", {}):
-                    trns.append((t, c, p.types[t]["transformer"][c]))
+                target = p.types[t].get("transformer", {})
+                for c in target:
+                    if c == t: continue
+                    trns.append((t, c, target[c]))
         for fr, to, convfunc in trns:
             action = QtWidgets.QAction("%s > %s" % (fr, to))
             action.triggered.connect(lambda b, fnc=convfunc, to=to: self.transform(fnc, to))

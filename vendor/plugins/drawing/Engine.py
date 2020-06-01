@@ -185,6 +185,8 @@ class ConversionVisitor:
             # TODO: font loading
             font = self.font(tree, 6)
             self.drawing.text(coord, text, color, font)
+        # TODO: load image?
+        # TODO: control: size, variables, computations...
 
 
 def convert(T):
