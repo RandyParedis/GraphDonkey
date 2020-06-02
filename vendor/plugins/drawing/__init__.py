@@ -6,7 +6,8 @@ not representable in a graph.
 Author:         Randy Paredis
 Requires:       The `Pillow` package.
 """
-from vendor.plugins.drawing.Engine2 import convert
+from vendor.plugins.drawing.Engine import convert
+from vendor.plugins.drawing.Lindenmayer import transform
 from main.extra import Constants
 
 keywords = [
@@ -20,14 +21,13 @@ attributes = [
 ]
 
 other = [
-    "radians", "degrees", "deg", "rad", "d", "r", "°",
-    "center"
+    "radians", "degrees", "deg", "rad", "d", "r", "°"
 ]
 
 TYPES = {
     "Pillow": {
-        "extensions": ["draw", "pil"],
-        "grammar": "pillow.lark",
+        "extensions": ["draw"],
+        "grammar": "drawing.lark",
         "parser": "earley",
         "highlighting": [
             {
@@ -39,7 +39,7 @@ TYPES = {
                 "format": "keyword"
             },
             {
-                "regex": other,
+                "regex": other + ["center"],
                 "format": "attribute"
             },
             {
@@ -77,6 +77,54 @@ TYPES = {
         ],
         "transformer": {
             "Pillow": lambda x, T: T
+        }
+    },
+    "Lindenmayer": {
+        "extensions": ["l", "lindenmayer"],
+        "grammar": "lindenmayer.lark",
+        "parser": "earley",
+        "highlighting": [
+            {
+                "regex": {
+                    "pattern": [
+                        "alphabet", "alpha",
+                        "axiom", "start", "initial", "init", "initializer",
+                        "angle", "seed", "depth", "n", "to", "is"
+                    ],
+                    "insensitive": True
+                },
+                "format": "keyword"
+            },
+            {
+                "regex": {
+                    "pattern": other,
+                    "insensitive": True
+                },
+                "format": "attribute"
+            },
+            {
+                "regex": "\\b-?[1-9][0-9]+\\b",
+                "format": "number"
+            },
+            {
+                "regex": "\\b0?\\.[0-9]+\\b",
+                "format": "number"
+            },
+            {
+                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+                "format": "comment"
+            },
+            {
+                "regex": {
+                    "pattern": "/\\*.*?\\*/",
+                    "single": True
+                },
+                "format": "comment",
+                "global": True
+            }
+        ],
+        "transformer": {
+            "Pillow": transform
         }
     }
 }

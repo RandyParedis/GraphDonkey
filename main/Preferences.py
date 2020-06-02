@@ -28,7 +28,7 @@ class Preferences(QtWidgets.QDialog):
     def __init__(self, parent):
         super(Preferences, self).__init__(parent)
         uic.loadUi(IOHandler.dir_ui("Preferences.ui"), self)
-        self.pluginUi = []
+        self.pluginUi = {}
 
         self.buttonBox.clicked.connect(self.restoreDefaults)
         self.check_monospace.toggled.connect(self.setFontCombo)
@@ -741,7 +741,7 @@ class PluginButton(QtWidgets.QLabel):
                     box.preferences = self.prefs.preferences
                     box.plugin = self.plugin
                     self.prefs.pluginUi[e] = box
-                lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
+                    lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles

@@ -104,6 +104,7 @@ class Plugin:
             if "ICON" in _locals:
                 self.icon = self.path(_locals["ICON"])
         except ImportError as e:
+            # TODO: Show Error Message
             self.disable()
             self.deps = False
 

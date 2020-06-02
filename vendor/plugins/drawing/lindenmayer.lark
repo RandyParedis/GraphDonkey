@@ -1,0 +1,37 @@
+// Simplified turtles for Pillow
+
+COMMENT_SNG: "//" /[^\n]/*
+COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
+WS: /[ \t\f\r\n]/+
+
+%ignore WS
+%ignore COMMENT_SNG
+%ignore COMMENT_MLT
+
+?start  : stmt*
+stmt    : alpha | axiom | angle | seed | depth | rule
+alpha   : ALPHA SET letters
+letters : LETTER (COMMA LETTER)*
+axiom   : AXIOM SET LETTER
+angle   : ANGLE SET INT (DEG | RAD)
+seed    : SEED SET INT
+depth   : DEPTH SET INT
+rule    : LETTER ("(" PERC ")")? TO tail
+tail    : (LETTER | CONST)+
+
+
+ALPHA   : "alphabet"i | "alpha"i
+AXIOM   : "axiom"i | "start"i | "init"i | "initial"i | "initializer"i
+ANGLE   : "angle"i
+SEED    : "seed"i
+DEPTH   : "depth"i | "n"i
+SET     : ":="i | "="i | ":"i | "is"i
+LETTER  : /[^\s\[\]+-,]/
+COMMA   : ","
+DEG     : "°"i | "deg"i | "d"i | "degrees"i
+RAD     : "r"i | "rad"i | "radians"i
+TO      : "->"i | "to"i
+CONST   : "[" | "]" | "+" | "-"
+SEP     : ":" | "::"
+INT     : /-?[1-9][0-9]*/
+PERC    : /0?\.[0-9]+/
