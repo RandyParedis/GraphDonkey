@@ -118,7 +118,7 @@ class Plugin:
         if typeid in self.types:
             tp = self.types[typeid]
             parser = Parser(tp.get("grammar", ""), tp.get("parser", "earley"))
-            parser.converter = tp.get("transformer", {})
+            parser.transformer = tp.get("transformer", {})
             visitor = self.getVisitorClass(typeid)
             if visitor is not None:
                 parser.visitor = visitor(parser)

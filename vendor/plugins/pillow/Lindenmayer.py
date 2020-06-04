@@ -39,12 +39,11 @@ class LSystem:
 
     def solve(self):
         current = self.rules[self.axiom].get_tail()
-        for i in range(self.depth):
+        for i in range(self.depth-1):
             new = []
             for tok in current:
                 new += self.rules.get(tok, LSystemRule(tok, tok)).get_tail()
             current = new[:]
-        print("C:", current)
         return self.execute(current)
 
     def execute(self, stream):
@@ -70,12 +69,17 @@ class LSystem:
                 pos = npos
         return trail
 
+
 class LindenmayerTransformer(Transformer):
     def __init__(self):
         super().__init__(True)
         self.system = LSystem()
 
     LETTER = CONST = str
+    PERC = float
+
+    def INT(self, x):
+        return int(float(x))
 
     def axiom(self, elms):
         self.system.axiom = elms[2]
@@ -119,12 +123,13 @@ class LImage:
     def transform(self, tx, ty, sx=1, sy=1):
         for i in range(len(self.path)):
             (x1, y1), (x2, y2) = self.path[i]
-            self.path[i] = ((x1 + tx) * sx, (y1 + ty) * sy), ((x2 + tx) * sx, (y2 + ty) * sy)
+            self.path[i] = (x1 * sx + tx, y1 * sy + ty), (x2 * sx + tx, y2 * sy + ty)
 
     def pillow(self):
         stmts = []
-        for p in self.path:
-            stmts.append("line from %s to %s" % p)
+        for (x1, y1), (x2, y2) in self.path:
+            p = (round(x1, 6), round(y1, 6)), (round(x2, 6), round(y2, 6))
+            stmts.append("line from %s to %s width 1" % p)
         return "\n".join(stmts)
 
 
@@ -133,7 +138,7 @@ def transform(text, T):
     trans.transform(T)
     img = LImage(trans.system.solve())
     (l, b), (r, t) = img.find_bounds()
-    img.transform(-l, -b)
-    res = img.pillow()
-    # print(res)
-    return res
+    w = 640 / (r - l)
+    h = 480 / (t - b)
+    img.transform(0, t*10, 10, -10)
+    return img.pillow()

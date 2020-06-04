@@ -587,7 +587,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         return self.export()
             if Constants.valid_ext(ext, exts):
                 try:
-                    contents = export["exporter"](self.editor().convert(ename), ext)
+                    contents = export["exporter"](self.editor().transform(ename), ext)
                     if contents is not None and len(contents) > 0:
                         with open(fileName, 'bw') as myfile:
                             myfile.write(contents)
@@ -638,7 +638,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 engine = pluginloader.getEngines().get(ename, None)
                 if engine is None:
                     raise RuntimeError("Unknown rendering engine '%s'." % ename)
-                res = self.editor().convert(ename)
+                res = self.editor().transform(ename)
                 if res is not None:
                     bdata = engine["convert"](res)
                     self.view.clear()

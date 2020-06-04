@@ -6,8 +6,8 @@ not representable in a graph.
 Author:         Randy Paredis
 Requires:       The `Pillow` package.
 """
-from vendor.plugins.drawing.Engine import convert
-from vendor.plugins.drawing.Lindenmayer import transform
+from vendor.plugins.pillow.Engine import convert
+from vendor.plugins.pillow.Lindenmayer import transform
 from main.extra import Constants
 
 keywords = [

@@ -175,10 +175,10 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.highlighter.deleteLater()
         self.highlighter = highlighter
 
-    def convert(self, engine):
+    def transform(self, engine):
         curs = self.textCursor()
-        return self.highlighter.parser.convert(self.toPlainText(), engine,
-                                               line=curs.block().blockNumber() + 1, col=curs.columnNumber())
+        return self.highlighter.parser.transform(self.toPlainText(), engine,
+                                                 line=curs.block().blockNumber() + 1, col=curs.columnNumber())
 
     def stoppedTyping(self):
         self.highlighter.storeErrors()

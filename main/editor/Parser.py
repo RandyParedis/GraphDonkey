@@ -19,13 +19,15 @@ class Parser:
             self.parser = Lark(self.grammar, parser=parser, propagate_positions=True)
         self.errors = []
         self.visitor = CheckVisitor(self)
-        self.converter = {}
+        self.transformer = {}
 
     def parse(self, text: str, yld=False, line=-1, col=-1):
         self.errors = []
         try:
             if self.parser is not None:
                 tree = self.parser.parse(text)
+
+                # Semantic Analysis
                 if tree is not None:
                     self.visitor.clear()
                     self.visitor.line = line
@@ -52,11 +54,11 @@ class Parser:
             return self.parser._terminals_dict[terminal_name]
         return None
 
-    def convert(self, text, engine, line=-1, col=-1):
+    def transform(self, text, engine, line=-1, col=-1):
         try:
             T = self.parse(text, line=line, col=col)
             if T is not None:
-                return self.converter[engine](text, T)
+                return self.transformer[engine](text, T)
         except Exception as e:
             self.errors.append(str(e.args))
         return None

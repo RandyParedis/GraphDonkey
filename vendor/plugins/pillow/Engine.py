@@ -1,10 +1,10 @@
-"""The Drawing rendering engine for the Drawing plugin.
+"""The Pillow rendering engine.
 
 Author: Randy Paredis
 Date:   01/09/2020
 """
 from main.extra.IOHandler import IOHandler
-from lark import Tree, Token
+from lark import Tree, Lark
 from PIL import Image, ImageDraw, ImageColor, ImageQt, ImageFont
 import cmath
 
@@ -26,7 +26,7 @@ class ConversionVisitor:
     def coordinate(self, coord: Tree):
         if coord.children[0].type == "CENTER":
             return self.image.width // 2, self.image.height // 2
-        return int(coord.children[0]), int(coord.children[2])
+        return float(coord.children[0].value), float(coord.children[2].value)
 
     def color(self, tree: Tree, pos):
         node = self.child(tree, pos)
@@ -190,6 +190,13 @@ class ConversionVisitor:
 
 
 def convert(T):
-    vis = ConversionVisitor()
-    vis.visit(T)
-    return vis.get()
+    if isinstance(T, Tree):
+        vis = ConversionVisitor()
+        vis.visit(T)
+        return vis.get()
+
+    # Parse the input!
+    with open(IOHandler.dir_plugins("pillow", "drawing.lark")) as file:
+        data = file.read()
+    parser = Lark(data, parser="earley", propagate_positions=True)
+    return convert(parser.parse(T))
