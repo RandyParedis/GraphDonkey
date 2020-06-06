@@ -144,8 +144,8 @@ class ConversionVisitor:
             if coord1[1] > coord2[1]:
                 coord1, coord2 = (coord1[0], coord2[1]), (coord2[0], coord1[0])
             # Counter-clockwise!
-            end = 360 - self.angle(tree.children[6])
-            start = 360 - self.angle(tree.children[8])
+            start = (360 - self.angle(tree.children[8])) % 360
+            end = (360 - self.angle(tree.children[6])) % 360
             color, width = self.cw(tree.children[9])
             self.drawing.arc([coord1, coord2], start, end, color, width)
         elif name == "chord":
@@ -194,6 +194,13 @@ def convert(T):
         vis = ConversionVisitor()
         vis.visit(T)
         return vis.get()
+
+    if isinstance(T, list):  # Turtle
+        image = Image.new('RGBA', (640, 480))
+        drawing = ImageDraw.Draw(image)
+        for f, t in T:
+            drawing.line([f, t], fill='black', width=1)
+        return ImageQt.ImageQt(image)
 
     # Parse the input!
     with open(IOHandler.dir_plugins("pillow", "drawing.lark")) as file:

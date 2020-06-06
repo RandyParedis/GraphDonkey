@@ -3,7 +3,7 @@
 https://en.wikipedia.org/wiki/L-system
 
 Author: Randy Paredis
-Date:   02/06/2020
+Date:   06/02/2020
 """
 from main.extra.IOHandler import IOHandler
 from lark import Transformer
@@ -33,6 +33,7 @@ class LSystem:
         self.depth = 1
         self.angle = 90
         self.seed = 0
+        self.size = 10
 
     def add_rule(self, rule):
         self.rules[rule.head] = rule
@@ -63,7 +64,7 @@ class LSystem:
                 pos, a = stack.pop()
             else:
                 rad = math.radians(a)
-                npos = pos[0] + math.cos(rad), pos[1] + math.sin(rad)
+                npos = pos[0] + math.cos(rad) * self.size, pos[1] + math.sin(rad) * self.size
                 if s.isupper():
                     trail.append((pos, npos))
                 pos = npos
@@ -107,6 +108,7 @@ class LindenmayerTransformer(Transformer):
         # TODO: what if rule exists?
         self.system.add_rule(LSystemRule(elms[0], elms[2]))
 
+
 class LImage:
     def __init__(self, path):
         self.path = path
@@ -140,5 +142,5 @@ def transform(text, T):
     (l, b), (r, t) = img.find_bounds()
     w = 640 / (r - l)
     h = 480 / (t - b)
-    img.transform(0, t*10, 10, -10)
-    return img.pillow()
+    img.transform(0, t * 10, 1, -1)
+    return img.path

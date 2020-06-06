@@ -27,6 +27,7 @@ TODO LIST
         - Add all syntactical errors
     - Simple (builtin) ImageRenderer
     - Other plugins by default (see Future.md)
+    	- Pillow to Wand? http://docs.wand-py.org/en/0.6.1/
     [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
