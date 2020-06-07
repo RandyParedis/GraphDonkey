@@ -1,29 +1,55 @@
-"""The engine for drawing Lindenmayer Systems
+"""The engine for drawing Lindenmayer Systems.
 
-https://en.wikipedia.org/wiki/L-system
+This engine allows:
+  * Basic L-Systems
+    * Capital letters draw, lower letters are gaps
+    * `+` and `-` update the angle
+    * Brackets store the position and angle
+  * Easy rotations of the full system by giving an axiom a rotation
+  * Both degrees and radian orientation
+  * Implicit start rules
+  * Stochastic grammars
+
+See Also:
+    https://en.wikipedia.org/wiki/L-system
 
 Author: Randy Paredis
 Date:   06/02/2020
 """
 from main.extra.IOHandler import IOHandler
 from lark import Transformer
-import math
+from main.viewer.shapes import Line, Properties
+import math, random
+
+# TODO: Docs, Semantics, Colors, Width, Background, Draw Mapping, Context-Dependency, Parametrics,
+#       mathematical equations for rotations (i.e. "PI / 2")...
+# Draw Mapping: by default small letters -> 0, capital letters -> 1
 
 Config = IOHandler.get_preferences()
 
 class LSystemRule:
-    def __init__(self, head, *tail):
+    def __init__(self, head, tail, perc=1):
         self.head = head
-        self.tails = list(tail)
+        self.tails = [(perc, tail)]
 
     def __repr__(self):
-        return "%s -> %s" % (self.head, self.get_tail())
+        return "%s -> { %s }" % (self.head, "; ".join(["%.3f, %s" %(p, l) for p, l in self.tails]))
 
-    def add_tail(self, tail):
-        self.tails.append(tail)
+    def add_tail(self, tail, perc=1):
+        self.tails.append((perc, tail))
 
-    def get_tail(self):
-        return self.tails[0]
+    def get_tail(self, gen):
+        if len(self.tails) == 1:
+            return self.tails[:][0][1]
+        r = gen.random()
+        for p, tail in self.tails[:]:
+            r -= p
+            if r <= 0:
+                return tail
+        # When the percentages don't add up to 1, take the last element.
+        # TODO: prevent this via semantic analysis.
+        return self.tails[:][-1][1]
+
 
 class LSystem:
     def __init__(self):
@@ -32,25 +58,31 @@ class LSystem:
         self.rules = dict()
         self.depth = 1
         self.angle = 90
+        self.sangle = 0
         self.seed = 0
         self.size = 10
 
-    def add_rule(self, rule):
-        self.rules[rule.head] = rule
+    def add_rule(self, head, tail, perc=1):
+        if head in self.rules:
+            self.rules[head].add_tail(tail, perc)
+        else:
+            self.rules[head] = LSystemRule(head, tail, perc)
 
     def solve(self):
-        current = self.rules[self.axiom].get_tail()
-        for i in range(self.depth-1):
+        rng = random.Random(self.seed)
+        current = self.axiom
+        for i in range(self.depth):
             new = []
             for tok in current:
-                new += self.rules.get(tok, LSystemRule(tok, tok)).get_tail()
+                tail = self.rules.get(tok, LSystemRule(tok, tok)).get_tail(rng)
+                new += tail
             current = new[:]
         return self.execute(current)
 
     def execute(self, stream):
         # TODO: Optimize!
         stack = []
-        a = 0
+        a = self.sangle
         pos = (0, 0)
         trail = []
         for s in stream:
@@ -77,13 +109,15 @@ class LindenmayerTransformer(Transformer):
         self.system = LSystem()
 
     LETTER = CONST = str
-    PERC = float
+    PERC = DOUBLE = float
 
     def INT(self, x):
         return int(float(x))
 
     def axiom(self, elms):
         self.system.axiom = elms[2]
+        if len(elms) > 3:
+            self.system.sangle = elms[4]
 
     def letters(self, elms):
         self.system.alpha = elms
@@ -98,6 +132,11 @@ class LindenmayerTransformer(Transformer):
     def angle(self, elms):
         self.system.angle = elms[2]
 
+    def ang(self, elms):
+        if elms[1].type == "DEG":
+            return elms[0]
+        return math.degrees(elms[0])
+
     def alpha(self, elms):
         self.system.alpha = set(elms[2])
 
@@ -105,8 +144,10 @@ class LindenmayerTransformer(Transformer):
         return elms
 
     def rule(self, elms):
-        # TODO: what if rule exists?
-        self.system.add_rule(LSystemRule(elms[0], elms[2]))
+        p = 1.0
+        if len(elms) == 4:
+            p = elms[1]
+        self.system.add_rule(elms[0], elms[-1], p)
 
 
 class LImage:
@@ -125,7 +166,7 @@ class LImage:
     def transform(self, tx, ty, sx=1, sy=1):
         for i in range(len(self.path)):
             (x1, y1), (x2, y2) = self.path[i]
-            self.path[i] = (x1 * sx + tx, y1 * sy + ty), (x2 * sx + tx, y2 * sy + ty)
+            self.path[i] = Line(x1 * sx + tx, y1 * sy + ty, x2 * sx + tx, y2 * sy + ty)
 
     def pillow(self):
         stmts = []
@@ -134,13 +175,17 @@ class LImage:
             stmts.append("line from %s to %s width 1" % p)
         return "\n".join(stmts)
 
+    def get(self):
+        (l, b), (r, t) = self.find_bounds()
+        margin = 10
+        self.transform(-l+margin, t+margin, 1, -1)
+        w = r - l + 2 * margin
+        h = t - b + 2 * margin
+        return [Properties(w, h)] + self.path
+
 
 def transform(text, T):
     trans = LindenmayerTransformer()
     trans.transform(T)
     img = LImage(trans.system.solve())
-    (l, b), (r, t) = img.find_bounds()
-    w = 640 / (r - l)
-    h = 480 / (t - b)
-    img.transform(0, t * 10, 1, -1)
-    return img.path
+    return img.get()

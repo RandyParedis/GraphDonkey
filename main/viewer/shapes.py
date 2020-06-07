@@ -14,6 +14,22 @@ def sign(x):
     return -1 if x < 0 else 1 if x > 0 else 0
 
 
+class Properties:
+    """Class that can be used to pass on system properties.
+
+    Attributes:
+        width (numeric):    The width of the drawing area.
+        height (numeric):   The height of the drawing area.
+
+    Args:
+        width (numeric):    The width of the drawing area.
+        height (numeric):   The height of the drawing area.
+    """
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+
 class Shape:
     """A generic shape, superclass of all shape objects.
 
@@ -95,6 +111,9 @@ class Line(Shape):
         super().__init__(x1, y1)
         self.xto = x2
         self.yto = y2
+
+    def __repr__(self):
+        return "LINE (%f, %f) -> (%f, %f)" % (self.x, self.y, self.xto, self.yto)
 
     def boundingBox(self):
         """Gets the bounding box for the line, as a :class:`Rectangle`."""

@@ -6,7 +6,8 @@ not representable in a graph.
 Author:         Randy Paredis
 Requires:       The `Pillow` package.
 """
-from vendor.plugins.pillow.Engine import convert
+# from vendor.plugins.pillow.Engine import convert
+from vendor.plugins.pillow.Cairo import convert
 from vendor.plugins.pillow.Lindenmayer import transform
 from main.extra import Constants
 
@@ -25,60 +26,60 @@ other = [
 ]
 
 TYPES = {
-    "Pillow": {
-        "extensions": ["draw"],
-        "grammar": "drawing.lark",
-        "parser": "earley",
-        "highlighting": [
-            {
-                "regex": keywords,
-                "format": "keyword"
-            },
-            {
-                "regex": attributes,
-                "format": "keyword"
-            },
-            {
-                "regex": other + ["center"],
-                "format": "attribute"
-            },
-            {
-                "regex": "#(([0-9a-f]{6})|([0-9A-F]{6}))",
-                "format": "number"
-            },
-            {
-                "regex": "\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b",
-                "format": "number"
-            },
-            {
-                "regex": {
-                    "pattern": r"\"(?:[^\"\\]|\\.)*\"",
-                    "single": True
-                },
-                "format": "string",
-                "global": True
-            },
-            {
-                "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
-                "format": "hash"
-            },
-            {
-                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
-                "format": "comment"
-            },
-            {
-                "regex": {
-                    "pattern": "/\\*.*?\\*/",
-                    "single": True
-                },
-                "format": "comment",
-                "global": True
-            }
-        ],
-        "transformer": {
-            "Pillow": lambda x, T: T
-        }
-    },
+    # "Pillow": {
+    #     "extensions": ["draw"],
+    #     "grammar": "drawing.lark",
+    #     "parser": "earley",
+    #     "highlighting": [
+    #         {
+    #             "regex": keywords,
+    #             "format": "keyword"
+    #         },
+    #         {
+    #             "regex": attributes,
+    #             "format": "keyword"
+    #         },
+    #         {
+    #             "regex": other + ["center"],
+    #             "format": "attribute"
+    #         },
+    #         {
+    #             "regex": "#(([0-9a-f]{6})|([0-9A-F]{6}))",
+    #             "format": "number"
+    #         },
+    #         {
+    #             "regex": "\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b",
+    #             "format": "number"
+    #         },
+    #         {
+    #             "regex": {
+    #                 "pattern": r"\"(?:[^\"\\]|\\.)*\"",
+    #                 "single": True
+    #             },
+    #             "format": "string",
+    #             "global": True
+    #         },
+    #         {
+    #             "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
+    #             "format": "hash"
+    #         },
+    #         {
+    #             "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+    #             "format": "comment"
+    #         },
+    #         {
+    #             "regex": {
+    #                 "pattern": "/\\*.*?\\*/",
+    #                 "single": True
+    #             },
+    #             "format": "comment",
+    #             "global": True
+    #         }
+    #     ],
+    #     "transformer": {
+    #         "Pillow": lambda x, T: T
+    #     }
+    # },
     "Lindenmayer": {
         "extensions": ["l", "lindenmayer"],
         "grammar": "lindenmayer.lark",
@@ -103,11 +104,15 @@ TYPES = {
                 "format": "attribute"
             },
             {
-                "regex": "\\b-?[1-9][0-9]+\\b",
+                "regex": "-?([1-9][0-9]*|0)",
                 "format": "number"
             },
             {
-                "regex": "\\b0?\\.[0-9]+\\b",
+                "regex": "0?\\.[0-9]+",
+                "format": "number"
+            },
+            {
+                "regex": "-?([1-9][0-9]*|0)(\\.[0-9]+)?",
                 "format": "number"
             },
             {
@@ -124,13 +129,13 @@ TYPES = {
             }
         ],
         "transformer": {
-            "Pillow": transform
+            "Cairo": transform
         }
     }
 }
 
 ENGINES = {
-    "Pillow": {
+    "Cairo": {
         "convert": convert,
         # "export": {
         #     "extensions": ['fig', 'jpeg', 'pdf', 'tk', 'eps', 'cmapx_np', 'jpe', 'ps', 'ismap', 'x11', 'dot_json', 'gd',
