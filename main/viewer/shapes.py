@@ -1,12 +1,11 @@
 """Helper file for rendering shapes.
 
 This file is part of the GraphDonkey core for future support and
-plugin-independency features.
+plugin-independency engine features.
 
 Athor:  Randy Paredis
 Date:   06/06/2020
 """
-# TODO: Colors (+ Filled Colors), Width, Rotation, Bezier, Curve, Image, Text...
 
 import math
 
@@ -18,13 +17,25 @@ def sign(x):
 class Shape:
     """A generic shape, superclass of all shape objects.
 
+    Attributes:
+        x (numeric):        The x-value of the shape.
+        y (numeric):        The y-value of the shape.
+        rot (numeric):      The shape's rotation.
+        width (numeric):    The width for the shape's stroke.
+        color (any):        The color for the shape's stroke.
+        stroke (any):       The style for the shape's stroke.
+
     Args:
-        x (numeric):    The x-value of the shape.
-        y (numeric):    The y-value of the shape.
+        x (numeric):        The x-value of the shape.
+        y (numeric):        The y-value of the shape.
     """
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.rot = 0
+        self.width = 1
+        self.color = None
+        self.stroke = None
 
     def boundingBox(self):
         """Gets the bounding box for the shape, as a :class:`Rectangle`."""
@@ -40,7 +51,8 @@ class FillableShape(Shape):
         filled (bool):  Whether or not the shape is filled.
     """
     def __init__(self, x, y, filled):
-        super().__init__(x, y, filled)
+        super().__init__(x, y)
+        self.filled = filled
 
     def boundingBox(self):
         raise NotImplementedError()
@@ -70,8 +82,6 @@ class Line(Shape):
     """A straight line.
 
     Attributes:
-        x (numeric):    The x-value of the first coordinate of the shape.
-        y (numeric):    The y-value of the first coordinate of the shape.
         xto (numeric):  The x-value of the second coordinate of the shape.
         yto (numeric):  The y-value of the second coordinate of the shape.
 
@@ -99,11 +109,8 @@ class Rectangle(FillableShape):
     """A square or rectangle.
 
     Attributes:
-        x (numeric):        The left of the rectangle.
-        y (numeric):        The top of the rectangle.
         width (numeric):    The width of the rectangle.
         height (numeric):   The height of the rectangle.
-        filled (bool):      Whether or not the shape is filled.
 
     Args:
         left (numeric):     The left of the rectangle.
@@ -139,11 +146,8 @@ class Ellipse(FillableShape):
     """An ellipse or a circle.
 
     Attributes:
-        x (numeric):    The x-value of the center of the ellipse.
-        y (numeric):    The y-value of the center of the ellipse.
         rx (numeric):   The horizontal radius of the ellipse.
         ry (numeric):   The vertical radius of the ellipse.
-        filled (bool):  Whether or not the shape is filled.
 
     Args:
         x (numeric):    The x-value of the center of the ellipse.
@@ -185,10 +189,7 @@ class Polygon(FillableShape):
     """A polygon.
 
     Attributes:
-        x (numeric):    The x-value of the first point of the polygon.
-        y (numeric):    The y-value of the first point of the polygon.
         points (list):  The points that make up the polygon, as tuples (x, y).
-        filled (bool):  Whether or not the shape is filled.
 
     Args:
         *points:        The points that make up the polygon, as tuples (x, y).
@@ -214,8 +215,6 @@ class Arc(Shape):
     """A portion of the outline of an ellipse.
 
     Attributes:
-        x (numeric):    The x-value of the start of the arc.
-        y (numeric):    The y-value of the start of the arc.
         xto (numeric):  The x-value of the end of the arc.
         yto (numeric):  The y-value of the end of the arc.
         rx (numeric):   The horizontal radius of the ellipse.
@@ -308,17 +307,6 @@ class Arc(Shape):
 class Chord(Arc, FillableShape):
     """Same as :class:`Arc`, but connects the endpoints in a straight line.
 
-    Attributes:
-        x (numeric):    The x-value of the start of the arc.
-        y (numeric):    The y-value of the start of the arc.
-        xto (numeric):  The x-value of the end of the arc.
-        yto (numeric):  The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-        ry (numeric):   The vertical radius of the ellipse.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-        sweep (bool):   Whether or not the angle is negative.
-        filled (bool):  Whether or not the shape is filled.
-
     Args:
         x1 (numeric):   The x-value of the start of the arc.
         y1 (numeric):   The y-value of the start of the arc.
@@ -361,17 +349,6 @@ class Chord(Arc, FillableShape):
 
 class Pie(Arc, FillableShape):
     """Same as :class:`Arc`, but connects the endpoints to the :class:`Ellipse`'s center.
-
-    Attributes:
-        x (numeric):    The x-value of the start of the arc.
-        y (numeric):    The y-value of the start of the arc.
-        xto (numeric):  The x-value of the end of the arc.
-        yto (numeric):  The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-        ry (numeric):   The vertical radius of the ellipse.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-        sweep (bool):   Whether or not the angle is negative.
-        filled (bool):  Whether or not the shape is filled.
 
     Args:
         x1 (numeric):   The x-value of the start of the arc.
@@ -422,6 +399,7 @@ class Pie(Arc, FillableShape):
         arc.filled = filled
         return arc
 
+
 Pieslice = Pie
 """Synonym for :class:`Pie`."""
 
@@ -430,8 +408,6 @@ class Group(Shape):
     """A shape that is made up of multiple shapes.
 
     Attributes:
-        x (numeric):    The x-value of the first shape of the group.
-        y (numeric):    The y-value of the first shape of the group.
         shapes (list):  The shapes that make up the group.
 
     Args:
@@ -453,4 +429,17 @@ class Group(Shape):
         return Polygon(*points).boundingBox()
 
 
+class Image(Shape): pass
+
+
 class Text(Shape): pass
+
+
+class Bezier(Shape): pass
+
+
+Curve = Bezier
+"""Synonym for :class:`Bezier`."""
+
+
+class Arrow(Line): pass
