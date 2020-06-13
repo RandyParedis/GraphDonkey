@@ -23,6 +23,8 @@ TODO LIST
                  to map special cases, this can be done.
     - Better indentation logic
     - Fix comments: identify indents before/after comment signs
+    - Fix: Make status bar have a fixed with; don't grow for big messages
+    - Fix: Treeview throws segfault on opening again after full screen on external monitor (quite specific issue)
     - Update Graphviz plugin to work better
         - Add all syntactical errors
     - Simple (builtin) ImageRenderer

@@ -4,17 +4,17 @@ Engine for drawing in a 2D space. This can be used by many formats that are
 not representable in a graph.
 
 Author:         Randy Paredis
-Requires:       The `Pillow` package.
+Requires:       The `Pillow` and `pycairo` packages.
 """
-# from vendor.plugins.pillow.Engine import convert
-from vendor.plugins.pillow.Cairo import convert
-from vendor.plugins.pillow.Lindenmayer import transform
+from vendor.plugins.drawing import Cairo, Engine, Lindenmayer
 from main.extra import Constants
 
+# TODO: Pillow, Docs
+
 keywords = [
-    "at", "from", "to", "of", "in", "grid", "border",
+    "at", "from", "to", "of", "in",
     "point", "line", "ellipse", "rectangle", "polygon",
-    "arc", "chord", "pie", "pieslice", "text"
+    "arc", "chord", "pie", "pieslice"
 ]
 
 attributes = [
@@ -22,64 +22,64 @@ attributes = [
 ]
 
 other = [
-    "radians", "degrees", "deg", "rad", "d", "r", "°"
+    "radians", "degrees", "deg", "rad", "d", "r"
 ]
 
 TYPES = {
-    # "Pillow": {
-    #     "extensions": ["draw"],
-    #     "grammar": "drawing.lark",
-    #     "parser": "earley",
-    #     "highlighting": [
-    #         {
-    #             "regex": keywords,
-    #             "format": "keyword"
-    #         },
-    #         {
-    #             "regex": attributes,
-    #             "format": "keyword"
-    #         },
-    #         {
-    #             "regex": other + ["center"],
-    #             "format": "attribute"
-    #         },
-    #         {
-    #             "regex": "#(([0-9a-f]{6})|([0-9A-F]{6}))",
-    #             "format": "number"
-    #         },
-    #         {
-    #             "regex": "\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b",
-    #             "format": "number"
-    #         },
-    #         {
-    #             "regex": {
-    #                 "pattern": r"\"(?:[^\"\\]|\\.)*\"",
-    #                 "single": True
-    #             },
-    #             "format": "string",
-    #             "global": True
-    #         },
-    #         {
-    #             "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
-    #             "format": "hash"
-    #         },
-    #         {
-    #             "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
-    #             "format": "comment"
-    #         },
-    #         {
-    #             "regex": {
-    #                 "pattern": "/\\*.*?\\*/",
-    #                 "single": True
-    #             },
-    #             "format": "comment",
-    #             "global": True
-    #         }
-    #     ],
-    #     "transformer": {
-    #         "Pillow": lambda x, T: T
-    #     }
-    # },
+    "Drawing": {
+        "extensions": ["draw"],
+        "grammar": "drawing.lark",
+        "parser": "earley",
+        "highlighting": [
+            {
+                "regex": keywords,
+                "format": "keyword"
+            },
+            {
+                "regex": attributes,
+                "format": "keyword"
+            },
+            {
+                "regex": other + ["center"],
+                "format": "attribute"
+            },
+            {
+                "regex": "#(([0-9a-f]{6})|([0-9A-F]{6}))",
+                "format": "number"
+            },
+            {
+                "regex": "\\b-?(\\.[0-9]+|[0-9]+(\\.[0-9]*)?)\\b",
+                "format": "number"
+            },
+            {
+                "regex": {
+                    "pattern": r"\"(?:[^\"\\]|\\.)*\"",
+                    "single": True
+                },
+                "format": "string",
+                "global": True
+            },
+            {
+                "regex": "^#[^%s]*$" % Constants.LINE_ENDING,
+                "format": "hash"
+            },
+            {
+                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+                "format": "comment"
+            },
+            {
+                "regex": {
+                    "pattern": "/\\*.*?\\*/",
+                    "single": True
+                },
+                "format": "comment",
+                "global": True
+            }
+        ],
+        "transformer": {
+            "Cairo": Engine.transform
+        }
+    },
     "Lindenmayer": {
         "extensions": ["l", "lindenmayer"],
         "grammar": "lindenmayer.lark",
@@ -129,14 +129,14 @@ TYPES = {
             }
         ],
         "transformer": {
-            "Cairo": transform
+            "Cairo": Lindenmayer.transform
         }
     }
 }
 
 ENGINES = {
     "Cairo": {
-        "convert": convert,
+        "convert": Cairo.convert,
         # "export": {
         #     "extensions": ['fig', 'jpeg', 'pdf', 'tk', 'eps', 'cmapx_np', 'jpe', 'ps', 'ismap', 'x11', 'dot_json', 'gd',
         #                    'plain', 'vmlz', 'xlib', 'pic', 'plain-ext', 'pov', 'vml', 'json0', 'cmapx', 'jpg', 'svg',

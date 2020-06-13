@@ -13,31 +13,31 @@ WS: /[ \t\f\r\n]/+
 start       : stmts
 stmts       : ((shape | stmt) SEP?)*
 stmt        : SEP
-shape       : grid | border | point | line | ellipse | rectangle | arc | chord | pieslice | polygon | text
+shape       : point | line | ellipse | rectangle | arc | chord | pieslice | polygon // | text | grid | border
 ?coord      : "(" coord ")" | (NUMBER COMMA NUMBER) | CENTER
 color       : COL COLOR
 width       : WIDTH NUMBER
-border      : BORDER cw
-grid        : GRID cw
+//border      : BORDER cw
+//grid        : GRID cw
 point       : POINT AT coord cw
 line        : LINE FROM coord TO coord cw
 ellipse     : ELLIPSE FROM coord TO coord cw filled?
 rectangle   : RECTANGLE FROM coord TO coord cw filled?
-polygon     : POLYGON FROM coord (TO coord)+ color filled?
+polygon     : POLYGON FROM coord (TO coord)+ cw filled?
 arc         : ARC FROM coord TO coord OF angle TO angle cw
 chord       : CHORD FROM coord TO coord OF angle TO angle cw filled?
 pieslice    : PIESLICE FROM coord TO coord OF angle TO angle cw filled?
-text        : TEXT STRING AT coord color? (IN font)?
+//text        : TEXT STRING AT coord color? (IN font)?
 cw          : (color? width?) | (width? color?)
 filled      : FILLED COLOR?
 angle       : NUMBER (DEGREES | RADIANS)
-font        : NUMBER STRING
+//font        : NUMBER STRING
 
 SEP         : ";"
 COMMA       : ","
 NUMBER      : /[-]?(0?\.[0-9]+|(0|[1-9][0-9]*)(\.[0-9]*)?)/
 NAME        : /[A-Za-z_][A-Za-z0-9_]*/
-COLOR       : /#([0-9a-f]{6}|[0-9A-F]{6})/
+COLOR       : /#([0-9a-fA-F]{6}([0-9a-fA-F]{2})?)/
 STRING      : "\"" /[^\"\\]*(?:\\.[^\"\\]*)*/ "\""
 
 POINT       : "point"
@@ -55,7 +55,7 @@ WIDTH       : "width"
 COL         : "color" | "colour"
 FILLED      : "filled"
 BORDER      : "border"
-DEGREES     : "degrees" | "deg" | "d" | "°"
+DEGREES     : "degrees" | "deg" | "d"
 RADIANS     : "radians" | "rad" | "r"
 CENTER      : "center"
 OF          : "of"

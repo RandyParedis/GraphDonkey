@@ -440,6 +440,8 @@ class MainWindow(QtWidgets.QMainWindow):
                                                    "Reverting to UTF-8."
                           % (et.upper() + ("" if len(lan) == 0 else " (%s)" % lan)))
                 et = 'utf-8'
+            if et == 'ascii':  # Only use ASCII if specified by the user, otherwise use the superset
+                et = 'utf-8'
             data = data.decode(et)
         edit.wrapper.encoding.setCurrentText(et.upper())
         edit.wrapper.statusBar.setLineSep(linesep)

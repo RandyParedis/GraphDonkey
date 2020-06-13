@@ -7,11 +7,22 @@ Athor:  Randy Paredis
 Date:   06/06/2020
 """
 
+# TODO: Rotations, Text, Bezier Curve, Arrows
+
 import math
 
 def sign(x):
     """Gets the sign of a number, or 0."""
     return -1 if x < 0 else 1 if x > 0 else 0
+
+
+def colors(color: str):
+    if color.startswith('#'):
+        color = color[1:]
+        return tuple([int(color[i:i+2], 16) / 255 for i in range(0, len(color), 2)])
+    # TODO: add more colors (user-specific?)
+    return 0, 0, 0, 1
+
 
 
 class Properties:
@@ -48,9 +59,8 @@ class Shape:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.rot = 0
         self.width = 1
-        self.color = None
+        self.color = (0, 0, 0, 1)
         self.stroke = None
 
     def boundingBox(self):
@@ -64,9 +74,11 @@ class FillableShape(Shape):
     Args:
         x (numeric):    The x-value of the shape.
         y (numeric):    The y-value of the shape.
-        filled (bool):  Whether or not the shape is filled.
+        filled (tuple): A tuple indicating the color, following (red, green, blue[, alpha=1])
+                        with each element in the range of [0, 1]. When ``None``, no filling is
+                        required.
     """
-    def __init__(self, x, y, filled):
+    def __init__(self, x, y, filled=None):
         super().__init__(x, y)
         self.filled = filled
 
@@ -128,7 +140,7 @@ class Rectangle(FillableShape):
     """A square or rectangle.
 
     Attributes:
-        width (numeric):    The width of the rectangle.
+        width_ (numeric):   The width of the rectangle.
         height (numeric):   The height of the rectangle.
 
     Args:
@@ -141,7 +153,7 @@ class Rectangle(FillableShape):
     """
     def __init__(self, left, top, width, height, filled=False):
         super().__init__(left, top, filled)
-        self.width = width
+        self.width_ = width
         self.height = height
 
     def topleft(self):
@@ -197,7 +209,7 @@ class Ellipse(FillableShape):
             filled (bool):      Whether or not the shape is filled.
                                 Defaults to ``False``.
         """
-        rx = rect.width / 2
+        rx = rect.width_ / 2
         ry = rect.height / 2
         cx = rect.x + rx
         cy = rect.y + ry
@@ -217,7 +229,7 @@ class Polygon(FillableShape):
     """
     def __init__(self, *points, filled=False):
         assert len(points) > 0
-        super().__init__(*points[0])
+        super().__init__(*points[0], filled)
         self.points = points
 
     def boundingBox(self):
@@ -229,164 +241,109 @@ class Polygon(FillableShape):
         bottom = max(y)
         return Rectangle(left, top, right - left, bottom - top)
 
-
+# TODO: get arc when sweep/large is reversed?
+# FIXME: bounding box, in the case of:
+#          XXX
+#         X   X
+#         O   O
+#         X   X
 class Arc(Shape):
     """A portion of the outline of an ellipse.
 
+    The angles are measured in degrees, starting at 3 o'clock and
+    increasing clockwise.
+
     Attributes:
-        xto (numeric):  The x-value of the end of the arc.
-        yto (numeric):  The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-        ry (numeric):   The vertical radius of the ellipse.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-        sweep (bool):   Whether or not the angle is negative.
+        x (numeric):        The x-value of the center of the ellipse.
+        y (numeric):        The y-value of the center of the ellipse.
+        rx (numeric):       The horizontal radius of the ellipse.
+        ry (numeric):       The vertical radius of the ellipse.
+        start (numeric):    Starting angle to draw from.
+        end (numeric):      Ending angle to draw to.
 
     Args:
-        x1 (numeric):   The x-value of the start of the arc.
-        y1 (numeric):   The y-value of the start of the arc.
-        x2 (numeric):   The x-value of the end of the arc.
-        y2 (numeric):   The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-                        Must be strictly positive.
-        ry (numeric):   The vertical radius of the ellipse.
-                        Must be strictly positive.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-                        Defaults to ``False``.
-        sweep (bool):   Whether or not the angle is negative. Defaults to
-                        ``False``.
+        x (numeric):        The x-value of the center of the ellipse.
+        y (numeric):        The y-value of the center of the ellipse.
+        rx (numeric):       The horizontal radius of the ellipse.
+        ry (numeric):       The vertical radius of the ellipse.
+        start (numeric):    Starting angle to draw from.
+        end (numeric):      Ending angle to draw to.
     """
-    def __init__(self, x1, y1, x2, y2, rx, ry, large=False, sweep=False):
+    def __init__(self, x, y, rx, ry, start, end):
         assert rx > 0 and ry > 0
-        super().__init__(x1, y1)
-        self.xto = x2
-        self.yto = y2
+        super().__init__(x, y)
         self.rx = rx
         self.ry = ry
-        self.large = large
-        self.sweep = sweep
+        self.start = start % 360
+        self.end = end % 360
 
     def ellipse(self):
-        """Gets the ellipse that corresponds to the arc.
+        """Gets the ellipse that the arc is part of."""
+        return Ellipse(self.x, self.y, self.rx, self.ry)
 
-        Solution based on
-        https://stackoverflow.com/questions/197649/how-to-calculate-center-of-an-ellipse-by-two-points-and-radius-sizes
-        """
-        r1 = (self.x - self.xto) / (2 * self.rx)
-        r2 = (self.y - self.yto) / (2 * self.ry)
+    def isLarge(self):
+        """Whether or not the angle exceeds 180°."""
+        return abs(self.start - self.end) > 180
 
-        # Prevent Errors
-        if r2 == 0: return Ellipse((self.xto - self.x) / 2, self.y, self.rx, self.ry)
+    isSweep = isLarge
+    """Synonym of :meth:`isLarge`.
+    
+    Because the center is known, sweep will always equal the largeness.
+    """
 
-        k = 1
-        if self.large ^ self.sweep:
-            k = -1
+    def startCoord(self):
+        """Get the starting coordinate as a tuple (x, y)."""
+        x = self.x + self.rx * math.cos(math.radians(self.start))
+        y = self.y + self.ry * math.sin(math.radians(self.start))
+        return x, y
 
-        a1 = math.atan2(r1, r2)
-        a2 = math.asin(k * math.sqrt(r1 ** 2 + r2 ** 2))
-        t1 = a1 + a2
-
-        s = k * sign(r2)
-
-        cx = self.x + self.rx * math.cos(t1) * s
-        cy = self.y - self.ry * math.sin(t1) * s
-        return Ellipse(cx, cy, self.rx, self.ry)
+    def endCoord(self):
+        """Get the ending coordinate as a tuple (x, y)."""
+        x = self.x + self.rx * math.cos(math.radians(self.end))
+        y = self.y + self.ry * math.sin(math.radians(self.end))
+        return x, y
 
     def boundingBox(self):
-        """Gets the bounding box for the arc, as a :class:`Rectangle`.
-
-        Note:
-            To obtain the bounding box for the ellipse that encompases
-            the arc, use :meth:`ellipse` instead.
-        """
-        if self.large:
-            return self.ellipse().boundingBox()
-        return Line(self.x, self.y, self.xto, self.yto).boundingBox()
-
-    @staticmethod
-    def fromEllipse(ellipse, start=0, end=360):
-        """Creates a new arc that belongs to the given ellipse.
-
-        Args:
-            ellipse (Ellipse):  The ellipse to which the arc belongs.
-            start (numeric):    Starting angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 0 degrees.
-            end (numeric):      Ending angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 360 degrees.
-        """
-        ls = abs(end - start) > 180
-        x1 = math.cos(math.radians(start)) * ellipse.rx
-        y1 = math.sin(math.radians(start)) * ellipse.ry
-        x2 = math.cos(math.radians(end)) * ellipse.rx
-        y2 = math.sin(math.radians(end)) * ellipse.ry
-        return Arc(x1, y1, x2, y2, ellipse.rx, ellipse.ry, ls, ls)
+        """Gets the bounding box of the arc, as a :class:`Rectangle`."""
+        x1, y1 = self.startCoord()
+        x2, y2 = self.endCoord()
+        x1, x2 = min(x1, x2), max(x1, x2)
+        y1, y2 = min(y1, y2), max(y1, y2)
+        return Rectangle(x1, y1, x2 - x1, y2 - y1)
 
 
 class Chord(Arc, FillableShape):
     """Same as :class:`Arc`, but connects the endpoints in a straight line.
 
     Args:
-        x1 (numeric):   The x-value of the start of the arc.
-        y1 (numeric):   The y-value of the start of the arc.
-        x2 (numeric):   The x-value of the end of the arc.
-        y2 (numeric):   The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-                        Must be strictly positive.
-        ry (numeric):   The vertical radius of the ellipse.
-                        Must be strictly positive.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-                        Defaults to ``False``.
-        sweep (bool):   Whether or not the angle is negative. Defaults to
-                        ``False``.
-        filled (bool):  Whether or not the shape is filled. Defaults to ``False``.
+        x (numeric):        The x-value of the center of the ellipse.
+        y (numeric):        The y-value of the center of the ellipse.
+        rx (numeric):       The horizontal radius of the ellipse.
+        ry (numeric):       The vertical radius of the ellipse.
+        start (numeric):    Starting angle to draw from.
+        end (numeric):      Ending angle to draw to.
+        filled (tuple):     Color of the shape. Defaults to ``None``.
     """
-    def __init__(self, x1, y1, x2, y2, rx, ry, large=False, sweep=False, filled=False):
-        FillableShape.__init__(self, 0, 0, filled)
-        Arc.__init__(self, x1, y1, x2, y2, rx, ry, large, sweep)
-
-    @staticmethod
-    def fromEllipse(ellipse, start=0, end=360, filled=False):
-        """Creates a new chord that belongs to the given ellipse.
-
-        Args:
-            ellipse (Ellipse):  The ellipse to which the chord belongs.
-            start (numeric):    Starting angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 0 degrees.
-            end (numeric):      Ending angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 360 degrees.
-            filled (bool):      Whether or not the shape is filled. Defaults to
-                                ``False``.
-        """
-        arc = Arc.fromEllipse(ellipse, start, end)
-        arc.__class__ = Chord  # Python can be fun
-        arc.filled = filled
-        return arc
+    def __init__(self, x, y, rx, ry, start, end, filled=None):
+        Arc.__init__(self, x, y, rx, ry, start, end)
+        self.filled = filled
 
 
 class Pie(Arc, FillableShape):
     """Same as :class:`Arc`, but connects the endpoints to the :class:`Ellipse`'s center.
 
     Args:
-        x1 (numeric):   The x-value of the start of the arc.
-        y1 (numeric):   The y-value of the start of the arc.
-        x2 (numeric):   The x-value of the end of the arc.
-        y2 (numeric):   The y-value of the end of the arc.
-        rx (numeric):   The horizontal radius of the ellipse.
-                        Must be strictly positive.
-        ry (numeric):   The vertical radius of the ellipse.
-                        Must be strictly positive.
-        large (bool):   Whether or not to use the arc with an angle > 180°.
-                        Defaults to ``False``.
-        sweep (bool):   Whether or not the angle is negative. Defaults to
-                        ``False``.
-        filled (bool):  Whether or not the shape is filled. Defaults to ``False``.
+        x (numeric):        The x-value of the center of the ellipse.
+        y (numeric):        The y-value of the center of the ellipse.
+        rx (numeric):       The horizontal radius of the ellipse.
+        ry (numeric):       The vertical radius of the ellipse.
+        start (numeric):    Starting angle to draw from.
+        end (numeric):      Ending angle to draw to.
+        filled (tuple):     Color of the shape. Defaults to ``None``.
     """
-    def __init__(self, x1, y1, x2, y2, rx, ry, large=False, sweep=False, filled=False):
-        FillableShape.__init__(self, 0, 0, filled)
-        Arc.__init__(self, x1, y1, x2, y2, rx, ry, large, sweep)
+    def __init__(self, x, y, rx, ry, start, end, filled=None):
+        Arc.__init__(self, x, y, rx, ry, start, end)
+        self.filled = filled
 
     def boundingBox(self):
         """Gets the bounding box for the pie, as a :class:`Rectangle`.
@@ -395,28 +352,7 @@ class Pie(Arc, FillableShape):
             To obtain the bounding box for the ellipse that encompases
             the pie, use :meth:`ellipse` instead.
         """
-        ellipse = self.ellipse()
-        return Polygon((ellipse.x, ellipse.y), (self.x, self.y), (self.xto, self.yto)).boundingBox()
-
-    @staticmethod
-    def fromEllipse(ellipse, start=0, end=360, filled=False):
-        """Creates a new pie that belongs to the given ellipse.
-
-        Args:
-            ellipse (Ellipse):  The ellipse to which the pie belongs.
-            start (numeric):    Starting angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 0 degrees.
-            end (numeric):      Ending angle in degrees, following the unit
-                                circle; i.e. We start at 3 o'clock and increase
-                                counter-clockwise. Defaults to 360 degrees.
-            filled (bool):      Whether or not the shape is filled. Defaults to
-                                ``False``.
-        """
-        arc = Arc.fromEllipse(ellipse, start, end)
-        arc.__class__ = Pie  # Python can be fun
-        arc.filled = filled
-        return arc
+        return Polygon((self.x, self.y), self.startCoord(), self.endCoord()).boundingBox()
 
 
 Pieslice = Pie
@@ -448,17 +384,17 @@ class Group(Shape):
         return Polygon(*points).boundingBox()
 
 
-class Image(Shape): pass
-
-
-class Text(Shape): pass
-
-
-class Bezier(Shape): pass
-
-
-Curve = Bezier
-"""Synonym for :class:`Bezier`."""
-
-
-class Arrow(Line): pass
+# class Image(Shape): pass
+#
+#
+# class Text(Shape): pass
+#
+#
+# class Bezier(Shape): pass
+#
+#
+# Curve = Bezier
+# """Synonym for :class:`Bezier`."""
+#
+#
+# class Arrow(Line): pass

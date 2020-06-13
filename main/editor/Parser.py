@@ -60,6 +60,7 @@ class Parser:
             if T is not None:
                 return self.transformer[engine](text, T)
         except Exception as e:
+            print("EXCEPTION:", e)
             self.errors.append(str(e.args))
         return None
 
