@@ -108,6 +108,7 @@ class CheckVisitor:
         self.scope = {}
         self.parser = parser
         self.errors = []
+        self.warnings = []  # reserved for future use
 
     def indent(self, tree: Tree, n=1):
         """Sets the indentation level for the lines in this scope.

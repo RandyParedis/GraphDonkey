@@ -106,6 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Zoom_Out.triggered.connect(self.view.zoomOut)
         self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
         self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
+        self.action_Help.triggered.connect(self.help)
         self.action_Report_Issue.triggered.connect(self.reportIssue)
         self.action_Updates.triggered.connect(self.updatesWizard)
         self.action_Qt.triggered.connect(self.aboutQt)
@@ -117,8 +118,8 @@ class MainWindow(QtWidgets.QMainWindow):
             for t in p.types:
                 target = p.types[t].get("transformer", {})
                 for c in target:
-                    if c == t: continue
-                    trns.append((t, c, target[c]))
+                    if c != t and c in pluginloader.getFileTypes().keys():
+                        trns.append((t, c, target[c]))
         for fr, to, convfunc in trns:
             action = QtWidgets.QAction("%s > %s" % (fr, to))
             action.triggered.connect(lambda b, fnc=convfunc, to=to: self.transform(fnc, to))
@@ -263,7 +264,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle("")
 
     def updateStatus(self, text):
-        self.statusBar().statusMessage.setText(text)
+        label = self.statusBar().statusMessage
+        metrics = QtGui.QFontMetrics(label.font())
+        elidedText = metrics.elidedText(text, QtCore.Qt.ElideRight, label.width())
+        label.setText(elidedText)
+        label.setToolTip(text)
 
     def newTab(self, label):
         editor = EditorWrapper(self)
@@ -499,7 +504,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save(self):
         editor = self.editor()
-        if editor is not None and editor.filename == "":
+        if editor is None: return
+        if editor.filename == "":
             self.saveAs()
         else:
             contents = editor.toPlainText()
@@ -512,8 +518,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.updateTitle()
             except Exception as e:
                 self.error("Error", str(e))
-        if editor is not None:
-            editor.stoppedTyping()
+        editor.stoppedTyping()
 
     def saveAll(self):
         old = self.files.currentIndex()
@@ -543,6 +548,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if Constants.valid_ext(ext, pluginloader.getFileExtensions()):
                 self.editor().filename = fileName
                 self.save()
+                self.updateFileType()
             else:
                 self.warn("Invalid File", "It looks like you want to save a file with an invalid file type of '%s'."
                                           "Please try another extension." % rext)
@@ -636,6 +642,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
             ename = self.editorWrapper().engine.currentText()
+            if ename == "": return None
             try:
                 engine = pluginloader.getEngines().get(ename, None)
                 if engine is None:
@@ -670,6 +677,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor().setPlainText(res)
         self.editor().wrapper.setType(to)
         self.releaseDisplay()
+
+    def help(self):
+        QtGui.QDesktopServices().openUrl(QtCore.QUrl("https://github.com/RandyParedis/GraphDonkey/wiki"))
 
     def reportIssue(self):
         QtGui.QDesktopServices().openUrl(QtCore.QUrl("https://github.com/RandyParedis/GraphDonkey/issues/new/choose"))

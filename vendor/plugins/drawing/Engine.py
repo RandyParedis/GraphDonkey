@@ -10,7 +10,7 @@ import cmath
 
 Config = IOHandler.get_preferences()
 
-# TODO: custom shapes, control statements, imports, variables, loops
+# TODO: custom shapes, control statements, imports, variables, loops, text, images
 class ConversionVisitor:
     def __init__(self):
         self.shapes = []

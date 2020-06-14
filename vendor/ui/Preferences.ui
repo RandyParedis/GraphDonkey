@@ -872,9 +872,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-787</y>
+            <y>-1229</y>
             <width>689</width>
-            <height>1738</height>
+            <height>1769</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -1371,45 +1371,55 @@
               <string>Other Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_13">
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QLabel" name="label_23">
                 <property name="text">
                  <string>Show Qt Info:</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="4" column="1">
                <widget class="QKeySequenceEdit" name="ks_qt"/>
               </item>
-              <item row="2" column="0">
+              <item row="3" column="0">
                <widget class="QLabel" name="label_21">
                 <property name="text">
                  <string>Show GraphDonkey Info:</string>
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
+              <item row="3" column="1">
                <widget class="QKeySequenceEdit" name="ks_graphdonkey"/>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="0">
                <widget class="QLabel" name="label_71">
                 <property name="text">
                  <string>Updates and Uninstall:</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
+              <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_updates"/>
               </item>
-              <item row="0" column="0">
+              <item row="1" column="0">
                <widget class="QLabel" name="label_83">
                 <property name="text">
                  <string>Report Issue:</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
+              <item row="1" column="1">
                <widget class="QKeySequenceEdit" name="ks_report_issue"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_94">
+                <property name="text">
+                 <string>Help:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_help"/>
               </item>
              </layout>
             </widget>

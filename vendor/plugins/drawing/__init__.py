@@ -9,7 +9,7 @@ Requires:       The `Pillow` and `pycairo` packages.
 from vendor.plugins.drawing import Cairo, Engine, Lindenmayer
 from main.extra import Constants
 
-# TODO: Pillow, Docs
+# TODO: Pillow, Docs, Export as SVG
 
 keywords = [
     "at", "from", "to", "of", "in",
@@ -81,9 +81,10 @@ TYPES = {
         }
     },
     "Lindenmayer": {
-        "extensions": ["l", "lindenmayer"],
+        "extensions": ["l", "lm", "l2", "lindenmayer"],
         "grammar": "lindenmayer.lark",
         "parser": "earley",
+        "semantics": Lindenmayer.CheckLVisitor,
         "highlighting": [
             {
                 "regex": {

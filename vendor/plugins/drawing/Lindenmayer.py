@@ -22,7 +22,7 @@ from main.viewer.shapes import Line, Properties
 import math, random
 
 # TODO: Docs, Semantics, Colors, Width, Background, Draw Mapping, Context-Dependency, Parametrics,
-#       mathematical equations for rotations (i.e. "PI / 2")...
+#       mathematical equations for rotations (i.e. "PI / 2"), multiple systems per file...
 # Draw Mapping: by default small letters -> 0, capital letters -> 1
 
 Config = IOHandler.get_preferences()
@@ -47,7 +47,6 @@ class LSystemRule:
             if r <= 0:
                 return tail
         # When the percentages don't add up to 1, take the last element.
-        # TODO: prevent this via semantic analysis.
         return self.tails[:][-1][1]
 
 
@@ -189,3 +188,67 @@ def transform(text, T):
     trans.transform(T)
     img = LImage(trans.system.solve())
     return img.get()
+
+
+from main.editor.Parser import CheckVisitor
+class CheckLVisitor(CheckVisitor):
+    def __init__(self, parser):
+        super().__init__(parser)
+        self.alpha = []
+        self.percs = {}
+        self.defn = {}
+
+    def clear(self):
+        super().clear()
+        self.alpha.clear()
+        self.percs.clear()
+        self.defn.clear()
+
+    def enter_letters(self, T):
+        for l in T.children:
+            if l.type == "COMMA": continue
+            if l.value not in self.alpha:
+                self.alpha.append(l.value)
+            else:
+                self.errors.append((l, "Duplicate definition in alphabet at line %i col %i" % (l.line, l.column), {}))
+
+    def enter_tail(self, T):
+        for c in T.children:
+            if c.type == "LETTER":
+                if c.value not in self.alpha:
+                    self.errors.append((c, "Undefined character at line %i col %i" % (c.line, c.column), {}))
+
+    def enter_rule(self, T):
+        c = T.children[0]
+        if c not in self.alpha:
+            self.errors.append((c, "Undefined character '%s' at line %i col %i" % (c.value, c.line, c.column), {}))
+        self.percs.setdefault(c.value, 0)
+        if len(T.children) == 3:
+            self.percs[c.value] += 1
+            tok = c
+        else:  # 4 children
+            tok = T.children[1]
+            self.percs[c.value] += float(tok.value)
+            if float(tok.value) == 0:
+                self.errors.append((tok, "Probability of 0 encountered for '%s' at line %i col %i" %
+                                    (c.value, tok.line, tok.column), {}))
+        if self.percs[c.value] > 1:
+            self.errors.append((tok, "Probabilities exceed 1 for '%s' at line %i col %i" %
+                                (c.value, tok.line, tok.column), {}))
+
+    def enter_ang(self, T):
+        t = T.children[0]
+        ang = float(t.value)
+        if T.children[1].type == "RAD":
+            ang = math.degrees(ang)
+        if abs(ang) > 360:
+            self.warnings.append((t, "Angle exceeds 360 degrees at line %i col %i" % (t.line, t.column), {}))
+
+    def enter_stmt(self, T):
+        # TODO: 'previously defined at'
+        for c in T.children:
+            if c.data != "rule":
+                if self.defn.get(c.data, False):
+                    self.errors.append((c.children[0],
+                                        "Redefinition of '%s' at line %i col %i" % (c.data, c.line, c.column), {}))
+                self.defn[c.data] = True

@@ -8,8 +8,8 @@ WS: /[ \t\f\r\n]/+
 %ignore COMMENT_SNG
 %ignore COMMENT_MLT
 
-?start  : (stmt ";")*
-stmt    : alpha | axiom | angle | seed | depth | rule
+?start  : (alpha ";")? (stmt ";")*
+stmt    : axiom | angle | seed | depth | rule
 alpha   : ALPHA SET letters
 letters : LETTER (COMMA LETTER)*
 axiom   : AXIOM SET tail (COMMA ang)?
@@ -27,7 +27,7 @@ ANGLE   : "angle"i
 SEED    : "seed"i
 DEPTH   : "depth"i | "n"i
 SET     : ":="i | "="i | ":"i | "is"i
-LETTER  : /[^\s\[\]+-,<>;]/
+LETTER  : /[^\s\[\]+,<>;-]/
 COMMA   : ","
 DEG     : "d"i | "deg"i | "degrees"i
 RAD     : "r"i | "rad"i | "radians"i

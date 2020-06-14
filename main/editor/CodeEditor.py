@@ -34,7 +34,7 @@ class StatusBar(QtWidgets.QStatusBar):
         super(StatusBar, self).__init__(parent)
         self.wrapper = wrapper
         self.statusMessage = QtWidgets.QLabel("")
-        self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBaseline)
+        self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         self.positionIndicator = QtWidgets.QLabel(":")
         self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)

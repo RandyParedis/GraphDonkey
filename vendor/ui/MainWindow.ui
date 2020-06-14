@@ -119,6 +119,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_Help"/>
     <addaction name="action_Report_Issue"/>
     <addaction name="action_Updates"/>
     <addaction name="separator"/>
@@ -645,6 +646,15 @@
   <action name="action_Goto_Line">
    <property name="text">
     <string>Go to &amp;Line...</string>
+   </property>
+  </action>
+  <action name="action_Help">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/help-browser.png</normaloff>:/icons/tango/help-browser.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Help</string>
    </property>
   </action>
  </widget>
