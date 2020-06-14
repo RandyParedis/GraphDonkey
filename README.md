@@ -58,17 +58,11 @@ Wait... did you say no? There is so much more left to see and discover that you
 cannot possibly know that! So go ahead and get `GraphDonkey`, I'm convinced you'll
 be amazed!
 
-### Bundled with
-By default, `GraphDonkey` comes bundled with:
-* The [Graphviz](wiki/Graphviz) rendering engine to bring your graphs to life,
-complete with a full grammar checker for the [`Graphviz dot` language][gv].
-* A [Flowchart / Pseudocode](wiki/Flowcharts) language that not only allows you
-to type clean and understandable pseudocode, but also see it visualized as a
-flowchart.
-
 ### Want to Learn More?
 Take a look at the [wiki][wiki] and allow `GraphDonkey` to do the donkey work for
 you!
+
+You can also [take a look at the plugins that `GraphDonkey` has to offer][plugins]!
 
 ### Copyright
 It's important to list your sources if you're working on a project. One does not
@@ -85,3 +79,4 @@ Mozilla Public License Version 2.0.](LICENSE)
 [wiki]: https://github.com/RandyParedis/GraphDonkey/wiki
 [lark]: https://github.com/lark-parser/lark
 [gv]: https://www.graphviz.org/
+[plugins]: https://github.com/RandyParedis/GraphDonkey/wiki/Plugins
