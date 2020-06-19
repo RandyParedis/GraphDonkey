@@ -12,7 +12,6 @@ TODO LIST
         - Restart
         - Read Only Files
         - Listen on host:port address
-        - Show all errors during parsing
         - Add Bookmarks?
         - Add "Search" Menu, which contains "Find & Replace", "Goto Line", "Next Error", "Prev Error" etc...
     - Change Preferences Loading to dict instead of lines
@@ -21,15 +20,15 @@ TODO LIST
                  ==> {"autohide": "check_autohide"}   // Might also require a function for more complex feats
                  The above might be settable via dynamic properties on the designer. If we now use a dictionary
                  to map special cases, this can be done.
+            - Add tooltips for all fields in preferences
     - Better indentation logic
-    - Fix comments: identify indents before/after comment signs
-    - Fix: Make status bar have a fixed with; don't grow for big messages + tooltip for too large messages
+    - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
+    - Fix Home button
     - Fix: Treeview throws segfault on opening again after full screen on external monitor (quite specific issue)
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors
-    - Simple (builtin) ImageRenderer
     - Other plugins by default (see Future.md)
-    	- Pillow to Wand? http://docs.wand-py.org/en/0.6.1/
+    	- Add Wand? http://docs.wand-py.org/en/0.6.1/
     [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
@@ -40,6 +39,7 @@ TODO LIST
     - Add icon to completer types
     - Tree Indentation guides
     - Max column size indicator
+    - Add 'warnings' for parsing
     - Apply button in preferences (which keeps the preferences open)
     - Auto-update
     	- https://hackthology.com/how-to-write-self-updating-python-programs-using-pip-and-git.html

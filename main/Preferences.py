@@ -198,6 +198,47 @@ class Preferences(QtWidgets.QDialog):
                 ks.setStyleSheet("background-color: rgb(255, 0, 0);")
                 getattr(self, "ks_" + self.shortcuts[loc].lower()).setStyleSheet("background-color: rgb(255, 0, 0);")
 
+    def rectify2(self):
+        for elem in self.__dict__.itervalues():
+            if isinstance(elem, QtWidgets.QCheckBox):
+                key = elem.property("key")
+                elem.setChecked(bool(self.preferences.value(key, elem.isChecked())))
+            elif isinstance(elem, QtWidgets.QRadioButton):
+                key = elem.property("key")
+                value = int(elem.property("value"))
+                val = int(self.preferences.value(key, 0))
+                if val == value:
+                    elem.setChecked(True)
+            elif isinstance(elem, QtWidgets.QSpinBox):
+                key = elem.property("key")
+                elem.setValue(int(self.preferences.value(key, elem.value())))
+            elif isinstance(elem, QtWidgets.QDoubleSpinBox):
+                key = elem.property("key")
+                elem.setValue(float(self.preferences.value(key, elem.value())))
+            elif isinstance(elem, QtWidgets.QFontComboBox):
+                key = elem.property("key")
+                if elem.property("monospace"):
+                    defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
+                else:
+                    defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.GeneralFont)
+                elem.setCurrentFont(QtGui.QFont(self.preferences.value(key, defFont.family())))
+            elif isinstance(elem, QtWidgets.QComboBox):
+                key = elem.property("key")
+                if elem.property("asInt"):
+                    elem.setCurrentIndex(int(self.preferences.value(key, elem.currentIndex())))
+                else:
+                    elem.setCurrentText(self.preferences.value(key, elem.currentText()))
+            elif isinstance(elem, QtWidgets.QKeySequenceEdit):
+                key = elem.property("key")
+                elem.setKeySequence(QtGui.QKeySequence(self.preferences.value(key, elem.keySequence())))
+
+        # TODO: Plugins, Colors
+
+        # Fields that cannot be set at creation time
+        self.combo_engine.setCurrentText(self.preferences.value(self.combo_engine.property("key"), "Graphviz"))
+        self.combo_theme.setCurrentText(self.preferences.value(self.combo_theme.property("key"), "Light Lucy"))
+
+
     def rectify(self):
         # GENERAL
         if True:
@@ -225,38 +266,37 @@ class Preferences(QtWidgets.QDialog):
         if True:
             defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
             self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("editor/font", defFont.family())))
+            self.check_monospace.setChecked(bool(self.preferences.value("editor/monospace", True)))
             self.num_font_editor.setValue(int(self.preferences.value("editor/fontsize", 12)))
             self.num_tabwidth.setValue(int(self.preferences.value("editor/tabwidth", 4)))
             self.check_lineNumbers.setChecked(bool(self.preferences.value("editor/showLineNumbers", True)))
+            self.check_spaceTabs.setChecked(bool(self.preferences.value("editor/spacesOverTabs", False)))
             self.check_highlightLine.setChecked(bool(self.preferences.value("editor/highlightCurrentLine", True)))
             self.check_parentheses.setChecked(bool(self.preferences.value("editor/parentheses", True)))
-            self.check_spaceTabs.setChecked(bool(self.preferences.value("editor/spacesOverTabs", False)))
-            self.check_monospace.setChecked(bool(self.preferences.value("editor/monospace", True)))
             self.check_showWhitespace.setChecked(bool(self.preferences.value("editor/showWhitespace", False)))
+            self.check_pairedBrackets.setChecked(bool(self.preferences.value("editor/pairedBrackets", True)))
+            self.check_emptyline.setChecked(bool(self.preferences.value("editor/emptyline", True)))
             self.check_syntax.setChecked(bool(self.preferences.value("editor/syntaxHighlighting", True)))
             self.check_parse.setChecked(bool(self.preferences.value("editor/useParser", True)))
             self.check_autorender.setChecked(bool(self.preferences.value("editor/autorender", True)))
-            self.check_pairedBrackets.setChecked(bool(self.preferences.value("editor/pairedBrackets", True)))
-            self.check_emptyline.setChecked(bool(self.preferences.value("editor/emptyline", True)))
             self.parseDisable(self.check_parse.isChecked())
             self.num_autoreparse.setValue(int(self.preferences.value("editor/autoreparse", 100)))
 
         # VIEW
         if True:
-            self.combo_engine.setCurrentText(self.preferences.value("view/engine", "Graphviz"))
             self.check_view_controls.setChecked(bool(self.preferences.value("view/controls", True)))
             self.combo_scroll_key.setCurrentText(self.preferences.value("view/scrollKey", "CTRL"))
             self.num_zoom_level_min.setValue(int(self.preferences.value("view/zoomMin", 10)))
             self.num_zoom_level_max.setValue(int(self.preferences.value("view/zoomMax", 450)))
             self.num_zoom_factor.setValue(float(self.preferences.value("view/zoomFactor", 2.0)))
+            self.combo_engine.setCurrentText(self.preferences.value("view/engine", "Graphviz"))  # dynamic
 
         # THEME AND COLORS
         if True:
             self.combo_style.setCurrentIndex(int(self.preferences.value("col/style", 0)))
-            self.combo_theme.setCurrentText(self.preferences.value("col/theme", "Light Lucy"))
+            self.combo_theme.setCurrentText(self.preferences.value("col/theme", "Light Lucy"))  # dynamic
             lst = self.names_general + self.names_editor + self.names_syntax
-            for i in range(len(lst)):
-                name = lst[i]
+            for name in lst:
                 cname = name.replace("_", ".")
                 getattr(self, name).setColor(QtGui.QColor(self.preferences.value(cname, self.findColor(cname[4:]))))
 
@@ -272,14 +312,15 @@ class Preferences(QtWidgets.QDialog):
             self.ks_preferences.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/preferences", "CTRL+P")))
             self.ks_close_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/close_file", "CTRL+W")))
             self.ks_exit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/exit", "CTRL+Q")))
+
             self.ks_undo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/undo", "CTRL+Z")))
             self.ks_redo.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/redo", "CTRL+SHIFT+Z")))
             self.ks_select_all.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/select_all", "CTRL+A")))
             self.ks_clear.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/clear", "")))
             self.ks_delete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/delete", "DELETE")))
             self.ks_copy.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/copy", "CTRL+C")))
-            self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/cut", "CTRL+X")))
             self.ks_paste.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/paste", "CTRL+V")))
+            self.ks_cut.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/cut", "CTRL+X")))
             self.ks_duplicate.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/duplicate", "CTRL+D")))
             self.ks_comment.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/comment", "CTRL+/")))
             self.ks_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/indent", "TAB")))
@@ -287,7 +328,6 @@ class Preferences(QtWidgets.QDialog):
             self.ks_auto_indent.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/auto_indent", "CTRL+SHIFT+I")))
             self.ks_move_up.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/move_up", "CTRL+SHIFT+UP")))
             self.ks_move_down.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/move_down", "CTRL+SHIFT+DOWN")))
-            self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/find", "CTRL+F")))
             self.ks_autocomplete.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/autocomplete", "CTRL+SPACE")))
             self.ks_uppercase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/uppercase", "")))
             self.ks_lowercase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/lowercase", "")))
@@ -296,18 +336,22 @@ class Preferences(QtWidgets.QDialog):
             self.ks_dromedarycase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/dromedarycase", "")))
             self.ks_pascalcase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/pascalcase", "")))
             self.ks_snakecase.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snakecase", "")))
+
+            self.ks_find.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/find", "CTRL+F")))
             self.ks_goto_line.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/goto_line", "CTRL+L")))
+
             self.ks_show_render_area.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/show_render_area", "")))
-            self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
-            self.ks_save_rendered_view.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_rendered_view", "")))
-            self.ks_view_parse_tree.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/view_parse_tree", "CTRL+T")))
             self.ks_snippets.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/snippets", "F2")))
             self.ks_next_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/next_file", "CTRL+TAB")))
             self.ks_previous_file.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/previous_file", "CTRL+SHIFT+TAB")))
+            self.ks_render.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/render", "CTRL+R")))
+            self.ks_save_rendered_view.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/save_rendered_view", "")))
+            self.ks_view_parse_tree.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/view_parse_tree", "CTRL+T")))
             self.ks_zoom_in.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_in", "CTRL++")))
             self.ks_zoom_out.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_out", "CTRL+-")))
             self.ks_reset_zoom.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/reset_zoom", "CTRL+0")))
             self.ks_zoom_to_fit.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/zoom_to_fit", "")))
+
             self.ks_help.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/help", "")))
             self.ks_report_issue.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/report_issue", "")))
             self.ks_updates.setKeySequence(QtGui.QKeySequence(self.preferences.value("ks/updates", "")))
