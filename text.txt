@@ -12,18 +12,10 @@ TODO LIST
         - Restart
         - Read Only Files
         - Listen on host:port address
-        - Add Bookmarks?
-        - Add "Search" Menu, which contains "Find & Replace", "Goto Line", "Next Error", "Prev Error" etc...
-    - Change Preferences Loading to dict instead of lines
-            I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
-                 - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
-                 ==> {"autohide": "check_autohide"}   // Might also require a function for more complex feats
-                 The above might be settable via dynamic properties on the designer. If we now use a dictionary
-                 to map special cases, this can be done.
-            - Add tooltips for all fields in preferences
-    - Better indentation logic
+        - Add "Navigate" Menu, which contains "Find & Replace", "Goto Line", "Next Error", "Prev Error", Bookmarks etc...
     - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
     - Fix Home button
+    - Fix indentation logic
     - Fix: Treeview throws segfault on opening again after full screen on external monitor (quite specific issue)
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors

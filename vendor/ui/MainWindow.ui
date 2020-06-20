@@ -75,6 +75,9 @@
      <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuOpen_Recent">
+     <property name="statusTip">
+      <string>List of recently opened files.</string>
+     </property>
      <property name="title">
       <string>Open &amp;Recent</string>
      </property>
@@ -102,9 +105,6 @@
     </property>
     <addaction name="action_Show_Render_Area"/>
     <addaction name="action_Snippets"/>
-    <addaction name="separator"/>
-    <addaction name="action_Next_File"/>
-    <addaction name="action_Previous_File"/>
     <addaction name="separator"/>
     <addaction name="action_Render"/>
     <addaction name="action_Save_Rendered_View"/>
@@ -170,16 +170,19 @@
      <string>&amp;Transform</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_Search">
+   <widget class="QMenu" name="menu_Navigate">
     <property name="title">
-     <string>&amp;Search</string>
+     <string>&amp;Navigate</string>
     </property>
+    <addaction name="action_Previous_File"/>
+    <addaction name="action_Next_File"/>
+    <addaction name="separator"/>
     <addaction name="action_Find"/>
     <addaction name="action_Goto_Line"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
-   <addaction name="menu_Search"/>
+   <addaction name="menu_Navigate"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Transform"/>
    <addaction name="menu_Help"/>
@@ -249,6 +252,9 @@
    <property name="text">
     <string>&amp;New</string>
    </property>
+   <property name="statusTip">
+    <string>Open a new file</string>
+   </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
    </property>
@@ -261,6 +267,9 @@
    <property name="text">
     <string>&amp;Open...</string>
    </property>
+   <property name="statusTip">
+    <string>Open an existing file</string>
+   </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
    </property>
@@ -272,6 +281,9 @@
    </property>
    <property name="text">
     <string>&amp;Save</string>
+   </property>
+   <property name="statusTip">
+    <string>Save the file</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
@@ -287,6 +299,9 @@
    <property name="text">
     <string>S&amp;how Render Area</string>
    </property>
+   <property name="statusTip">
+    <string>Show/Hide Render Area</string>
+   </property>
   </action>
   <action name="action_Render">
    <property name="icon">
@@ -295,6 +310,9 @@
    </property>
    <property name="text">
     <string>&amp;Render</string>
+   </property>
+   <property name="statusTip">
+    <string>Render the graph</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
@@ -308,15 +326,24 @@
    <property name="text">
     <string>Save &amp;As...</string>
    </property>
+   <property name="statusTip">
+    <string>Save a file as...</string>
+   </property>
   </action>
   <action name="action_Qt">
    <property name="text">
     <string>About &amp;Qt</string>
    </property>
+   <property name="statusTip">
+    <string>More information about Qt</string>
+   </property>
   </action>
   <action name="action_Select_All">
    <property name="text">
     <string>&amp;Select All</string>
+   </property>
+   <property name="statusTip">
+    <string>Select all text from the editor</string>
    </property>
   </action>
   <action name="action_Copy">
@@ -327,6 +354,9 @@
    <property name="text">
     <string>&amp;Copy</string>
    </property>
+   <property name="statusTip">
+    <string>Copy to clipboard</string>
+   </property>
   </action>
   <action name="action_Paste">
    <property name="icon">
@@ -335,6 +365,9 @@
    </property>
    <property name="text">
     <string>&amp;Paste</string>
+   </property>
+   <property name="statusTip">
+    <string>Paste from clipboard</string>
    </property>
   </action>
   <action name="action_Cut">
@@ -345,10 +378,16 @@
    <property name="text">
     <string>C&amp;ut</string>
    </property>
+   <property name="statusTip">
+    <string>Cut to clipboard</string>
+   </property>
   </action>
   <action name="action_Delete">
    <property name="text">
     <string>&amp;Delete</string>
+   </property>
+   <property name="statusTip">
+    <string>Delete the selected text</string>
    </property>
   </action>
   <action name="action_Undo">
@@ -359,6 +398,9 @@
    <property name="text">
     <string>&amp;Undo</string>
    </property>
+   <property name="statusTip">
+    <string>Undo last action</string>
+   </property>
   </action>
   <action name="action_Redo">
    <property name="icon">
@@ -368,10 +410,16 @@
    <property name="text">
     <string>&amp;Redo</string>
    </property>
+   <property name="statusTip">
+    <string>Redo last action</string>
+   </property>
   </action>
   <action name="action_GraphDonkey">
    <property name="text">
     <string>About Graph&amp;Donkey</string>
+   </property>
+   <property name="statusTip">
+    <string>More information about GraphDonkey</string>
    </property>
   </action>
   <action name="action_Exit">
@@ -382,15 +430,24 @@
    <property name="text">
     <string>E&amp;xit</string>
    </property>
+   <property name="statusTip">
+    <string>Quit IDE</string>
+   </property>
   </action>
   <action name="action_Clear_Recents">
    <property name="text">
     <string>Clear Recents</string>
    </property>
+   <property name="statusTip">
+    <string>Clear the recent files</string>
+   </property>
   </action>
   <action name="action_CheckUpdates">
    <property name="text">
     <string>Check for &amp;Updates</string>
+   </property>
+   <property name="statusTip">
+    <string>Check for system updates</string>
    </property>
   </action>
   <action name="action_Preferences">
@@ -401,25 +458,40 @@
    <property name="text">
     <string>&amp;Preferences...</string>
    </property>
+   <property name="statusTip">
+    <string>Open the Preferences window</string>
+   </property>
   </action>
   <action name="action_Export">
    <property name="text">
     <string>&amp;Export...</string>
+   </property>
+   <property name="statusTip">
+    <string>Export the graph as...</string>
    </property>
   </action>
   <action name="action_Duplicate">
    <property name="text">
     <string>Du&amp;plicate</string>
    </property>
+   <property name="statusTip">
+    <string>Duplicate the current selection</string>
+   </property>
   </action>
   <action name="action_Comment">
    <property name="text">
     <string>&amp;Toggle Comment</string>
    </property>
+   <property name="statusTip">
+    <string>Toggle comments for selection</string>
+   </property>
   </action>
   <action name="action_Auto_Indent">
    <property name="text">
     <string>Auto &amp;Indent</string>
+   </property>
+   <property name="statusTip">
+    <string>Automatically indent selection</string>
    </property>
   </action>
   <action name="action_Indent">
@@ -430,6 +502,9 @@
    <property name="text">
     <string>&amp;Indent</string>
    </property>
+   <property name="statusTip">
+    <string>Indent selection</string>
+   </property>
   </action>
   <action name="action_Unindent">
    <property name="icon">
@@ -438,6 +513,9 @@
    </property>
    <property name="text">
     <string>U&amp;nindent</string>
+   </property>
+   <property name="statusTip">
+    <string>Remove single indent for selection</string>
    </property>
   </action>
   <action name="action_Find">
@@ -448,10 +526,16 @@
    <property name="text">
     <string>&amp;Find and Replace...</string>
    </property>
+   <property name="statusTip">
+    <string>Open the Find and Replace window</string>
+   </property>
   </action>
   <action name="action_Autocomplete">
    <property name="text">
     <string>&amp;Autocomplete</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the autocomplete menu</string>
    </property>
   </action>
   <action name="action_Snippets">
@@ -462,6 +546,9 @@
    <property name="text">
     <string>&amp;Snippets...</string>
    </property>
+   <property name="statusTip">
+    <string>Open the Snippets window</string>
+   </property>
   </action>
   <action name="action_Close_File">
    <property name="icon">
@@ -471,15 +558,24 @@
    <property name="text">
     <string>&amp;Close File</string>
    </property>
+   <property name="statusTip">
+    <string>Close current file</string>
+   </property>
   </action>
   <action name="action_Save_All">
    <property name="text">
     <string>Sa&amp;ve All</string>
    </property>
+   <property name="statusTip">
+    <string>Save all files</string>
+   </property>
   </action>
   <action name="action_View_Parse_Tree">
    <property name="text">
     <string>View &amp;Parse Tree...</string>
+   </property>
+   <property name="statusTip">
+    <string>Show the AST for the current file</string>
    </property>
   </action>
   <action name="action_Clear">
@@ -490,8 +586,8 @@
    <property name="text">
     <string>C&amp;lear</string>
    </property>
-   <property name="toolTip">
-    <string>Clear the currently open file.</string>
+   <property name="statusTip">
+    <string>Clear the currently open file</string>
    </property>
   </action>
   <action name="action_Next_File">
@@ -502,6 +598,9 @@
    <property name="text">
     <string>&amp;Next File</string>
    </property>
+   <property name="statusTip">
+    <string>Open the next file from the editor</string>
+   </property>
   </action>
   <action name="action_Previous_File">
    <property name="icon">
@@ -510,6 +609,9 @@
    </property>
    <property name="text">
     <string>Pr&amp;evious File</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the previous file from the editor</string>
    </property>
   </action>
   <action name="action_Zoom_In">
@@ -520,6 +622,9 @@
    <property name="text">
     <string>Zoom &amp;In</string>
    </property>
+   <property name="statusTip">
+    <string>Increase the zoom of the view</string>
+   </property>
   </action>
   <action name="action_Zoom_Out">
    <property name="icon">
@@ -529,10 +634,16 @@
    <property name="text">
     <string>Zoom &amp;Out</string>
    </property>
+   <property name="statusTip">
+    <string>Decrease the zoom of the view</string>
+   </property>
   </action>
   <action name="action_Reset_Zoom">
    <property name="text">
     <string>Reset &amp;Zoom</string>
+   </property>
+   <property name="statusTip">
+    <string>Reset the zoom to 100%</string>
    </property>
   </action>
   <action name="action_Zoom_To_Fit">
@@ -543,6 +654,9 @@
    <property name="text">
     <string>Zoom To &amp;Fit</string>
    </property>
+   <property name="statusTip">
+    <string>Zoom the view to fit its contents</string>
+   </property>
   </action>
   <action name="action_Save_Rendered_View">
    <property name="icon">
@@ -551,6 +665,9 @@
    </property>
    <property name="text">
     <string>S&amp;ave Rendered View...</string>
+   </property>
+   <property name="statusTip">
+    <string>Save the view as an image</string>
    </property>
   </action>
   <action name="action_Move_Up">
@@ -561,8 +678,8 @@
    <property name="text">
     <string>Move Up</string>
    </property>
-   <property name="toolTip">
-    <string>Move Up</string>
+   <property name="statusTip">
+    <string>Move the current selection one line up</string>
    </property>
   </action>
   <action name="action_Move_Down">
@@ -573,79 +690,88 @@
    <property name="text">
     <string>Move Down</string>
    </property>
-   <property name="toolTip">
-    <string>Move Down</string>
+   <property name="statusTip">
+    <string>Move the current selection one line down</string>
    </property>
   </action>
   <action name="action_Updates">
    <property name="text">
     <string>&amp;Updates and Uninstall</string>
    </property>
+   <property name="statusTip">
+    <string>Open the Updates and Uninstall window</string>
+   </property>
   </action>
   <action name="action_Report_Issue">
    <property name="text">
     <string>Report &amp;Issue</string>
+   </property>
+   <property name="statusTip">
+    <string>Report a bug, an issue or request a feature</string>
    </property>
   </action>
   <action name="action_UpperCase">
    <property name="text">
     <string>Upper Case</string>
    </property>
-   <property name="toolTip">
-    <string>Change selection to upper case.</string>
+   <property name="statusTip">
+    <string>Change selection to upper case</string>
    </property>
   </action>
   <action name="action_LowerCase">
    <property name="text">
     <string>Lower Case</string>
    </property>
-   <property name="toolTip">
-    <string>Change selection to lower case.</string>
+   <property name="statusTip">
+    <string>Change selection to lower case</string>
    </property>
   </action>
   <action name="action_WordCase">
    <property name="text">
     <string>Case Words</string>
    </property>
-   <property name="toolTip">
-    <string>Change each word in selection to only have the first letter upper case.</string>
+   <property name="statusTip">
+    <string>Change each word in selection to only have the first letter upper case</string>
    </property>
   </action>
   <action name="action_SentenceCase">
    <property name="text">
     <string>Case First Word</string>
    </property>
-   <property name="toolTip">
-    <string>Change casing of selection to only case first letter of first selected word.</string>
+   <property name="statusTip">
+    <string>Change casing of selection to only case first letter of first selected word</string>
    </property>
   </action>
   <action name="action_DromedaryCase">
    <property name="text">
     <string>Dromedary Case</string>
    </property>
-   <property name="toolTip">
-    <string>Camel casing with first letter capitalized.</string>
+   <property name="statusTip">
+    <string>Camel casing with first letter capitalized</string>
    </property>
   </action>
   <action name="action_PascalCase">
    <property name="text">
     <string>Pascal Case</string>
    </property>
-   <property name="toolTip">
-    <string>Camel case with first letter in lower case.</string>
+   <property name="statusTip">
+    <string>Camel case with first letter in lower case</string>
    </property>
   </action>
   <action name="action_SnakeCase">
    <property name="text">
     <string>Snake Case</string>
    </property>
-   <property name="toolTip">
-    <string>Snake case without any capitals.</string>
+   <property name="statusTip">
+    <string>Snake case without any capitals</string>
    </property>
   </action>
   <action name="action_Goto_Line">
    <property name="text">
     <string>Go to &amp;Line...</string>
+   </property>
+   <property name="statusTip">
+    <string>Go to a specific position in the editor</string>
    </property>
   </action>
   <action name="action_Help">
@@ -655,6 +781,9 @@
    </property>
    <property name="text">
     <string>&amp;Help</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the documentation in a browser window</string>
    </property>
   </action>
  </widget>

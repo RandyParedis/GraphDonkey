@@ -12,6 +12,23 @@ def left(string, seq=(' ', '\t', '\r', '\n')):
 def right(string, seq=(' ', '\t', '\r', '\n')):
     return left(reversed(string), seq)
 
+def isColorDark(red, green, blue):
+    """Use the definition of luminescence to compute the darkness of a color.
+
+    This method follows https://stackoverflow.com/a/24261119, `CCIR 601` and
+    https://en.wikipedia.org/wiki/Luma_%28video%29.
+
+    Args:
+        red (int):      The red component of the color in [0, 255].
+        green (int):    The green component of the color in [0, 255].
+        blue (int):     The blue component of the color in [0, 255].
+
+    Returns:
+        ``True`` if the color is dark.
+    """
+    darkness = 255 - (.299 * red + .587 * green + .114 * blue)
+    return darkness >= 255 / 2
+
 
 import xml.etree.cElementTree as et
 

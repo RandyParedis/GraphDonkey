@@ -40,6 +40,19 @@
           <string>Other</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0,0">
+          <item row="2" column="1">
+           <widget class="QFontComboBox" name="font_interface">
+            <property name="toolTip">
+             <string>Font of the interface. This is the font of all menus and windows.</string>
+            </property>
+            <property name="key" stdset="0">
+             <string>font</string>
+            </property>
+            <property name="monospace" stdset="0">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_69">
             <property name="text">
@@ -49,6 +62,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QSpinBox" name="num_recents">
+            <property name="toolTip">
+             <string>Maximal number of recent files to remember.</string>
+            </property>
             <property name="suffix">
              <string/>
             </property>
@@ -62,6 +78,9 @@
           </item>
           <item row="0" column="0" colspan="3">
            <widget class="QCheckBox" name="check_autohide">
+            <property name="toolTip">
+             <string>When enabled, the tabs of the files will be hidden when a single file is open. Otherwise they will always be shown.</string>
+            </property>
             <property name="text">
              <string>Automatically hide tabs when there are less than two.</string>
             </property>
@@ -94,18 +113,11 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QFontComboBox" name="font_interface">
-            <property name="key" stdset="0">
-             <string>font</string>
-            </property>
-            <property name="monospace" stdset="0">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="1">
            <widget class="QSpinBox" name="num_font_interface">
+            <property name="toolTip">
+             <string>Font size of the interface. This is the font size of all menus and windows.</string>
+            </property>
             <property name="suffix">
              <string> pt</string>
             </property>
@@ -134,6 +146,9 @@
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
            <widget class="QCheckBox" name="check_rememberLayout">
+            <property name="toolTip">
+             <string>When enabled, the render area zoom level, the recents menu, the window geometry and the window state will be remembered for the next launch.</string>
+            </property>
             <property name="text">
              <string>Remember Layout</string>
             </property>
@@ -153,6 +168,9 @@
             <layout class="QGridLayout" name="gridLayout_4">
              <item row="2" column="0">
               <widget class="QRadioButton" name="radio_ws_restore">
+               <property name="toolTip">
+                <string>Reopen the files that were open when GraphDonkey was last closed.</string>
+               </property>
                <property name="text">
                 <string>Restore Last Session</string>
                </property>
@@ -166,6 +184,9 @@
              </item>
              <item row="1" column="0">
               <widget class="QRadioButton" name="radio_ws_openempty">
+               <property name="toolTip">
+                <string>Open an empty file on startup.</string>
+               </property>
                <property name="text">
                 <string>Open Empty File</string>
                </property>
@@ -179,6 +200,9 @@
              </item>
              <item row="0" column="0">
               <widget class="QRadioButton" name="radio_ws_none">
+               <property name="toolTip">
+                <string>Don't open anything on startup.</string>
+               </property>
                <property name="text">
                 <string>Open Empty Workspace</string>
                </property>
@@ -226,18 +250,11 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="3" colspan="2">
-           <widget class="QCheckBox" name="check_spaceTabs">
-            <property name="text">
-             <string>Use spaces instead of tabs</string>
-            </property>
-            <property name="key" stdset="0">
-             <string>editor/spacesOverTabs</string>
-            </property>
-           </widget>
-          </item>
           <item row="4" column="3" colspan="2">
            <widget class="QCheckBox" name="check_parentheses">
+            <property name="toolTip">
+             <string>When enabled, matching parentheses, brackets, quotes... will be highlighted.</string>
+            </property>
             <property name="text">
              <string>Match Parentheses</string>
             </property>
@@ -251,6 +268,9 @@
           </item>
           <item row="0" column="3" colspan="2">
            <widget class="QCheckBox" name="check_monospace">
+            <property name="toolTip">
+             <string>Only allow monospace fonts in the editor.</string>
+            </property>
             <property name="text">
              <string>Show Monospace Fonts</string>
             </property>
@@ -262,34 +282,43 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_lineNumbers">
+          <item row="0" column="1" colspan="2">
+           <widget class="QFontComboBox" name="font_editor">
+            <property name="toolTip">
+             <string>The font for the editor.</string>
+            </property>
+            <property name="fontFilters">
+             <set>QFontComboBox::AllFonts</set>
+            </property>
+            <property name="key" stdset="0">
+             <string>editor/font</string>
+            </property>
+            <property name="monospace" stdset="0">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3" colspan="2">
+           <widget class="QCheckBox" name="check_pairedBrackets">
+            <property name="toolTip">
+             <string>Whether or not to pair brackets like () {} &lt;&gt; &quot;&quot; ''... Which brackets are paired is completely filetype-dependant.</string>
+            </property>
             <property name="text">
-             <string>Show Line Numbers</string>
+             <string>Pair brackets</string>
             </property>
             <property name="checked">
              <bool>true</bool>
             </property>
             <property name="key" stdset="0">
-             <string>editor/showLineNumbers</string>
+             <string>editor/pairedBrackets</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0" colspan="2">
-           <widget class="QCheckBox" name="check_highlightLine">
-            <property name="text">
-             <string>Highlight Current Line</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="key" stdset="0">
-             <string>editor/highlightCurrentLine</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
+          <item row="1" column="1" colspan="2">
            <widget class="QSpinBox" name="num_font_editor">
+            <property name="toolTip">
+             <string>The font size of the editor.</string>
+            </property>
             <property name="suffix">
              <string> pt</string>
             </property>
@@ -307,8 +336,31 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="4">
+          <item row="2" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_spaceTabs">
+            <property name="toolTip">
+             <string>When enabled, tabs will be replaced by a series of spaces.</string>
+            </property>
+            <property name="text">
+             <string>Use spaces instead of tabs</string>
+            </property>
+            <property name="key" stdset="0">
+             <string>editor/spacesOverTabs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Tab size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
            <widget class="QSpinBox" name="num_tabwidth">
+            <property name="toolTip">
+             <string>The width of the tabs. When spaces are preferred, this is the amount of spaces to be inserted.</string>
+            </property>
             <property name="suffix">
              <string> chars</string>
             </property>
@@ -326,28 +378,43 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="3">
-           <widget class="QLabel" name="label_3">
+          <item row="3" column="3">
+           <widget class="QCheckBox" name="check_highlightLine">
+            <property name="toolTip">
+             <string>Whether or not the current line needs to be highlighted in another color.</string>
+            </property>
             <property name="text">
-             <string>Tab size:</string>
+             <string>Highlight Current Line</string>
             </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="2">
-           <widget class="QFontComboBox" name="font_editor">
-            <property name="fontFilters">
-             <set>QFontComboBox::AllFonts</set>
-            </property>
-            <property name="key" stdset="0">
-             <string>editor/font</string>
-            </property>
-            <property name="monospace" stdset="0">
+            <property name="checked">
              <bool>true</bool>
             </property>
+            <property name="key" stdset="0">
+             <string>editor/highlightCurrentLine</string>
+            </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="3">
+          <item row="3" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_lineNumbers">
+            <property name="toolTip">
+             <string>Whether or not to show line numbers.</string>
+            </property>
+            <property name="text">
+             <string>Show Line Numbers</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="key" stdset="0">
+             <string>editor/showLineNumbers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="3">
            <widget class="QCheckBox" name="check_showWhitespace">
+            <property name="toolTip">
+             <string>Whether or not to show whitespace characters.</string>
+            </property>
             <property name="text">
              <string>Show whitespace characters</string>
             </property>
@@ -356,24 +423,11 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="3" colspan="2">
-           <widget class="QCheckBox" name="check_pairedBrackets">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether or not to pair brackets like () {} &amp;lt;&amp;gt; &amp;quot;&amp;quot; ''...&lt;/p&gt;&lt;p&gt;Which brackets are paired is completely filetype-dependant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Pair brackets</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="key" stdset="0">
-             <string>editor/pairedBrackets</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0" colspan="3">
+          <item row="5" column="0" colspan="3">
            <widget class="QCheckBox" name="check_emptyline">
+            <property name="toolTip">
+             <string>Enforce that the last line of the file ends in a newline.</string>
+            </property>
             <property name="text">
              <string>Ensure empty line at end of file.</string>
             </property>
@@ -403,6 +457,9 @@
           </item>
           <item row="4" column="1">
            <widget class="QSpinBox" name="num_autoreparse">
+            <property name="toolTip">
+             <string>The minimal waiting delay between keystrokes before the text needs to be reparsed.</string>
+            </property>
             <property name="minimum">
              <number>100</number>
             </property>
@@ -419,6 +476,9 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="toolTip">
+             <string>When enabled, the graph will be redered automatically if no errors can be found.</string>
+            </property>
             <property name="text">
              <string>Automatically render the graph if valid</string>
             </property>
@@ -430,21 +490,11 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="check_parse">
-            <property name="text">
-             <string>Use parser for validity checking</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="key" stdset="0">
-             <string>editor/useParser</string>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="check_syntax">
+            <property name="toolTip">
+             <string>When enabled, syntax highlighting will be used.</string>
+            </property>
             <property name="text">
              <string>Use Syntax Highlighting</string>
             </property>
@@ -453,6 +503,22 @@
             </property>
             <property name="key" stdset="0">
              <string>editor/syntaxHighlighting</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="check_parse">
+            <property name="toolTip">
+             <string>When enabled, the parser will check for any errors w.r.t. the filetype and highlight them.</string>
+            </property>
+            <property name="text">
+             <string>Use parser for validity checking</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="key" stdset="0">
+             <string>editor/useParser</string>
             </property>
            </widget>
           </item>
@@ -526,6 +592,9 @@
               </item>
               <item row="2" column="1">
                <widget class="QSpinBox" name="num_zoom_level_min">
+                <property name="toolTip">
+                 <string>The minimal zoom that is allowed.</string>
+                </property>
                 <property name="suffix">
                  <string> %</string>
                 </property>
@@ -545,6 +614,9 @@
               </item>
               <item row="4" column="1">
                <widget class="QSpinBox" name="num_zoom_level_max">
+                <property name="toolTip">
+                 <string>The maximal zoom that is allowed.</string>
+                </property>
                 <property name="suffix">
                  <string> %</string>
                 </property>
@@ -564,6 +636,9 @@
               </item>
               <item row="5" column="1">
                <widget class="QDoubleSpinBox" name="num_zoom_factor">
+                <property name="toolTip">
+                 <string>The factor with which the zoom is increased.</string>
+                </property>
                 <property name="decimals">
                  <number>2</number>
                 </property>
@@ -593,6 +668,9 @@
               </item>
               <item row="1" column="1">
                <widget class="QComboBox" name="combo_scroll_key">
+                <property name="toolTip">
+                 <string>The key combo to press in combination with the scroll wheel to zoom the view.</string>
+                </property>
                 <property name="currentText">
                  <string>CTRL</string>
                 </property>
@@ -696,6 +774,9 @@
               </item>
               <item row="6" column="1">
                <widget class="QComboBox" name="combo_engine">
+                <property name="toolTip">
+                 <string>If multiple renderers are available and the provided renderer is an option, it will be used over the others.</string>
+                </property>
                 <property name="key" stdset="0">
                  <string>view/engine</string>
                 </property>
@@ -735,6 +816,9 @@
           <layout class="QGridLayout" name="gridLayout_17">
            <item row="0" column="1">
             <widget class="QComboBox" name="combo_style">
+             <property name="toolTip">
+              <string>The window style.</string>
+             </property>
              <property name="currentText">
               <string>Fusion</string>
              </property>
@@ -872,6 +956,9 @@
            </item>
            <item row="1" column="1">
             <widget class="QComboBox" name="combo_theme">
+             <property name="toolTip">
+              <string>Set the colors depending on a predefined theme.</string>
+             </property>
              <property name="key" stdset="0">
               <string>col/theme</string>
              </property>
@@ -1005,6 +1092,9 @@
            </item>
            <item row="2" column="0">
             <widget class="QPushButton" name="pb_reload">
+             <property name="toolTip">
+              <string>Resets all colors to the original theme settings.</string>
+             </property>
              <property name="text">
               <string>Reset Theme</string>
              </property>
@@ -1012,6 +1102,9 @@
            </item>
            <item row="2" column="1">
             <widget class="QPushButton" name="pb_saveTheme">
+             <property name="toolTip">
+              <string>Save the current colors as a preset.</string>
+             </property>
              <property name="text">
               <string>Save as Custom Theme</string>
              </property>

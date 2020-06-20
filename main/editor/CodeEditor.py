@@ -181,8 +181,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                                                  line=curs.block().blockNumber() + 1, col=curs.columnNumber())
 
     def stoppedTyping(self):
-        self.highlighter.storeErrors()
         if bool(Config.value("editor/useParser", True)):
+            self.highlighter.storeErrors()
             self.highlightErrors()
 
     def positionChangedSlot(self):

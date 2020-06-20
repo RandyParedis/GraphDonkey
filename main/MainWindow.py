@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.find = FindReplace(self, self.editor())
         self.snippets = Snippets(self)
 
-        # Set menu
+        # Set menus
         self.action_New.triggered.connect(self.new)
         self.action_Open.triggered.connect(self.open)
         self.action_Save.triggered.connect(self.save)
@@ -112,6 +112,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
 
+        # self.action_Qt.hovered.connect(lambda: self.action_Qt.showStatusText(self))
+
+
+        # Set status texts
+        # for name, elem in self.__dict__.items():
+        #     if isinstance(elem, QtWidgets.QAction):
+        #         elem.hovered.connect(lambda m=elem.statusTip(): self.updateStatus(m))
+
         # Set Transformation Functions
         trns = []
         for p in pluginloader.get():
@@ -127,6 +135,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menu_Transform.addAction(action)
             self.transformationActions.append(action)
         self.tabChanged(self.files.currentIndex())
+
+    def event(self, e):
+        if e.type() == QtCore.QEvent.StatusTip:
+            self.updateStatus(e.tip())
+        return super().event(e)
 
     def setStatusBar(self, status: StatusBar):
         if self.statusBar() and isinstance(self.statusBar(), StatusBar):
@@ -298,9 +311,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if settings.contains("zoomlevel"):
                 self.view.zoomTo(float(settings.value("zoomlevel")))
         restore = int(Config.value("restore", 0))
-        if restore == 0:
+        if restore == 1:
             self.new()
-        elif restore == 1:
+        elif restore == 2:
             files = settings.value("open", list())
             cursors = settings.value("cursors", list())
             active = int(settings.value("active", 0))
