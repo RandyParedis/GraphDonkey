@@ -70,14 +70,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Preferences.triggered.connect(self.preferences.exec_)
         self.action_Close_File.triggered.connect(self.closeFile)
         self.action_Exit.triggered.connect(self.close)
+        self.action_Restart.\
+            triggered.connect(lambda: QtWidgets.QApplication.instance().exit(Constants.EXIT_CODE_REBOOT))
+
         self.action_Undo.triggered.connect(lambda: self.editorEvent("undo"))
         self.action_Redo.triggered.connect(lambda: self.editorEvent("redo"))
         self.action_Select_All.triggered.connect(lambda: self.editorEvent("selectAll"))
-        self.action_Clear.triggered.connect(lambda: self.editorEvent("clearContents"))
         self.action_Delete.triggered.connect(lambda: self.editorEvent("delete"))
+        self.action_Clear.triggered.connect(lambda: self.editorEvent("clearContents"))
         self.action_Copy.triggered.connect(lambda: self.editorEvent("copy"))
-        self.action_Paste.triggered.connect(lambda: self.editorEvent("paste"))
         self.action_Cut.triggered.connect(lambda: self.editorEvent("cut"))
+        self.action_Paste.triggered.connect(lambda: self.editorEvent("paste"))
         self.action_Duplicate.triggered.connect(lambda: self.editorEvent("duplicate"))
         self.action_Comment.triggered.connect(lambda: self.editorEvent("comment"))
         self.action_Indent.triggered.connect(lambda: self.editorEvent("indent"))
@@ -85,8 +88,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Auto_Indent.triggered.connect(lambda: self.editorEvent("autoIndent"))
         self.action_Move_Up.triggered.connect(lambda: self.editorEvent("moveUp"))
         self.action_Move_Down.triggered.connect(lambda: self.editorEvent("moveDown"))
-        self.action_Goto_Line.triggered.connect(lambda: self.editorEvent("goto"))
-        self.action_Find.triggered.connect(self.findReplace)
         self.action_Autocomplete.triggered.connect(lambda: self.editorEvent("complete"))
         self.action_UpperCase.triggered.connect(lambda: self.editorEvent("uppercase"))
         self.action_LowerCase.triggered.connect(lambda: self.editorEvent("lowercase"))
@@ -95,10 +96,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_DromedaryCase.triggered.connect(lambda: self.editorEvent("dromedaryCase"))
         self.action_PascalCase.triggered.connect(lambda: self.editorEvent("pascalCase"))
         self.action_SnakeCase.triggered.connect(lambda: self.editorEvent("snakeCase"))
-        self.viewDock.closeEvent = self.viewDockCloseEvent
-        self.action_Snippets.triggered.connect(self.openSnippets)
+
         self.action_Next_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() + 1))
         self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
+        self.action_Goto_Line.triggered.connect(lambda: self.editorEvent("goto"))
+        self.action_Find.triggered.connect(self.findReplace)
+
+        self.viewDock.closeEvent = self.viewDockCloseEvent
+        self.action_Snippets.triggered.connect(self.openSnippets)
         self.action_Render.triggered.connect(self.forceDisplay)
         self.action_Save_Rendered_View.triggered.connect(self.view.save)
         self.action_View_Parse_Tree.triggered.connect(lambda: self.editorEvent("viewParseTree"))
@@ -106,19 +111,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Zoom_Out.triggered.connect(self.view.zoomOut)
         self.action_Reset_Zoom.triggered.connect(self.view.resetZoom)
         self.action_Zoom_To_Fit.triggered.connect(self.view.zoomToFit)
+
         self.action_Help.triggered.connect(self.help)
         self.action_Report_Issue.triggered.connect(self.reportIssue)
         self.action_Updates.triggered.connect(self.updatesWizard)
-        self.action_Qt.triggered.connect(self.aboutQt)
         self.action_GraphDonkey.triggered.connect(self.aboutGraphDonkey)
-
-        # self.action_Qt.hovered.connect(lambda: self.action_Qt.showStatusText(self))
-
-
-        # Set status texts
-        # for name, elem in self.__dict__.items():
-        #     if isinstance(elem, QtWidgets.QAction):
-        #         elem.hovered.connect(lambda m=elem.statusTip(): self.updateStatus(m))
+        self.action_Qt.triggered.connect(self.aboutQt)
 
         # Set Transformation Functions
         trns = []
@@ -355,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 settings.setValue("windowState", state)
                 settings.setValue("recents", self.recents)
                 settings.setValue("zoomlevel", self.view.zoomlevel)
-            if int(Config.value("restore", 0)) == 1:
+            if int(Config.value("restore", 0)) == 2:
                 files = list()
                 cursors = list()
                 for tab in range(self.files.count()):
@@ -371,7 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             event.ignore()
 
-    def textChangedEvent(self):
+    def textChangedEvent(self):  # TODO: unused
         self.updateTitle()
 
     def updateRecents(self, file=None):
@@ -386,7 +384,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.menuOpen_Recent.clear()
 
         for file in self.recents:
-            self.menuOpen_Recent.addAction(file, lambda: self.openFile(file))
+            self.menuOpen_Recent.addAction(file, lambda f=file: self.openFile(f))
         if len(self.recents) > 0:
             self.menuOpen_Recent.addSeparator()
         clear = self.menuOpen_Recent.addAction("Clear Recents")
@@ -720,8 +718,10 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.aboutQt(self)
 
 
+# TODO: Not executed
 class TabPressEater(QtCore.QObject):
     def eventFilter(self, obj, event):
+        print("EVENT;", event.type())
         if event.type() == QtCore.QEvent.KeyPress and \
                 event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
             return True

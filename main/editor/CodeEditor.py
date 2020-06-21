@@ -170,6 +170,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             if len(curs.selectedText()) == 0:
                 curs.movePosition(QtGui.QTextCursor.PreviousCharacter)
                 self.setTextCursor(curs)
+        self.mainwindow.updateTitle()
 
     def alter(self, highlighter):
         self.highlighter.deleteLater()
@@ -329,13 +330,19 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             end = cursor.selectionEnd()
             cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
             txt = cursor.selectedText()
-            if len(txt.strip()) == 0 != len(txt):
-                cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            if len(txt) == 0 or 0 < len(txt.lstrip()):
+                line = cursor.block().text()
+                if len(line) == 0:
+                    self.autoIndent()
+                else:
+                    cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+                    if 0 < len(line) - len(line.lstrip()):
+                        cursor.movePosition(QtGui.QTextCursor.NextWord)
+                    if QtGui.QGuiApplication.keyboardModifiers() & QtCore.Qt.ShiftModifier:
+                        cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+                    self.setTextCursor(cursor)
             else:
-                cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-                cursor.movePosition(QtGui.QTextCursor.NextWord)
-            cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
-            self.setTextCursor(cursor)
+                QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
         elif event.key() == QtCore.Qt.Key_Backspace:
             if bool(Config.value("editor/pairedBrackets")):
                 curs = self.textCursor()

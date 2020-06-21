@@ -10,6 +10,7 @@ APP_NAME = "GraphDonkey"
 APP_VERSION = "0.2.2"
 APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
+EXIT_CODE_REBOOT = -123456789
 
 LINE_ENDING = "\u2029"  # Qt Handles all line endings internally => only need to replace on save
 

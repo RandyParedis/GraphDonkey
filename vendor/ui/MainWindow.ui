@@ -98,6 +98,7 @@
     <addaction name="separator"/>
     <addaction name="action_Close_File"/>
     <addaction name="action_Exit"/>
+    <addaction name="action_Restart"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -784,6 +785,11 @@
    </property>
    <property name="statusTip">
     <string>Open the documentation in a browser window</string>
+   </property>
+  </action>
+  <action name="action_Restart">
+   <property name="text">
+    <string>Res&amp;tart</string>
    </property>
   </action>
  </widget>

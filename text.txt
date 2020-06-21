@@ -9,14 +9,18 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     [0.2.3] {Universalisation}
     - Features:
-        - Restart
         - Read Only Files
         - Listen on host:port address
-        - Add "Navigate" Menu, which contains "Find & Replace", "Goto Line", "Next Error", "Prev Error", Bookmarks etc...
+        - Add "Next Error", "Prev Error", Bookmarks etc... to "Navigate" menu
     - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
-    - Fix Home button
+    - Fix tab handling (selecting a character and pressing tab should NOT copy characters)
     - Fix indentation logic
     - Fix: Treeview throws segfault on opening again after full screen on external monitor (quite specific issue)
+    - Fix: CTRL+SHIFT+TAB will override shortcut navigation
+            When the shortcuts of "Next File" and "Previous File" are changed to other values, CTRL+SHIFT+TAB
+            continues to work.
+    - Fix: Add (SHIFT+)TAB as possible shortcut setting in QKeySequenceEdits of Preferences
+    - Fix: "Restore Defaults" in Preferences also clears "first time" setting (and allows retriggering of startup dialog)
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors
     - Other plugins by default (see Future.md)
@@ -33,8 +37,7 @@ TODO LIST
     - Max column size indicator
     - Add 'warnings' for parsing
     - Apply button in preferences (which keeps the preferences open)
-    - Auto-update
-    	- https://hackthology.com/how-to-write-self-updating-python-programs-using-pip-and-git.html
+    - Restart on Separate Thread
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML

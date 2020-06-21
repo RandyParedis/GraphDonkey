@@ -36,6 +36,11 @@ if __name__ == '__main__':
     print("LAUNCING APP...")
     print("GraphDonkey Version:", Constants.APP_VERSION_NAME, "(" + Constants.APP_VERSION + ")")
 
-    mainwindow = MainWindow()
-    mainwindow.show()
-    code = app.exec_()
+    while True:
+        mainwindow = MainWindow()
+        mainwindow.show()
+        code = app.exec_()
+        if code != Constants.EXIT_CODE_REBOOT:
+            break
+        else:
+            print("RESTARTING APP...")

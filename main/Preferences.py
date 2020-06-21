@@ -167,7 +167,7 @@ class Preferences(QtWidgets.QDialog):
             "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
             "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down", "Updates", "Report_Issue",
             "UpperCase", "LowerCase", "WordCase", "SentenceCase", "DromedaryCase", "PascalCase", "SnakeCase",
-            "Goto_Line", "Help"
+            "Goto_Line", "Help", "Restart"
         ]
 
         def pressEvent(kseq, event):
