@@ -11,15 +11,12 @@ TODO LIST
     - Features:
         - Read Only Files
         - Listen on host:port address
-        - Add "Next Error", "Prev Error", Bookmarks etc... to "Navigate" menu
+        - Add "Next Error", "Prev Error", Bookmarks, "First file", "Last file" etc... to "Navigate" menu
     - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
-    - Fix tab handling (selecting a character and pressing tab should NOT copy characters)
+    - Fix tab handling (selecting a set of characters and pressing tab should NOT copy characters)
     - Fix indentation logic
+    - Fix: Restart on Windows
     - Fix: Treeview throws segfault on opening again after full screen on external monitor (quite specific issue)
-    - Fix: CTRL+SHIFT+TAB will override shortcut navigation
-            When the shortcuts of "Next File" and "Previous File" are changed to other values, CTRL+SHIFT+TAB
-            continues to work.
-    - Fix: Add (SHIFT+)TAB as possible shortcut setting in QKeySequenceEdits of Preferences
     - Fix: "Restore Defaults" in Preferences also clears "first time" setting (and allows retriggering of startup dialog)
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors
@@ -33,6 +30,7 @@ TODO LIST
     - Add images to documentation AND wizards
     - Add icon to all plugins
     - Add icon to completer types
+    - Fix colors for invalid shortcuts (make them follow the theme)
     - Tree Indentation guides
     - Max column size indicator
     - Add 'warnings' for parsing

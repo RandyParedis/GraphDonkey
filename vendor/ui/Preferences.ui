@@ -1136,7 +1136,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-1335</y>
             <width>689</width>
             <height>1844</height>
            </rect>
@@ -1332,7 +1332,7 @@
            <item row="4" column="0">
             <widget class="QGroupBox" name="groupBox_8">
              <property name="title">
-              <string>Other Actions</string>
+              <string>Help Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_13" columnstretch="1,3">
               <item row="4" column="0">
@@ -1448,6 +1448,9 @@
               </item>
               <item row="0" column="1">
                <widget class="QKeySequenceEdit" name="ks_show_render_area">
+                <property name="focusPolicy">
+                 <enum>Qt::WheelFocus</enum>
+                </property>
                 <property name="key" stdset="0">
                  <string>ks/show_render_area</string>
                 </property>
@@ -1467,26 +1470,6 @@
                <widget class="QLabel" name="label_76">
                 <property name="text">
                  <string>Zoom In:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QKeySequenceEdit" name="ks_next_file">
-                <property name="keySequence">
-                 <string>Ctrl+Tab</string>
-                </property>
-                <property name="key" stdset="0">
-                 <string>ks/next_file</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QKeySequenceEdit" name="ks_previous_file">
-                <property name="keySequence">
-                 <string>Ctrl+Shift+Tab</string>
-                </property>
-                <property name="key" stdset="0">
-                 <string>ks/previous_file</string>
                 </property>
                </widget>
               </item>
@@ -1531,24 +1514,10 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_74">
-                <property name="text">
-                 <string>Next File:</string>
-                </property>
-               </widget>
-              </item>
               <item row="6" column="0">
                <widget class="QLabel" name="label_72">
                 <property name="text">
                  <string>View Parse Tree:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_75">
-                <property name="text">
-                 <string>Previous File:</string>
                 </property>
                </widget>
               </item>
@@ -1995,10 +1964,17 @@
            <item row="2" column="0">
             <widget class="QGroupBox" name="groupBox_10">
              <property name="title">
-              <string>Search Actions</string>
+              <string>Navigate Actions</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_23" columnstretch="1,3">
-              <item row="1" column="1">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_75">
+                <property name="text">
+                 <string>Previous File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
                <widget class="QKeySequenceEdit" name="ks_goto_line">
                 <property name="keySequence">
                  <string>Ctrl+G</string>
@@ -2008,27 +1984,54 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
+              <item row="3" column="0">
                <widget class="QLabel" name="label_93">
                 <property name="text">
                  <string>Go to Line:</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
+              <item row="2" column="0">
                <widget class="QLabel" name="label_60">
                 <property name="text">
                  <string>Find and Replace:</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
+              <item row="2" column="1">
                <widget class="QKeySequenceEdit" name="ks_find">
                 <property name="keySequence">
                  <string>Ctrl+F</string>
                 </property>
                 <property name="key" stdset="0">
                  <string>ks/find</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="ks_previous_file">
+                <property name="keySequence">
+                 <string>Ctrl+Shift+Tab</string>
+                </property>
+                <property name="key" stdset="0">
+                 <string>ks/previous_file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_74">
+                <property name="text">
+                 <string>Next File:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QKeySequenceEdit" name="ks_next_file">
+                <property name="keySequence">
+                 <string>Ctrl+Tab</string>
+                </property>
+                <property name="key" stdset="0">
+                 <string>ks/next_file</string>
                 </property>
                </widget>
               </item>
@@ -2162,6 +2165,100 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>check_rememberLayout</tabstop>
+  <tabstop>radio_ws_none</tabstop>
+  <tabstop>radio_ws_openempty</tabstop>
+  <tabstop>radio_ws_restore</tabstop>
+  <tabstop>check_autohide</tabstop>
+  <tabstop>num_recents</tabstop>
+  <tabstop>font_interface</tabstop>
+  <tabstop>num_font_interface</tabstop>
+  <tabstop>font_editor</tabstop>
+  <tabstop>check_monospace</tabstop>
+  <tabstop>num_font_editor</tabstop>
+  <tabstop>check_spaceTabs</tabstop>
+  <tabstop>num_tabwidth</tabstop>
+  <tabstop>check_lineNumbers</tabstop>
+  <tabstop>check_highlightLine</tabstop>
+  <tabstop>check_showWhitespace</tabstop>
+  <tabstop>check_parentheses</tabstop>
+  <tabstop>check_emptyline</tabstop>
+  <tabstop>check_pairedBrackets</tabstop>
+  <tabstop>check_syntax</tabstop>
+  <tabstop>check_parse</tabstop>
+  <tabstop>check_autorender</tabstop>
+  <tabstop>num_autoreparse</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>check_view_controls</tabstop>
+  <tabstop>combo_scroll_key</tabstop>
+  <tabstop>num_zoom_level_min</tabstop>
+  <tabstop>num_zoom_level_max</tabstop>
+  <tabstop>num_zoom_factor</tabstop>
+  <tabstop>combo_engine</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>combo_style</tabstop>
+  <tabstop>combo_theme</tabstop>
+  <tabstop>pb_reload</tabstop>
+  <tabstop>pb_saveTheme</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>ks_new</tabstop>
+  <tabstop>ks_open</tabstop>
+  <tabstop>ks_save</tabstop>
+  <tabstop>ks_save_all</tabstop>
+  <tabstop>ks_save_as</tabstop>
+  <tabstop>ks_export</tabstop>
+  <tabstop>ks_clear_recents</tabstop>
+  <tabstop>ks_preferences</tabstop>
+  <tabstop>ks_close_file</tabstop>
+  <tabstop>ks_exit</tabstop>
+  <tabstop>ks_restart</tabstop>
+  <tabstop>ks_undo</tabstop>
+  <tabstop>ks_redo</tabstop>
+  <tabstop>ks_select_all</tabstop>
+  <tabstop>ks_clear</tabstop>
+  <tabstop>ks_delete</tabstop>
+  <tabstop>ks_copy</tabstop>
+  <tabstop>ks_paste</tabstop>
+  <tabstop>ks_cut</tabstop>
+  <tabstop>ks_duplicate</tabstop>
+  <tabstop>ks_comment</tabstop>
+  <tabstop>ks_indent</tabstop>
+  <tabstop>ks_unindent</tabstop>
+  <tabstop>ks_auto_indent</tabstop>
+  <tabstop>ks_move_up</tabstop>
+  <tabstop>ks_move_down</tabstop>
+  <tabstop>ks_autocomplete</tabstop>
+  <tabstop>ks_uppercase</tabstop>
+  <tabstop>ks_lowercase</tabstop>
+  <tabstop>ks_wordcase</tabstop>
+  <tabstop>ks_sentencecase</tabstop>
+  <tabstop>ks_dromedarycase</tabstop>
+  <tabstop>ks_pascalcase</tabstop>
+  <tabstop>ks_snakecase</tabstop>
+  <tabstop>ks_previous_file</tabstop>
+  <tabstop>ks_next_file</tabstop>
+  <tabstop>ks_find</tabstop>
+  <tabstop>ks_goto_line</tabstop>
+  <tabstop>ks_show_render_area</tabstop>
+  <tabstop>ks_snippets</tabstop>
+  <tabstop>ks_render</tabstop>
+  <tabstop>ks_save_rendered_view</tabstop>
+  <tabstop>ks_view_parse_tree</tabstop>
+  <tabstop>ks_zoom_in</tabstop>
+  <tabstop>ks_zoom_out</tabstop>
+  <tabstop>ks_reset_zoom</tabstop>
+  <tabstop>ks_zoom_to_fit</tabstop>
+  <tabstop>ks_help</tabstop>
+  <tabstop>ks_report_issue</tabstop>
+  <tabstop>ks_updates</tabstop>
+  <tabstop>ks_graphdonkey</tabstop>
+  <tabstop>ks_qt</tabstop>
+  <tabstop>filterPlugins</tabstop>
+  <tabstop>pluginlistscroll</tabstop>
+  <tabstop>pluginviewscroll</tabstop>
+ </tabstops>
  <resources>
   <include location="../icons/tango.qrc"/>
  </resources>

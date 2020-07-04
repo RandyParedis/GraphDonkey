@@ -78,3 +78,20 @@ def tabPathnames(names: list, skip=('undefined',)):
         nlist[idx] = tabs[idx]
 
     return nlist
+
+from PyQt5 import  QtCore
+class TabPressEater(QtCore.QObject):
+    """Disables the tab navigation for a specific widget.
+
+    Use as an event filter!
+    """
+    def __init__(self, parent, ctrl=True):
+        super().__init__(parent)
+        self.ctrl = ctrl
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress and \
+                (event.key() == QtCore.Qt.Key_Tab or event.key() == QtCore.Qt.Key_Backtab) and \
+                (not self.ctrl or event.modifiers() & QtCore.Qt.ControlModifier):
+            return True
+        return QtCore.QObject.eventFilter(self, obj, event)

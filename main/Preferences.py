@@ -21,6 +21,7 @@ def bool(name: str):
     return name
 
 from main.plugins import PluginLoader, PluginInstaller
+from main.extra import TabPressEater
 pluginloader = PluginLoader.instance()
 
 
@@ -172,29 +173,38 @@ class Preferences(QtWidgets.QDialog):
 
         def pressEvent(kseq, event):
             QtWidgets.QKeySequenceEdit.keyPressEvent(kseq, event)
-            kseq.setKeySequence(QtGui.QKeySequence.fromString(kseq.keySequence().toString().split(", ")[0]))
-            self.checkShortcuts()
+            if len(kseq.keySequence()) > 0:
+                kseq.setKeySequence(QtGui.QKeySequence(kseq.keySequence()[0]))
+
+        def menu(kseq, point):
+            m = QtWidgets.QMenu(self)
+            m.addAction("Clear Field", lambda: kseq.clear())
+            m.addSeparator()
+            m.addAction("Set to 'Tab'", lambda: kseq.setKeySequence(QtCore.Qt.Key_Tab))
+            m.addAction("Set to 'Shift+Tab'", lambda: kseq.setKeySequence("Shift+Tab"))
+            m.exec_(self.mapToGlobal(
+                kseq.parent().parent().mapToParent(kseq.parent().mapToParent(kseq.mapToParent(point)))))
 
         for action in self.shortcuts:
             ks = getattr(self, "ks_" + action.lower())
             ks.setToolTip("Shortcut for the '%s' action." % action.replace("_", " "))
             ks.keyPressEvent = lambda e, k=ks: pressEvent(k, e)
+            ks.keySequenceChanged.connect(lambda _: self.checkShortcuts())
 
             # Bypass because Qt works weirdly:
             le = ks.findChild(QtWidgets.QLineEdit)
-            le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+            le.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            le.customContextMenuRequested.connect(lambda p, k=ks: menu(k, p))
             le.setClearButtonEnabled(True)
+            clear = le.findChild(QtWidgets.QAction)
+            clear.triggered.connect(ks.clear)
 
     def checkShortcuts(self):
+        # TODO: follow theme!
         mapped = []
         for sc in self.shortcuts:
             ks = getattr(self, "ks_" + sc.lower())
             scs = ks.keySequence().toString()
-
-            # TRUNCATE TO SINGLE SHORTCUT
-            if ", " in scs:
-                scs = scs.split(", ")[0]
-                ks.setKeySequence(QtGui.QKeySequence.fromString(scs))
 
             if scs not in mapped or scs == "":
                 mapped.append(scs)

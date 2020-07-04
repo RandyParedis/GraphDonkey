@@ -11,7 +11,7 @@ from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
-from main.extra import Constants, tabPathnames
+from main.extra import Constants, tabPathnames, TabPressEater
 from main.wizards.UpdateWizard import UpdateWizard
 from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import os, sys, chardet, markdown
@@ -29,7 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
-        self.files.installEventFilter(TabPressEater())
+        self.files.installEventFilter(TabPressEater(self.files))
         self.view = GraphicsView(self, self.viewDock)
         self.viewDockWidgetContents.layout().addWidget(self.view)
         self.view.zoomed.connect(self.zoomed)
@@ -716,13 +716,3 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def aboutQt(self):
         QtWidgets.QMessageBox.aboutQt(self)
-
-
-# TODO: Not executed
-class TabPressEater(QtCore.QObject):
-    def eventFilter(self, obj, event):
-        print("EVENT;", event.type())
-        if event.type() == QtCore.QEvent.KeyPress and \
-                event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
-            return True
-        return QtCore.QObject.eventFilter(self, obj, event)
