@@ -13,8 +13,8 @@ TODO LIST
         - Listen on host:port address
         - Add "Next Error", "Prev Error", Bookmarks, "First file", "Last file" etc... to "Navigate" menu
     - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
-    - Fix tab handling (selecting a set of characters and pressing tab should NOT copy characters)
     - Fix indentation logic
+    - Fix indentation undo
     - Fix: Restart on Windows
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors

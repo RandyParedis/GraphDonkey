@@ -493,8 +493,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         cursor.setPosition(posS)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.setPosition(posE, QtGui.QTextCursor.KeepAnchor)
-        if cursor.selectedText() == Constants.LINE_ENDING or posS == posE:
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
         cursor.insertText(ntxt)
         cursor.setPosition(posS + add)
         cursor.setPosition(posE + len(ntxt) - len(otxt), QtGui.QTextCursor.KeepAnchor)
