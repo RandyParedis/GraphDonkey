@@ -36,40 +36,42 @@ class StatusBar(QtWidgets.QStatusBar):
         self.statusMessage = QtWidgets.QLabel("")
         self.statusMessage.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        self.positionIndicator = QtWidgets.QLabel(":")
-        self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-
-        self.leCombo = QtWidgets.QComboBox()
-        self.seps = {
-            "Posix (LF)": '\n',
-            "Mac OS [Pre-OSX] (CR)": '\r',
-            "Windows (CRLF)": '\r\n'
-        }
-        for name in self.seps:
-            self.leCombo.addItem(name, self.seps[name])
-        self.setLineSep(os.linesep)
-
-        self.encCombo = QtWidgets.QComboBox()
-        self.encCombo.addItem("UTF-8", "utf-8")
-        self.encCombo.addItem("UTF-16", "utf-16")
-        self.encCombo.addItem("ASCII", "ascii")
-        self.encCombo.addItem("ISO-8859-1", "latin1")
-
-        self.ftCombo = QtWidgets.QComboBox()
-
-        rdr = QtWidgets.QLabel("Render with:")
-        rdr.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.rendererCombo = QtWidgets.QComboBox()
-
         self.addPermanentWidget(QtWidgets.QLabel(" "))
         self.addPermanentWidget(self.statusMessage, 7)
-        self.addPermanentWidget(self.positionIndicator, 1)
-        self.addPermanentWidget(self.leCombo, 1)
-        self.addPermanentWidget(self.encCombo, 1)
-        self.addPermanentWidget(self.ftCombo, 0)
-        self.addPermanentWidget(rdr, 1)
-        self.addPermanentWidget(self.rendererCombo, 0)
-        self.addPermanentWidget(QtWidgets.QLabel(" "))
+
+        if wrapper is not None:
+            self.positionIndicator = QtWidgets.QLabel(":")
+            self.positionIndicator.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+            self.leCombo = QtWidgets.QComboBox()
+            self.seps = {
+                "Posix (LF)": '\n',
+                "Mac OS [Pre-OSX] (CR)": '\r',
+                "Windows (CRLF)": '\r\n'
+            }
+            for name in self.seps:
+                self.leCombo.addItem(name, self.seps[name])
+            self.setLineSep(os.linesep)
+
+            self.encCombo = QtWidgets.QComboBox()
+            self.encCombo.addItem("UTF-8", "utf-8")
+            self.encCombo.addItem("UTF-16", "utf-16")
+            self.encCombo.addItem("ASCII", "ascii")
+            self.encCombo.addItem("ISO-8859-1", "latin1")
+
+            self.ftCombo = QtWidgets.QComboBox()
+
+            rdr = QtWidgets.QLabel("Render with:")
+            rdr.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            self.rendererCombo = QtWidgets.QComboBox()
+
+            self.addPermanentWidget(self.positionIndicator, 1)
+            self.addPermanentWidget(self.leCombo, 1)
+            self.addPermanentWidget(self.encCombo, 1)
+            self.addPermanentWidget(self.ftCombo, 0)
+            self.addPermanentWidget(rdr, 1)
+            self.addPermanentWidget(self.rendererCombo, 0)
+            self.addPermanentWidget(QtWidgets.QLabel(" "))
 
     def setLineSep(self, sep):
         seps = {self.seps[n]: n for n in self.seps}
@@ -327,9 +329,11 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             cursor.endEditBlock()
         elif event.key() == QtCore.Qt.Key_Home:
             cursor = self.textCursor()
-            end = cursor.selectionEnd()
+            start = cursor.selectionStart()
+            anchor = cursor.anchor()
+            sel = cursor.selectedText()
             cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
-            txt = cursor.selectedText()
+            txt = cursor.selectedText() + sel
             if len(txt) == 0 or 0 < len(txt.lstrip()):
                 line = cursor.block().text()
                 if len(line) == 0:
@@ -338,8 +342,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                     cursor.movePosition(QtGui.QTextCursor.StartOfLine)
                     if 0 < len(line) - len(line.lstrip()):
                         cursor.movePosition(QtGui.QTextCursor.NextWord)
+                        if cursor.selectionStart() == start:
+                            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
                     if QtGui.QGuiApplication.keyboardModifiers() & QtCore.Qt.ShiftModifier:
-                        cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+                        pos = cursor.position()
+                        cursor.setPosition(anchor)
+                        cursor.setPosition(pos, QtGui.QTextCursor.KeepAnchor)
                     self.setTextCursor(cursor)
             else:
                 QtWidgets.QPlainTextEdit.keyPressEvent(self, event)
@@ -978,7 +986,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.lineNumberArea.setGeometry(QtCore.QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
 
     def updateIndicator(self):
-        if isinstance(self.mainwindow.statusBar(), StatusBar):
+        if isinstance(self.mainwindow.statusBar(), StatusBar) and self.mainwindow.statusBar().wrapper is not None:
             text = ""
             cursor = self.textCursor()
             if cursor.selectedText() != "":
@@ -1010,6 +1018,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 view = GraphicsView(self.mainwindow, self.parent())
                 layout.addWidget(view)
                 self.treeView.setLayout(layout)
+                def term(_):
+                    self.treeView = None
+                self.treeView.finished.connect(term)
             self.treeView.setWindowTitle("Lark LALR Parse Tree of %s" % self.filename)
             view = self.treeView.layout().itemAtPosition(0, 0).widget()
             view.setControls(bool(Config.value("view/controls")))
@@ -1047,6 +1058,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.mainwindow.warn("Warning!", "It looks like your file contains some errors. Impossible to render AST.")
             if self.treeView is not None and self.treeView.isVisible():
                 self.treeView.close()
+                self.treeView = None
 
 
 class LineNumberArea(QtWidgets.QWidget):

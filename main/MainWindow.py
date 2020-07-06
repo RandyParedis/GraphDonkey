@@ -43,7 +43,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
         self.updateTitle()
-        self.setStatusBar(QtWidgets.QStatusBar())
+        self.setStatusBar(StatusBar(None))
 
         if len(Config.allKeys()) == 0:
             wiz = WelcomeWizard()

@@ -21,7 +21,6 @@ def bool(name: str):
     return name
 
 from main.plugins import PluginLoader, PluginInstaller
-from main.extra import TabPressEater
 pluginloader = PluginLoader.instance()
 
 
@@ -449,6 +448,7 @@ class Preferences(QtWidgets.QDialog):
     def restoreDefaults(self, button):
         if button.text() == "Restore Defaults":
             self.preferences.clear()
+            self.preferences.setValue("col/theme", self.combo_theme.currentText())
             self.preferences.sync()
             self.rectify()
 
