@@ -161,13 +161,15 @@ class Preferences(QtWidgets.QDialog):
 
     def _setupKs(self):
         self.shortcuts = [
-            "New", "Open", "Clear_Recents", "Save", "Save_As", "Save_All", "Export", "Preferences", "Close_File",
-            "Exit", "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Cut", "Paste", "Duplicate", "Comment",
-            "Indent", "Unindent", "Auto_Indent", "Find", "Autocomplete", "Show_Render_Area", "Snippets", "Next_File",
-            "Previous_File", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out", "Reset_Zoom",
-            "Zoom_To_Fit", "GraphDonkey", "Qt", "Move_Up", "Move_Down", "Updates", "Report_Issue",
+            "New", "Open", "Save", "Save_All", "Save_As", "Export", "Clear_Recents", "Preferences", "Close_File",
+            "Exit", "Restart",
+            "Undo", "Redo", "Select_All", "Clear", "Delete", "Copy", "Paste", "Cut", "Duplicate", "Comment",
+            "Indent", "Unindent", "Auto_Indent", "Move_Up", "Move_Down", "Autocomplete",
             "UpperCase", "LowerCase", "WordCase", "SentenceCase", "DromedaryCase", "PascalCase", "SnakeCase",
-            "Goto_Line", "Help", "Restart"
+            "Previous_File", "Next_File", "First_File", "Last_File", "Find", "Goto_Line",
+            "Show_Render_Area", "Snippets", "Render", "Save_Rendered_View", "View_Parse_Tree", "Zoom_In", "Zoom_Out",
+            "Reset_Zoom", "Zoom_To_Fit",
+            "Help", "Report_Issue", "Updates", "GraphDonkey", "Qt"
         ]
 
         def pressEvent(kseq, event):

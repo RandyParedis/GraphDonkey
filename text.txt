@@ -11,24 +11,26 @@ TODO LIST
     - Features:
         - Read Only Files
         - Listen on host:port address
-        - Add "Next Error", "Prev Error", Bookmarks, "First file", "Last file" etc... to "Navigate" menu
-    - Fix comments (identify indents before/after comment signs + identify comments when not first chars)
+        - Add "Next Error", "Prev Error", Bookmarks, etc... to "Navigate" menu
     - Fix indentation logic
-    - Fix indentation undo
     - Fix: Restart on Windows
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors
     - Other plugins by default (see Future.md)
     	- Add Wand? http://docs.wand-py.org/en/0.6.1/
-    	- Fix L-Systems (there is a slight bug somewhere.. -- penrose.l is invalid)
+    	- Fix L-Systems
+    	    * there is a slight bug somewhere.. -- penrose.l is invalid
+    	    * it cannot seem to handle comments..
     [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
     - Add images to documentation AND wizards
-    - Add icon to all plugins
-    - Add icon to completer types
+    - Custom Icons:
+        - Create custom icons (?)
+        - Add icon to all plugins (independent images)
+        - Add icon to completer types
     - Fix colors for invalid shortcuts (make them follow the theme)
     - Tree Indentation guides
     - Max column size indicator

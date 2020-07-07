@@ -99,6 +99,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.action_Next_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() + 1))
         self.action_Previous_File.triggered.connect(lambda: self.changeTab(self.files.currentIndex() - 1))
+        self.action_First_File.triggered.connect(lambda: self.changeTab(0))
+        self.action_Last_File.triggered.connect(lambda: self.changeTab(len(self.files)-1))
         self.action_Goto_Line.triggered.connect(lambda: self.editorEvent("goto"))
         self.action_Find.triggered.connect(self.findReplace)
 

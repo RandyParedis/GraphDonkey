@@ -152,8 +152,8 @@
     <addaction name="action_Clear"/>
     <addaction name="separator"/>
     <addaction name="action_Copy"/>
-    <addaction name="action_Cut"/>
     <addaction name="action_Paste"/>
+    <addaction name="action_Cut"/>
     <addaction name="action_Duplicate"/>
     <addaction name="separator"/>
     <addaction name="action_Comment"/>
@@ -177,6 +177,8 @@
     </property>
     <addaction name="action_Previous_File"/>
     <addaction name="action_Next_File"/>
+    <addaction name="action_First_File"/>
+    <addaction name="action_Last_File"/>
     <addaction name="separator"/>
     <addaction name="action_Find"/>
     <addaction name="action_Goto_Line"/>
@@ -790,6 +792,33 @@
   <action name="action_Restart">
    <property name="text">
     <string>Res&amp;tart</string>
+   </property>
+  </action>
+  <action name="action_First_File">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/go-first.png</normaloff>:/icons/tango/go-first.png</iconset>
+   </property>
+   <property name="text">
+    <string>F&amp;irst File</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the first file from the editor</string>
+   </property>
+  </action>
+  <action name="action_Last_File">
+   <property name="icon">
+    <iconset resource="../icons/tango.qrc">
+     <normaloff>:/icons/tango/go-last.png</normaloff>:/icons/tango/go-last.png</iconset>
+   </property>
+   <property name="text">
+    <string>L&amp;ast File</string>
+   </property>
+   <property name="toolTip">
+    <string>Last File</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the last file from the editor</string>
    </property>
   </action>
  </widget>

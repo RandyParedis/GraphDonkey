@@ -107,6 +107,10 @@ class EditorWrapper(QtWidgets.QWidget):
         # TODO: determine filetype based on extension
         self.filetype.setCurrentText(txt)
 
+    def getCurrentType(self):
+        tp = self.filetype.currentText()
+        return pluginloader.getFileTypesBis().get(tp, {})
+
     def alter(self, idx):
         self.engine.clear()
         if idx >= 0:
@@ -503,17 +507,15 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         return cursor
 
     def comment(self):
-        # TODO: identify indents before/after comment signs
+        sym = self.wrapper.getCurrentType().get("comments", "//")
+        sl = len(sym)
         def cmnt(line, state):
             txt = line
-            if txt[:2] == "//" and state in [True, None]:
-                txt = txt[2:]
-                state = True
-            elif len(txt) > 0 and txt[0] == "#" and state in [True, None]:
-                txt = txt[1:]
+            if txt.startswith(sym) and state in [True, None]:
+                txt = txt[sl:]
                 state = True
             elif state in [False, None]:
-                txt = "//" + txt
+                txt = sym + txt
                 state = False
             return state, txt
 

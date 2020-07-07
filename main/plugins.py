@@ -208,6 +208,13 @@ class PluginLoader:
             res.update(p.getFileTypes())
         return res
 
+    def getFileTypesBis(self, active=True):
+        res = { "": {} }
+        ps = self.get(active)
+        for p in ps:
+            res.update(p.types)
+        return res
+
     def getFileExtensions(self, active=True):
         res = {}
         ps = self.get(active)

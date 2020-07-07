@@ -78,7 +78,8 @@ TYPES = {
         ],
         "transformer": {
             "Cairo": Engine.transform
-        }
+        },
+        "comments": "//"
     },
     "Lindenmayer": {
         "extensions": ["l", "lm", "l2", "lindenmayer"],
