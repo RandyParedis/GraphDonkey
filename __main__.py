@@ -15,10 +15,9 @@ if not os.path.isdir(depfol):
     os.mkdir(depfol)
 sys.path.append(depfol)
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from main.extra import Constants
 from main.MainWindow import MainWindow
-
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
@@ -36,11 +35,11 @@ if __name__ == '__main__':
     print("LAUNCING APP...")
     print("GraphDonkey Version:", Constants.APP_VERSION_NAME, "(" + Constants.APP_VERSION + ")")
 
-    while True:
-        mainwindow = MainWindow()
-        mainwindow.show()
-        code = app.exec_()
-        if code != Constants.EXIT_CODE_REBOOT:
-            break
-        else:
-            print("RESTARTING APP...")
+    mainwindow = MainWindow()
+    mainwindow.show()
+    code = app.exec_()
+    if code == Constants.EXIT_CODE_REBOOT:
+        # NOTE: only works when launced from terminal
+        print("RESTARTING APP...")
+        python = str(sys.executable).replace('Program Files', 'Progra~1')
+        os.execl(python, python, *QtWidgets.QApplication.instance().arguments())
