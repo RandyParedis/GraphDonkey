@@ -514,15 +514,20 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         return cursor
 
     def comment(self):
-        sym = self.wrapper.getCurrentType().get("comments", "//")
+        comm = self.wrapper.getCurrentType().get("comments", {})
+        sym = comm.get("symbol", "//")
         sl = len(sym)
         def cmnt(line, state):
             txt = line
-            if txt.startswith(sym) and state in [True, None]:
-                txt = txt[sl:]
+            lstxt = txt.lstrip()
+            if lstxt.startswith(sym) and state in [True, None]:
+                txt = txt[:len(txt) - len(lstxt)] + lstxt[sl:]
                 state = True
             elif state in [False, None]:
-                txt = sym + txt
+                if txt != lstxt and comm.get("indent", False):
+                    txt = txt[:len(txt) - len(lstxt)] + sym + lstxt
+                else:
+                    txt = sym + txt
                 state = False
             return state, txt
 
@@ -599,7 +604,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             inc = indent + vobt
             txt = ("\t" * inc) + txt
         return txt
-
 
     def autoIndent(self):
         cursor = self.textCursor()

@@ -120,7 +120,10 @@ TYPES = {
         "paired": [
             ("{", "}"), ("[", "]"), ("<", ">"), ('"', '"')
         ],
-        "comments": "//"
+        "comments": {
+            "symbol": "//",
+            "indent": False
+        }
     }
 }
 

@@ -56,6 +56,9 @@ TYPES = {
         "transformer": {
             "Graphviz": convert
         },
-        "comments": "//"
+        "comments": {
+            "symbol": "//",
+            "indent": False
+        }
     }
 }
