@@ -312,24 +312,31 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 self.completer.popup().hide()
                 self.complete()
         elif event.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
-            self.insertPlainText(Constants.LINE_ENDING)
-            self.autoIndent()
             cursor = self.textCursor()
             cursor.beginEditBlock()
             pos = cursor.position()
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-            txt = cursor.selectedText().lstrip()
+            cursor.movePosition(QtGui.QTextCursor.PreviousCharacter)
+            cursor.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor, 2)
+            pn = cursor.selectedText()
             cursor.setPosition(pos)
+            cursor.insertBlock()
             cursor.movePosition(QtGui.QTextCursor.StartOfLine, QtGui.QTextCursor.KeepAnchor)
-            if len(txt) > 0 and txt[0] in [x[1] for x in paired] and len(cursor.selectedText()) == 0:
-                cursor.setPosition(pos)
-                cursor.insertText(Constants.LINE_ENDING)
-                cursor.movePosition(QtGui.QTextCursor.Up, QtGui.QTextCursor.KeepAnchor)
-                self.setTextCursor(cursor)
-                self.autoIndent()
-                cursor.setPosition(pos)
+            txt = cursor.selectedText()
+
+            linenr = cursor.blockNumber()
+            indent, tw, sot = self._get_generic_indent(txt)
+            ind = self._get_indent(indent, tw, sot, 1, linenr, "")
+            inc = " " * tw if sot else "\t"
+
+            # extra expansion when opening paired brackets (i.e. {} )
+            if pn in ["".join(x) for x in paired]:
+                self.insertPlainText(ind + inc + '\n' + ind + txt)
+                cursor.movePosition(QtGui.QTextCursor.Up)
                 cursor.movePosition(QtGui.QTextCursor.EndOfLine)
                 self.setTextCursor(cursor)
+            else:
+                self.insertPlainText(ind + txt)
+
             cursor.endEditBlock()
         elif event.key() == QtCore.Qt.Key_Home:
             cursor = self.textCursor()
@@ -562,42 +569,54 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.lines(func)
 
-    def autoIndent(self):
-        cursor = self.textCursor()
-        posS = cursor.selectionStart()
-        cursor.setPosition(posS)
-        s = cursor.movePosition(QtGui.QTextCursor.Up)
-        linenr = 0
-        indent = 0
+    @staticmethod
+    def _get_generic_indent(text):
         tw = int(Config.value("editor/tabwidth"))
         sot = bool(Config.value("editor/spacesOverTabs"))
-        if s:
-            linenr = cursor.blockNumber() + 1
-            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-            txt = cursor.selectedText()
-            for c in txt:
-                if c == ' ':
-                    indent += 1
-                elif c == '\t':
-                    indent += tw
-                else:
-                    break
+        indent = 0
+        for c in text:
+            if c == ' ':
+                indent += 1
+            elif c == '\t':
+                indent += tw
+            else:
+                break
 
         if not sot:
             indent //= tw
 
+        return indent, tw, sot
+
+    def _get_indent(self, indent, tw, sot, start, end, text, vis=None):
+        if vis is None:
+            vis = self.highlighter.parser.visitor
+        vobt = vis.obtain(end, start)
+        txt = text.lstrip()
+        if sot:
+            inc = indent + (vobt * tw)
+            txt = (" " * inc) + txt
+        else:
+            inc = indent + vobt
+            txt = ("\t" * inc) + txt
+        return txt
+
+
+    def autoIndent(self):
+        cursor = self.textCursor()
+        posS = cursor.selectionStart()
+        cursor.setPosition(posS)
+        cursor.movePosition(QtGui.QTextCursor.Up)
+
+        linenr = cursor.blockNumber() + 1
+        cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+        cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+        txt = cursor.selectedText()
+        indent, tw, sot = self._get_generic_indent(txt)
+
         vis = self.highlighter.parser.visitor
 
         def indentLine(line, state):
-            vobt = vis.obtain(state, linenr)
-            txt = line.lstrip()
-            if sot:
-                inc = indent + (vobt * tw)
-                line = (" " * inc) + txt
-            else:
-                inc = indent + vobt
-                line = ("\t" * inc) + txt
+            line = self._get_indent(indent, tw, sot, linenr, state, line, vis)
             state += 1
             return state, line
 

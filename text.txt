@@ -12,9 +12,12 @@ TODO LIST
         - Read Only Files
         - Listen on host:port address
         - Add "Next Error", "Prev Error", Bookmarks, etc... to "Navigate" menu
-    - Fix indentation logic
+    - Comments:
+        - When the line already starts with a comment, remove it instead
+        - Allow whitespace before comments
     - Update Graphviz plugin to work better (?)
         - Add all syntactical errors
+        - Comments only get highlighted at the beginning of a line
     - Other plugins by default (see Future.md)
     	- Add Wand? http://docs.wand-py.org/en/0.6.1/
     	- Fix L-Systems
