@@ -42,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files.currentChanged.connect(self.tabChanged)
         self.files.tabBarClicked.connect(self.tabChanged)
         self.files.tabCloseRequested.connect(self.closeFile)
+        self.files.customContextMenuRequested.connect(self.tabContextMenu)
         self.updateTitle()
         self.setStatusBar(StatusBar(None))
 
@@ -135,6 +136,49 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menu_Transform.addAction(action)
             self.transformationActions.append(action)
         self.tabChanged(self.files.currentIndex())
+
+    def tabContextMenu(self, pos):
+        # Compute clicked tab
+        cnt = self.files.tabBar().count()
+        it = -1
+        for i in range(cnt):
+            if self.files.tabBar().tabRect(i).contains(pos):
+                it = i
+                break
+
+        # Create menu actions
+        ac_close = QtWidgets.QAction("Close File", self.files)
+        ac_close.triggered.connect(lambda: self.closeFile(it))
+        ac_close.setIcon(QtGui.QIcon(":/icons/tango/process-stop.png"))
+        ac_other = QtWidgets.QAction("Close Others", self.files)
+        ac_other.triggered.connect(lambda: [self.closeFile(i) for i in range(cnt) if i != it])
+        ac_clall = QtWidgets.QAction("Close All", self.files)
+        ac_clall.triggered.connect(lambda: [self.closeFile(i) for i in range(cnt)])
+        ac_left = QtWidgets.QAction("Close All to the Left", self.files)
+        ac_left.triggered.connect(lambda: [self.closeFile(i) for i in range(it-1, -1, -1)])
+        ac_right = QtWidgets.QAction("Close All to the Right", self.files)
+        ac_right.triggered.connect(lambda: [self.closeFile(cnt - 1 - i) for i in range(cnt - it - 1)])
+
+        # Create menu
+        menu = QtWidgets.QMenu(self.files)
+        if it == self.files.currentIndex():
+            menu.addAction(self.action_Close_File)
+        else:
+            menu.addAction(ac_close)
+        menu.addAction(ac_other)
+        menu.addAction(ac_clall)
+        if it > 0:
+            menu.addAction(ac_left)
+        if it < cnt - 1:
+            menu.addAction(ac_right)
+        menu.addSeparator()
+        menu.addAction(self.action_Previous_File)
+        menu.addAction(self.action_Next_File)
+        menu.addAction(self.action_First_File)
+        menu.addAction(self.action_Last_File)
+
+        # Show menu
+        menu.popup(self.files.mapToGlobal(pos))
 
     def event(self, e):
         if e.type() == QtCore.QEvent.StatusTip:
@@ -445,6 +489,9 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 linesep = os.linesep
 
+        # Check if writeable
+        edit.wrapper.setReadOnly(not os.access(fn, os.W_OK))
+
         # Actually open the file
         with open(fn, "rb") as myfile:
             data = myfile.read()
@@ -477,10 +524,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lockDisplay()
         if fileName and fileName != "":
             valid = True
+            it = -1
+            for i in range(self.files.count()):
+                if self.editor(i) is not None and self.editor(i).filename == fileName:
+                    it = i
+                    self.files.setCurrentIndex(i)
+                    break
             try:
                 edit = self.editor()
-                if ignoreopen or edit is None or not (edit.filename == "" and edit.isSaved()):
-                    self.newTab(fileName)
+                if ignoreopen or edit is None or not (edit.filename == "" and edit.isSaved()) or it == -1:
+                    if it == -1 or edit is None:
+                        self.newTab(fileName)
                 self.editor().filename = fileName
                 self.updateFileType()
                 self.updateRecents(fileName)

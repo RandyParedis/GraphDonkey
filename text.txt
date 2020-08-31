@@ -9,18 +9,23 @@ Creating an rcc from a *.qrc file (example for tango icon set):
 TODO LIST
     [0.2.3] {Universalisation}
     - Features:
-        - Read Only Files
         - Listen on host:port address
-        - Add "Next Error", "Prev Error", Bookmarks, etc... to "Navigate" menu
-    - Update Graphviz plugin to work better (?)
-        - Add all syntactical errors
-        - Comments only get highlighted at the beginning of a line
+        - Add "Next Error", "Prev Error" to "Navigate" menu
     - Other plugins by default (see Future.md)
     	- Add Wand? http://docs.wand-py.org/en/0.6.1/
+    	- Update Graphviz plugin to work better
+            * Add all syntactical errors (?)
+            * Comments only get highlighted at the beginning of a line
     	- Fix L-Systems
-    	    * there is a slight bug somewhere.. -- penrose.l is invalid
-    	    * it cannot seem to handle comments..
+    	    * There is a slight bug somewhere -- penrose.l is invalid
+    	    * It cannot seem to handle comments
+    	- Fix flowchart
+    	    * Add matching parentheses
+    	    * Add missing features (procedures etc)
+    - What with files that get edited in another app?
     [0.2.4] {Styling Update}
+    - Add Bookmarks
+        - Add possibility to add icons to the line number area
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
@@ -31,11 +36,12 @@ TODO LIST
         - Add icon to all plugins (independent images)
         - Add icon to completer types
     - Fix colors for invalid shortcuts (make them follow the theme)
+    - Fix: The completer font size does not change with the preferences
     - Tree Indentation guides
     - Max column size indicator
     - Add 'warnings' for parsing
-    - Apply button in preferences (which keeps the preferences open)
-    - Restart on Separate Thread
+    - Error/Warning: underline or line background?
+    - "Apply" button in preferences (which keeps the preferences open)
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML

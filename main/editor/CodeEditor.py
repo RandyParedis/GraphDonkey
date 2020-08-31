@@ -82,6 +82,34 @@ class EditorWrapper(QtWidgets.QWidget):
     def __init__(self, parent):
         super(EditorWrapper, self).__init__(parent)
         self._layout = QtWidgets.QGridLayout()
+
+        # read-only
+        self.popup = QtWidgets.QFrame(self)
+        self.playout = QtWidgets.QHBoxLayout(self.popup)
+        self.popup.setAutoFillBackground(True)
+        self.playout.setContentsMargins(0, 0, 0, 0)
+        self.popup.setForegroundRole(QtGui.QPalette.Text)
+        self.popup.setBackgroundRole(QtGui.QPalette.AlternateBase)
+
+        self.iicon = QtWidgets.QLabel()
+        self.iicon.setPixmap(QtGui.QIcon(":/icons/tango/dialog-warning.png").pixmap(16, 16))
+        self.iicon.setAutoFillBackground(True)
+        self.iicon.setContentsMargins(10, 0, 10, 0)
+        self.iicon.setForegroundRole(QtGui.QPalette.Text)
+        self.iicon.setBackgroundRole(QtGui.QPalette.AlternateBase)
+        self.iicon.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.info = QtWidgets.QLabel("This file is read-only!")
+        self.info.setAutoFillBackground(True)
+        self.info.setContentsMargins(10, 5, 10, 5)
+        self.info.setForegroundRole(QtGui.QPalette.Text)
+        self.info.setBackgroundRole(QtGui.QPalette.AlternateBase)
+        self.info.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.playout.addWidget(self.iicon, 0)
+        self.playout.addWidget(self.info, 2)
+
+        # Main
         self.editor = CodeEditor(self)
         self.mainwindow = parent
         self.types = []
@@ -92,10 +120,16 @@ class EditorWrapper(QtWidgets.QWidget):
         self.encoding = self.statusBar.encCombo
 
         self._layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.addWidget(self.editor, 0, 0, 1, -1)
+        self._layout.setSpacing(0)
+        self._layout.addWidget(self.popup, 0, 0, 1, -1)
+        self._layout.addWidget(self.editor, 1, 0, 1, -1)
+        self._layout.setColumnStretch(0, 0)
+        self._layout.setColumnStretch(1, 1)
         self.filetype.currentIndexChanged.connect(self.alter)
         self.setTypes()
         self.setLayout(self._layout)
+
+        self.setReadOnly(False)
 
     def setTypes(self):
         self.types = pluginloader.getFileTypes()
@@ -125,6 +159,10 @@ class EditorWrapper(QtWidgets.QWidget):
 
     def setType(self, type):
         self.filetype.setCurrentText(self.types[type][0])
+
+    def setReadOnly(self, state):
+        self.popup.setVisible(state)
+        self.editor.setReadOnly(state)
 
 
 class CodeEditor(QtWidgets.QPlainTextEdit):
