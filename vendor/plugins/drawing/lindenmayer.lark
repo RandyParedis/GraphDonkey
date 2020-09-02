@@ -1,23 +1,23 @@
-// Simplified turtles for Pillow
+// L-Systems for Cairo
 
 COMMENT_SNG: "//" /[^\n]/*
 COMMENT_MLT: /\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\//
 WS: /[ \t\f\r\n]/+
 
-%ignore WS
 %ignore COMMENT_SNG
 %ignore COMMENT_MLT
+%ignore WS
 
-?start  : (alpha ";")? (stmt ";")*
+?start  : ((alpha ";")? (stmt ";")*)
 stmt    : axiom | angle | seed | depth | rule
 alpha   : ALPHA SET letters
 letters : LETTER (COMMA LETTER)*
 axiom   : AXIOM SET tail (COMMA ang)?
 ang     : DOUBLE (DEG | RAD)
-angle   : ANGLE SET ang
+angle   : (ANGLE | PLUS | MINUS) SET ang
 seed    : SEED SET INT
 depth   : DEPTH SET INT
-rule    : LETTER ("(" PERC ")")? TO tail
+rule    : LETTER ("(" PERC ")")? TO tail?
 tail    : (LETTER | CONST)+
 
 
@@ -25,15 +25,17 @@ ALPHA   : "alphabet"i | "alpha"i
 AXIOM   : "axiom"i | "start"i | "init"i | "initial"i | "initializer"i
 ANGLE   : "angle"i
 SEED    : "seed"i
-DEPTH   : "depth"i | "n"i
+DEPTH   : "depth"i
 SET     : ":="i | "="i | ":"i | "is"i
 LETTER  : /[^\s\[\]+,<>;-]/
 COMMA   : ","
 DEG     : "d"i | "deg"i | "degrees"i
 RAD     : "r"i | "rad"i | "radians"i
 TO      : "->"i | "to"i
-CONST   : "[" | "]" | "+" | "-"
+CONST   : "[" | "]" | "+" | "-" | "|"
 SEP     : ":" | "::"
+PLUS    : "angle+"i
+MINUS   : "angle-"i
 INT     : /-?([1-9][0-9]*|0)/
 PERC    : /0?\.[0-9]+/
 DOUBLE  : /-?([1-9][0-9]*|0)(\.[0-9]+)?/

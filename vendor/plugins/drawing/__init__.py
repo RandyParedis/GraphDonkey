@@ -22,7 +22,7 @@ attributes = [
 ]
 
 other = [
-    "radians", "degrees", "deg", "rad", "d", "r"
+    "(?<=\d\s)radians", "(?<=\d\s)degrees", "(?<=\d\s)deg", "(?<=\d\s)rad", "(?<=\d\s)d", "(?<=\d\s)r"
 ]
 
 TYPES = {
@@ -64,7 +64,7 @@ TYPES = {
                 "format": "hash"
             },
             {
-                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+                "regex": "//[^%s]*$" % Constants.LINE_ENDING,
                 "format": "comment"
             },
             {
@@ -87,7 +87,7 @@ TYPES = {
     "Lindenmayer": {
         "extensions": ["l", "lm", "l2", "lindenmayer"],
         "grammar": "lindenmayer.lark",
-        "parser": "earley",
+        "parser": "lalr",
         "semantics": Lindenmayer.CheckLVisitor,
         "highlighting": [
             {
@@ -95,7 +95,7 @@ TYPES = {
                     "pattern": [
                         "alphabet", "alpha",
                         "axiom", "start", "initial", "init", "initializer",
-                        "angle", "seed", "depth", "n", "to", "is"
+                        "angle", "seed", "depth", "to", "is", # "n(?=\s(is|:=|:|=))"
                     ],
                     "insensitive": True
                 },
@@ -121,7 +121,7 @@ TYPES = {
                 "format": "number"
             },
             {
-                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+                "regex": "//[^%s]*$" % Constants.LINE_ENDING,
                 "format": "comment"
             },
             {

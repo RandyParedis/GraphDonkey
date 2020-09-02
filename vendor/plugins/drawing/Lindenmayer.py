@@ -17,7 +17,7 @@ Author: Randy Paredis
 Date:   06/02/2020
 """
 from main.extra.IOHandler import IOHandler
-from lark import Transformer
+from lark import Transformer, Token
 from main.viewer.shapes import Line, Properties
 import math, random
 
@@ -46,7 +46,7 @@ class LSystemRule:
             r -= p
             if r <= 0:
                 return tail
-        # When the percentages don't add up to 1, take the last element.
+        # When the percentages don't add up to 1, take the last tail.
         return self.tails[:][-1][1]
 
 
@@ -56,7 +56,8 @@ class LSystem:
         self.axiom = None
         self.rules = dict()
         self.depth = 1
-        self.angle = 90
+        self.anglep = 90
+        self.anglem = 90
         self.sangle = 0
         self.seed = 0
         self.size = 10
@@ -86,9 +87,11 @@ class LSystem:
         trail = []
         for s in stream:
             if s == '+':
-                a += self.angle
+                a += self.anglep
             elif s == '-':
-                a -= self.angle
+                a -= self.anglem
+            elif s == '|':
+                a += 180
             elif s == '[':
                 stack.append((pos, a))
             elif s == ']':
@@ -129,7 +132,13 @@ class LindenmayerTransformer(Transformer):
         self.system.depth = elms[2]
 
     def angle(self, elms):
-        self.system.angle = elms[2]
+        if elms[0].value.endswith("+"):
+            self.system.anglep = elms[2]
+        elif elms[0].value.endswith("-"):
+            self.system.anglem = elms[2]
+        else:
+            self.system.anglep = elms[2]
+            self.system.anglem = elms[2]
 
     def ang(self, elms):
         if elms[1].type == "DEG":
@@ -144,9 +153,12 @@ class LindenmayerTransformer(Transformer):
 
     def rule(self, elms):
         p = 1.0
-        if len(elms) == 4:
+        if isinstance(elms[1], float):
             p = elms[1]
-        self.system.add_rule(elms[0], elms[-1], p)
+        tail = elms[-1]
+        if isinstance(tail, Token):
+            tail = []
+        self.system.add_rule(elms[0], tail, p)
 
 
 class LImage:
@@ -183,7 +195,7 @@ class LImage:
         return [Properties(w, h)] + self.path
 
 
-def transform(text, T):
+def transform(_, T):
     trans = LindenmayerTransformer()
     trans.transform(T)
     img = LImage(trans.system.solve())
@@ -223,10 +235,10 @@ class CheckLVisitor(CheckVisitor):
         if c not in self.alpha:
             self.errors.append((c, "Undefined character '%s' at line %i col %i" % (c.value, c.line, c.column), {}))
         self.percs.setdefault(c.value, 0)
-        if len(T.children) == 3:
+        if T.children[1].type == "TO":
             self.percs[c.value] += 1
             tok = c
-        else:  # 4 children
+        else:  # probability set
             tok = T.children[1]
             self.percs[c.value] += float(tok.value)
             if float(tok.value) == 0:
@@ -247,8 +259,26 @@ class CheckLVisitor(CheckVisitor):
     def enter_stmt(self, T):
         # TODO: 'previously defined at'
         for c in T.children:
-            if c.data != "rule":
+            if c.data not in ["rule", "angle"]:
                 if self.defn.get(c.data, False):
                     self.errors.append((c.children[0],
                                         "Redefinition of '%s' at line %i col %i" % (c.data, c.line, c.column), {}))
                 self.defn[c.data] = True
+            elif c.data == "angle":
+                val = c.children[0].value
+                if self.defn.get(val, False) or \
+                        (val == "angle" and (self.defn.get("angle+", False) or self.defn.get("angle-", False))):
+                    self.errors.append((c.children[0],
+                                        "Redefinition of '%s' at line %i col %i" % (c.data, c.line, c.column), {}))
+                if val.endswith("+") or val.endswith("-"):
+                    self.defn[val] = True
+                else:
+                    self.defn["angle+"] = True
+                    self.defn["angle-"] = True
+
+    def exit_start(self, T):
+        c = T
+        while not isinstance(c, Token):
+            c = c.children[0]
+        if not self.defn.get("axiom", False):
+            self.errors.append((c, "Unable to find axiom in L-System definition", {}))

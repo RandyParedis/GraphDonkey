@@ -16,9 +16,6 @@ TODO LIST
     	- Update Graphviz plugin to work better
             * Add all syntactical errors (?)
             * Comments only get highlighted at the beginning of a line
-    	- Fix L-Systems
-    	    * There is a slight bug somewhere -- penrose.l is invalid
-    	    * It cannot seem to handle comments
     	- Fix flowchart
     	    * Add matching parentheses
     	    * Add missing features (procedures etc)
