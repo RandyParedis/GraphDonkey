@@ -439,6 +439,22 @@
             </property>
            </widget>
           </item>
+          <item row="6" column="0" colspan="3">
+           <widget class="QCheckBox" name="check_centerOnScroll">
+            <property name="toolTip">
+             <string>When enabled, it will be ensured that the cursor is visible at the center of the viewport. It allows text to be scrolled past the end of a document.</string>
+            </property>
+            <property name="text">
+             <string>Allow scrolling past end of file.</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="key" stdset="0">
+             <string>editor/centerOnScroll</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1136,7 +1152,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-1104</y>
+            <y>0</y>
             <width>689</width>
             <height>1906</height>
            </rect>

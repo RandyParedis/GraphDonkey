@@ -321,11 +321,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setWindowTitle("")
 
     def updateStatus(self, text):
-        label = self.statusBar().statusMessage
-        metrics = QtGui.QFontMetrics(label.font())
-        elidedText = metrics.elidedText(text, QtCore.Qt.ElideRight, label.width())
-        label.setText(elidedText)
-        label.setToolTip(text)
+        try:
+            label = self.statusBar().statusMessage
+            metrics = QtGui.QFontMetrics(label.font())
+            elidedText = metrics.elidedText(text, QtCore.Qt.ElideRight, label.width())
+            label.setText(elidedText)
+            label.setToolTip(text)
+        except AttributeError:
+            self.statusBar().showMessage(text)
 
     def newTab(self, label):
         editor = EditorWrapper(self)

@@ -12,14 +12,11 @@ TODO LIST
         - Listen on host:port address
         - Add "Next Error", "Prev Error" to "Navigate" menu
     - Other plugins by default (see Future.md)
-    	- Add Wand? http://docs.wand-py.org/en/0.6.1/
     	- Update Graphviz plugin to work better
             * Add all syntactical errors (?)
-            * Comments only get highlighted at the beginning of a line
     	- Fix flowchart
     	    * Add matching parentheses
     	    * Add missing features (procedures etc)
-    - What with files that get edited in another app?
     [0.2.4] {Styling Update}
     - Add Bookmarks
         - Add possibility to add icons to the line number area
@@ -49,6 +46,7 @@ TODO LIST
     - Add tests!
     - Fix in-code TODOs
     - Hints on startup?
+    - What with files that get edited in another app?
 
 Version 1.0.0 name ideas:
     - Wishing Table (ref to "the Wishing Table, Gold-Ass and the Cudgel in the Sack")

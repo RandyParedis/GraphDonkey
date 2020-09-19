@@ -188,6 +188,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.errors = []
 
         self.setMouseTracking(True)
+        self.setCenterOnScroll(bool(Config.value("editor/centerOnScroll", False)))
 
         self.filename = ""
         self.filecontents = ""

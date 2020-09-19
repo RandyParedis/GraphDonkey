@@ -98,7 +98,7 @@ TYPES = {
                 "format": "hash"
             },
             {
-                "regex": "^//[^%s]*$" % Constants.LINE_ENDING,
+                "regex": "//[^%s]*$" % Constants.LINE_ENDING,
                 "format": "comment"
             },
             {

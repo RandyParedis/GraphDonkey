@@ -1,15 +1,16 @@
 """Drawing
 
 Engine for drawing in a 2D space. This can be used by many formats that are
-not representable in a graph.
+not representable in a graph. Additionally, L-Systems are included in the
+plugin.
 
 Author:         Randy Paredis
-Requires:       The `Pillow` and `pycairo` packages.
+Requires:       The `pycairo` package.
 """
 from vendor.plugins.drawing import Cairo, Engine, Lindenmayer
 from main.extra import Constants
 
-# TODO: Pillow, Docs, Export as SVG
+# TODO: Docs, Export
 
 keywords = [
     "at", "from", "to", "of", "in",
@@ -141,13 +142,6 @@ TYPES = {
 
 ENGINES = {
     "Cairo": {
-        "convert": Cairo.convert,
-        # "export": {
-        #     "extensions": ['fig', 'jpeg', 'pdf', 'tk', 'eps', 'cmapx_np', 'jpe', 'ps', 'ismap', 'x11', 'dot_json', 'gd',
-        #                    'plain', 'vmlz', 'xlib', 'pic', 'plain-ext', 'pov', 'vml', 'json0', 'cmapx', 'jpg', 'svg',
-        #                    'wbmp', 'vrml', 'xdot_json', 'gd2', 'png', 'gif', 'imap_np', 'svgz', 'ps2', 'cmap', 'json',
-        #                    'mp', 'imap'],
-        #     "exporter": export
-        # }
+        "convert": Cairo.convert
     }
 }
