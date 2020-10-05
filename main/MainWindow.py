@@ -139,6 +139,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.transformationActions.append(action)
         self.tabChanged(self.files.currentIndex())
 
+    def show(self):
+        super().show()
+        self.editor().centerCursor()
+
     def tabContextMenu(self, pos):
         # Compute clicked tab
         cnt = self.files.tabBar().count()

@@ -37,8 +37,9 @@ class Viewport(QtWidgets.QGraphicsView):
         if self.overlayText != "":
             painter.resetTransform()
             r = self.viewport().geometry()
-            painter.fillRect(0, 0, r.width(), 30, QtGui.QColor(255, 255, 255, 150))
-            painter.drawText(5, 15, self.overlayText)
+            fm = painter.fontMetrics()
+            painter.fillRect(0, 0, r.width(), fm.height() + 10, QtGui.QColor(255, 255, 255, 150))
+            painter.drawText(QtCore.QRectF(5, 0, r.width() - 10, fm.height() + 10), QtCore.Qt.AlignVCenter, self.overlayText)
 
     def scrollContentsBy(self, x: int, y: int):
         self.scene().invalidate()
@@ -152,24 +153,15 @@ class GraphicsView(QtWidgets.QWidget):
         self._view.setScene(QtWidgets.QGraphicsScene())
         self._scene = self._view.scene()
 
-    def repaint_view(self):
-        margin = 25
-        sr = self._scene.itemsBoundingRect()
-        sr.adjust(-margin, -margin, margin, margin)
-        self._scene.setSceneRect(sr)
-
     def prepare(self):
-        print("prepare")
         self._view.overlayText = "Loading..."
-        # TODO: force repaint!
+        self._scene.invalidate(self._view.sceneRect())
 
     def error(self):
-        print("error")
         self._view.overlayText = "Could not update."
-        # TODO: force repaint!
+        self._scene.invalidate(self._view.sceneRect())
 
     def add(self, bdata):
-        print("clear")
         self._view.overlayText = ""
         if isinstance(bdata, QtGui.QImage):
             pixmap = QtGui.QPixmap.fromImage(bdata)

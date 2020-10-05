@@ -118,6 +118,8 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
             self.editor.mainwindow.updateStatus("")
             if len(self.parser.errors) == 0 and bool(Config.value("editor/autorender")):
                 self.editor.mainwindow.displayGraph()
+            else:
+                self.editor.mainwindow.view.error()
             for line, msg in self.parser.errors:
                 start = 0
                 size = 1

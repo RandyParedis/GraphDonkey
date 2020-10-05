@@ -16,6 +16,7 @@ import re
 from dbm import error
 
 from PyQt5 import QtGui, QtWidgets, QtCore
+from lark import Tree
 
 from main.extra import Constants, left
 from main.extra.IOHandler import IOHandler
@@ -1095,7 +1096,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             ename = self.wrapper.engine.currentText()
             T = self.highlighter.parser.parse(self.toPlainText())
             engine = pluginloader.getEngines()[ename]
-            if T is not None:
+            if isinstance(T, Tree):
                 if "AST" in engine:
                     bdata = engine["AST"](T)
                     view.add(bdata)
@@ -1110,6 +1111,12 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                                                         "'Graphviz' cannot be found.\n\nCurrently unable to display the"
                                                         " AST." % ename)
                         return
+            else:
+                self.mainwindow.warn("Warning!", "The current file format does not support AST generation.")
+                if self.treeView is not None and self.treeView.isVisible():
+                    self.treeView.close()
+                    self.treeView = None
+                return
 
             if not self.treeView.isVisible():
                 self.treeView.show()
