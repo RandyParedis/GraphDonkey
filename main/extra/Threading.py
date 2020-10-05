@@ -9,13 +9,16 @@ from PyQt5 import QtCore
 
 
 class WorkerThread(QtCore.QThread):
-    def __init__(self, func):
+    def __init__(self, func, *args, **kwargs):
         QtCore.QThread.__init__(self)
         self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.return_value = None
 
     def __del__(self):
         self.wait()
 
     def run(self):
         time.sleep(0.01)  # << Make sure the thread is at least this amount of time active
-        self.func()
+        self.return_value = self.func(*self.args, **self.kwargs)

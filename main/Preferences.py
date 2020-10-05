@@ -398,6 +398,7 @@ class Preferences(QtWidgets.QDialog):
             # FIX DISPLAY
             editor.positionChangedSlot()
             editor.highlighter.rehighlight()
+            # TODO: make it actually centered!
             editor.setCenterOnScroll(self.check_centerOnScroll.isChecked())
 
             # TURN TABS TO SPACES AND VICE VERSA

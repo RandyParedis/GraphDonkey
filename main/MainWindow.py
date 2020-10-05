@@ -11,7 +11,7 @@ from main.Snippets import Snippets
 from main.extra.IOHandler import IOHandler
 from main.editor.CodeEditor import EditorWrapper, StatusBar
 from main.extra.GraphicsView import GraphicsView
-from main.extra import Constants, tabPathnames, TabPressEater
+from main.extra import Constants, tabPathnames, TabPressEater, Threading
 from main.wizards.UpdateWizard import UpdateWizard
 from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import os, sys, chardet, markdown
@@ -36,6 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.transformationActions = []
         self.disableDisplay = []
+        self.displayThread = Threading.WorkerThread(self._displayGraph)
+        self.displayThread.finished.connect(self.displayGraphFinished)
         self.lockDisplay(False)
 
         self.files.clear()
@@ -703,13 +705,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def forceDisplay(self):
         if self.canDisplay():
-            res = self.displayGraph()
-            if res is not None and len(res) > 0:
-                self.error("Error", res)
+            self.displayGraph()
         else:
             self.error("Cannot Render", "A process is currently trying to render the graph, please wait.")
 
     def displayGraph(self):
+        self.view.prepare()
+        if not self.displayThread.isRunning():
+            self.displayThread.start()
+
+    def _displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
             ename = self.editorWrapper().engine.currentText()
             if ename == "": return None
@@ -717,16 +722,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 engine = pluginloader.getEngines().get(ename, None)
                 if engine is None:
                     raise RuntimeError("Unknown rendering engine '%s'." % ename)
-                res = self.editor().transform(ename)
-                if res is not None:
-                    bdata = engine["convert"](res)
-                    self.view.clear()
-                    self.view.add(bdata)
+                return self.editor().transform(ename)
             except Exception as e:
                 print(str(e), file=sys.stderr)
                 self.updateStatus(str(e))
-                return str(e)
+                self.error("Error", str(e))
+                return None
         return None
+
+    def displayGraphFinished(self):
+        ename = self.editorWrapper().engine.currentText()
+        if ename == "": return None
+        engine = pluginloader.getEngines().get(ename, None)
+        result = self.displayThread.return_value
+        if result is not None:
+            bdata = engine["convert"](result)
+            self.view.clear()
+            self.view.add(bdata)
+        else:
+            self.view.error()
 
     def openSnippets(self):
         self.snippets.exec_()

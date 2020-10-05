@@ -6,7 +6,7 @@ Date:   12/14/2019
 import math
 
 from PyQt5 import QtGui, QtCore
-from main.extra import Constants
+from main.extra import Constants, Threading
 from main.editor.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
 from main.Preferences import bool
@@ -49,6 +49,8 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         self.editor = editor
         self.highlightingRules = []
         self.parser = Parser()
+        self.errorThread = Threading.WorkerThread(self._storeErrors)
+        self.errorThread.finished.connect(self.storeErrorsFinished)
 
     def setRules(self, rules):
         def obtainRegex(value):
@@ -85,9 +87,16 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 raise ValueError("Invalid Highlighting Rule %s" % str(rule))
 
     def storeErrors(self):
+        self.errorThread.start()
+
+    def _storeErrors(self):
         self.editor.errors = []
         text = self.editor.toPlainText()
-        T = self.parser.parse(text) if text != "" else None
+        return self.parser.parse(text, y1=True) if text != "" else None
+
+    def storeErrorsFinished(self):
+        text = self.editor.toPlainText()
+        T = self.errorThread.return_value
         if T is None:
             for token, msg, exp in self.parser.errors:
                 startIndex = token.pos_in_stream
@@ -107,8 +116,17 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 self.editor.mainwindow.updateStatus(msg)
         else:
             self.editor.mainwindow.updateStatus("")
-            if bool(Config.value("editor/autorender")):
+            if len(self.parser.errors) == 0 and bool(Config.value("editor/autorender")):
                 self.editor.mainwindow.displayGraph()
+            for line, msg in self.parser.errors:
+                start = 0
+                size = 1
+                for l in text.split("\n")[:line+1]:
+                    start += len(l)
+                    size = len(l.lstrip())
+                self.editor.errors.append((start - size + 1, size, msg))
+                self.editor.mainwindow.updateStatus(msg)
+        self.editor.highlightErrors()
 
     def storeBrackets(self, text:str):
         from main.plugins import PluginLoader

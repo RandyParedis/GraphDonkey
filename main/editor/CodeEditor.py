@@ -21,6 +21,7 @@ from main.extra import Constants, left
 from main.extra.IOHandler import IOHandler
 from main.editor.Highlighter import BaseHighlighter
 from main.extra.GraphicsView import GraphicsView
+from main.extra import Threading
 from main.Preferences import bool
 from main.plugins import PluginLoader
 from main.editor.Intellisense import Types, ICONS
@@ -229,7 +230,6 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
     def stoppedTyping(self):
         if bool(Config.value("editor/useParser", True)):
             self.highlighter.storeErrors()
-            self.highlightErrors()
 
     def positionChangedSlot(self):
         self.stTimer.start(int(Config.value("editor/autoreparse", 100)))

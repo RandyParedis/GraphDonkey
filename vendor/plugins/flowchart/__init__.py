@@ -59,6 +59,7 @@ TYPES = {
         "comments": {
             "symbol": "//",
             "indent": False
-        }
+        },
+        "paired": [("if", "fi"), ("do", "done"), ("(", ")"), ('"', '"'), ("'", "'")]
     }
 }

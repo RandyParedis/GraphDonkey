@@ -26,6 +26,24 @@ FILE_TYPES_OUT = {
     "X11 Pixmap": ["xpm"]
 }
 
+class Viewport(QtWidgets.QGraphicsView):
+    def __init__(self, scene, parent=None):
+        super().__init__(scene, parent)
+        self.overlayText = "Loading..."
+        self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+
+    def drawForeground(self, painter: QtGui.QPainter, rect: QtCore.QRectF):
+        super().drawForeground(painter, rect)
+        if self.overlayText != "":
+            painter.resetTransform()
+            r = self.viewport().geometry()
+            painter.fillRect(0, 0, r.width(), 30, QtGui.QColor(255, 255, 255, 150))
+            painter.drawText(5, 15, self.overlayText)
+
+    def scrollContentsBy(self, x: int, y: int):
+        self.scene().invalidate()
+        super().scrollContentsBy(x, y)
+
 class GraphicsView(QtWidgets.QWidget):
     zoomed = QtCore.pyqtSignal(float)
 
@@ -33,9 +51,8 @@ class GraphicsView(QtWidgets.QWidget):
         super(GraphicsView, self).__init__(parent)
         self.mainwindow = mainwindow
         self._scene = QtWidgets.QGraphicsScene()
-        self._view = QtWidgets.QGraphicsView(self._scene, parent)
+        self._view = Viewport(self._scene, parent)
         self._view.wheelEvent = self.viewWheelEvent
-        self._view.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -135,7 +152,25 @@ class GraphicsView(QtWidgets.QWidget):
         self._view.setScene(QtWidgets.QGraphicsScene())
         self._scene = self._view.scene()
 
+    def repaint_view(self):
+        margin = 25
+        sr = self._scene.itemsBoundingRect()
+        sr.adjust(-margin, -margin, margin, margin)
+        self._scene.setSceneRect(sr)
+
+    def prepare(self):
+        print("prepare")
+        self._view.overlayText = "Loading..."
+        # TODO: force repaint!
+
+    def error(self):
+        print("error")
+        self._view.overlayText = "Could not update."
+        # TODO: force repaint!
+
     def add(self, bdata):
+        print("clear")
+        self._view.overlayText = ""
         if isinstance(bdata, QtGui.QImage):
             pixmap = QtGui.QPixmap.fromImage(bdata)
             self._scene.addPixmap(pixmap)

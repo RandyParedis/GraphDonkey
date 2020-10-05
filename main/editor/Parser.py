@@ -17,14 +17,16 @@ class Parser:
             with open(file, "r") as file:
                 self.grammar = file.read()
             self.parser = Lark(self.grammar, parser=parser, propagate_positions=True)
+        if callable(parser):
+            self.parser = parser
         self.errors = []
         self.visitor = CheckVisitor(self)
         self.transformer = {}
 
-    def parse(self, text: str, yld=False, line=-1, col=-1):
+    def parse(self, text: str, yld=False, line=-1, col=-1, y1=False):
         self.errors = []
         try:
-            if self.parser is not None:
+            if isinstance(self.parser, Lark):
                 tree = self.parser.parse(text)
 
                 # Semantic Analysis
@@ -36,6 +38,11 @@ class Parser:
                     self.errors += self.visitor.errors
                     if len(self.errors) == 0 or yld:
                         return tree
+            else:
+                self.errors = self.parser(text)
+                if len(self.errors) > 0:
+                    return 1 if y1 else None
+                return 1
         except (UnexpectedCharacters, UnexpectedToken) as e:
             splt = str(e).split("\n")
             while "" in splt:
