@@ -205,6 +205,13 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         return singleLineCommentFormat
 
     @staticmethod
+    def format_note():
+        singleLineCommentFormat = QtGui.QTextCharFormat()
+        singleLineCommentFormat.setForeground(QtGui.QColor(Config.value("col/note")))
+        singleLineCommentFormat.setFontItalic(True)
+        return singleLineCommentFormat
+
+    @staticmethod
     def format_number():
         numberFormat = QtGui.QTextCharFormat()
         numberFormat.setForeground(QtGui.QColor(Config.value("col/number")))

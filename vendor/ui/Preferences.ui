@@ -559,7 +559,7 @@
             <x>0</x>
             <y>0</y>
             <width>703</width>
-            <height>509</height>
+            <height>505</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
@@ -824,9 +824,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-469</y>
             <width>689</width>
-            <height>881</height>
+            <height>974</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_17">
@@ -1047,17 +1047,17 @@
               <string>Syntax Highlighting</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_15">
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_25">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_24">
                 <property name="text">
-                 <string>Comment:</string>
+                 <string>Keyword:</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label_31">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_27">
                 <property name="text">
-                 <string>Hash:</string>
+                 <string>Attribute:</string>
                 </property>
                </widget>
               </item>
@@ -1076,30 +1076,37 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QLabel" name="label_30">
+              <widget class="QLabel" name="label_30">
+               <property name="text">
+                <string>HTML String:</string>
+               </property>
+              </widget>
+             </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_98">
                 <property name="text">
-                 <string>HTML String:</string>
+                 <string>Note:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_25">
+                <property name="text">
+                 <string>Comment:</string>
                 </property>
                </widget>
               </item>
               <item row="7" column="0">
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>Hash:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
                <widget class="QLabel" name="label_26">
                 <property name="text">
                  <string>Error:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_24">
-                <property name="text">
-                 <string>Keyword:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_27">
-                <property name="text">
-                 <string>Attribute:</string>
                 </property>
                </widget>
               </item>
@@ -1154,7 +1161,7 @@
             <x>0</x>
             <y>0</y>
             <width>689</width>
-            <height>1906</height>
+            <height>2024</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
@@ -2193,7 +2200,7 @@
                <x>0</x>
                <y>0</y>
                <width>417</width>
-               <height>509</height>
+               <height>505</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24"/>

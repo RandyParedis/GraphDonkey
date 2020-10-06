@@ -3,7 +3,11 @@
 Author: Randy Paredis
 Date:   10/05/2020
 """
+from main.Preferences import bool
+from main.extra.IOHandler import IOHandler
 import subprocess
+
+Config = IOHandler.get_preferences()
 
 _CONV_CACHE = {}
 def convert(text: str):
@@ -17,11 +21,12 @@ def convert(text: str):
 
 _SYN_CACHE = {}
 def syntax(text: str):
-    if text not in _CONV_CACHE:
-        contents = text.encode("ascii")
-        _SYN_CACHE[text] = subprocess.run(["plantuml", "-syntax"], input=contents,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if len(_SYN_CACHE[text].stderr) > 0:
-        errs = _SYN_CACHE[text].stdout.decode("utf-8").split("\n")[1:]
-        return [(int(errs[0]), errs[1])]
+    if bool(Config.value("plugin/plantuml/highlight", False)):
+        if text not in _CONV_CACHE:
+            contents = text.encode("ascii")
+            _SYN_CACHE[text] = subprocess.run(["plantuml", "-syntax"], input=contents, stdout=subprocess.PIPE)
+        errs = _SYN_CACHE[text].stdout.decode("utf-8").split("\n")
+        if errs[0] == "ERROR":
+            errs = errs[1:]
+            return [(int(errs[0]), errs[1])]
     return []

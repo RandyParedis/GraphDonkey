@@ -131,6 +131,7 @@ class Preferences(QtWidgets.QDialog):
             "col_number",
             "col_string",
             "col_html",
+            "col_note",
             "col_comment",
             "col_hash",
             "col_error"
@@ -604,10 +605,13 @@ class PluginButton(QtWidgets.QLabel):
             if e not in self.prefs.pluginUi:
                 box = self.plugin.getPreferencesUi(e)
                 if box is not None:
-                    box.preferences = self.prefs.preferences
-                    box.plugin = self.plugin
                     self.prefs.pluginUi[e] = box
-                    lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
+            else:
+                box = self.prefs.pluginUi[e]
+            if box is not None:
+                box.preferences = self.prefs.preferences
+                box.plugin = self.plugin
+                lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles

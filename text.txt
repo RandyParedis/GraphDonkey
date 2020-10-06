@@ -24,6 +24,7 @@ TODO LIST
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
+        - Syntax highlighting more complex in plugins! (Allow plugins for expanding the CSS?)
     - Add images to documentation AND wizards
     - Custom Icons:
         - Create custom icons (?)

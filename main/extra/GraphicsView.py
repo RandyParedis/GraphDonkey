@@ -159,6 +159,7 @@ class GraphicsView(QtWidgets.QWidget):
 
     def error(self):
         self._view.overlayText = "Could not update."
+        # TODO: what when scenerect is smaller than viewport?
         self._scene.invalidate(self._view.sceneRect())
 
     def add(self, bdata):
