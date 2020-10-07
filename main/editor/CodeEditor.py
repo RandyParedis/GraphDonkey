@@ -1096,7 +1096,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
             ename = self.wrapper.engine.currentText()
             T = self.highlighter.parser.parse(self.toPlainText())
-            engine = pluginloader.getEngines()[ename]
+            engine = pluginloader.getEngines().get(ename, {})
             if isinstance(T, Tree):
                 if "AST" in engine:
                     bdata = engine["AST"](T)

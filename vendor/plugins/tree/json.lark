@@ -1,0 +1,29 @@
+// JSON parse file
+// The parse tree is based on the official documentation:
+//      https://www.json.org/json-en.html
+
+// Discard Comments and whitespace
+COMMENT: "//" /[^\n]/*
+WS: /[ \t\r\n]/+
+
+%ignore WS
+%ignore COMMENT
+
+start       : object | array
+object      : LACC ((keyvalue COMMA)* keyvalue)? RACC
+keyvalue    : STRING COLON value
+array       : LBR ((value COMMA)* value)? RBR
+value       : STRING | NUMBER | object | array | TRUE | FALSE | NULL
+
+STRING: /"([^\\"]|(\\(["\\\/bfnrt]|(u[0-9a-fA-F]{4}))))*"/
+NUMBER: /-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][+-]?[0-9]+)?/
+
+LACC: "{"
+RACC: "}"
+LBR: "["
+RBR: "]"
+COMMA: ","
+COLON: ":"
+TRUE: "true"
+FALSE: "false"
+NULL: "null"

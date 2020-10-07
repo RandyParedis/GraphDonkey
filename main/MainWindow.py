@@ -141,6 +141,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def show(self):
         super().show()
+        # TODO: do this for all editors
         self.editor().centerCursor()
 
     def tabContextMenu(self, pos):

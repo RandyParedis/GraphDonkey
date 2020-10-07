@@ -38,7 +38,7 @@ class Parser:
                     self.errors += self.visitor.errors
                     if len(self.errors) == 0 or yld:
                         return tree
-            else:
+            elif callable(self.parser):
                 self.errors = self.parser(text)
                 if len(self.errors) > 0:
                     return 1 if y1 else None
