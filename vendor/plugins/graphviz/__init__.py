@@ -19,7 +19,7 @@ This plugin includes:
 Author:         Randy Paredis
 Website:        https://www.graphviz.org/
 Credits:        https://www.graphviz.org/credits/
-Requires:       Obviously, this requires the `graphviz` package.
+Requires:       Obviously, this requires the `graphviz` package and its command to be installed.
 Documentation:  https://github.com/RandyParedis/GraphDonkey/wiki/Graphviz
 """
 from vendor.plugins.graphviz.CheckDot import CheckDotVisitor

@@ -20,6 +20,7 @@ TODO LIST
     - Bugs:
         - After startup wizard, the editor closes on Win (because GV is not installed by default)
           MAKE SURE GraphViz IS DOWNLOADED/INSTALLED WITH THE PLUGIN!
+        -> Make it so Each plugin can call a custom function after plugin install
     [0.2.4] {Styling Update}
     - Add Bookmarks
         - Add possibility to add icons to the line number area

@@ -5,6 +5,7 @@ Date:   01/09/2020
 """
 from main.plugins import Settings, command
 import subprocess
+import graphviz
 
 class GraphvizSettings(Settings):
     def __init__(self, pathname, parent=None):
@@ -12,15 +13,13 @@ class GraphvizSettings(Settings):
         self.setUp()
 
     def check(self):
-        cmd = [self.combo_engine.currentText(), "-V"]
         try:
-            command(cmd)
-        except subprocess.CalledProcessError as e:
-            if e.returncode != 0:
-                raise RuntimeError("It seems Graphviz package is not installed on your system, but"
-                                   " is required when using this plugin. Take a look at "
-                                   "<a href='https://graphviz.gitlab.io/download/'>the Graphviz download page</a> "
-                                   "to learn more on how to install it.")
+            graphviz.version()
+        except (subprocess.CalledProcessError, graphviz.backend.ExecutableNotFound) as _:
+            raise RuntimeError("It seems Graphviz package is not installed on your system, but"
+                               " is required when using this plugin. Take a look at "
+                               "<a href='https://graphviz.gitlab.io/download/'>the Graphviz download page</a> "
+                               "to learn more on how to install it.")
 
     def setUp(self):
         self.combo_engine.currentTextChanged.connect(lambda x: self.setGraphvizRenderer())

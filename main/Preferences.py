@@ -603,7 +603,17 @@ class PluginButton(QtWidgets.QLabel):
         lo = self.viewer.layout()
         for e in self.plugin.engines:
             if e not in self.prefs.pluginUi:
-                box = self.plugin.getPreferencesUi(e)
+                try:
+                    box = self.plugin.getPreferencesUi(e)
+                except RuntimeError as err:
+                    self.prefs.parent().error("Plugin Error", str(err))
+                    self.plugin.deps = False
+                    self.plugin.enable(False)
+                    box = None
+                except SystemExit as err:
+                    self.prefs.parent().error("Plugin Error", str(err))
+                    box = None
+                    exit(1)
                 if box is not None:
                     self.prefs.pluginUi[e] = box
             else:
