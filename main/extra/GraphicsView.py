@@ -148,6 +148,7 @@ class GraphicsView(QtWidgets.QWidget):
         return self.zoom_level_max == self.zoomlevel
 
     def clear(self):
+        self._view.overlayText = ""
         self._scene.clear()
         self._scene.deleteLater()
         self._view.setScene(QtWidgets.QGraphicsScene())

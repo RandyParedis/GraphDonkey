@@ -12,11 +12,14 @@ TODO LIST
         - Listen on host:port address
         - Add "Next Error", "Prev Error" to "Navigate" menu
     - Other plugins by default (see Future.md)
-    	- Update Graphviz plugin to work better
+        - Update Graphviz plugin to work better
             * Add all syntactical errors (?)
-    	- Fix flowchart
-    	    * Add matching parentheses
-    	    * Add missing features (procedures etc)
+        - Fix flowchart
+            * Add matching parentheses
+            * Add missing features (procedures etc)
+    - Bugs:
+        - After startup wizard, the editor closes on Win (because GV is not installed by default)
+          MAKE SURE GraphViz IS DOWNLOADED/INSTALLED WITH THE PLUGIN!
     [0.2.4] {Styling Update}
     - Add Bookmarks
         - Add possibility to add icons to the line number area
@@ -37,6 +40,7 @@ TODO LIST
     - Add 'warnings' for parsing
     - Error/Warning: underline or line background?
     - "Apply" button in preferences (which keeps the preferences open)
+    - Fix "Undo/Redo" issues
     [0.3.0]
     - More complex rendering mechanics
         - text/HTML

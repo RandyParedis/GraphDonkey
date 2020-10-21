@@ -267,7 +267,7 @@ class Preferences(QtWidgets.QDialog):
         plst = pluginloader.get()
         pls = self.preferences.value("plugin/enabled", None)
         if pls is None:
-            pls = [p.name for p in plst]
+            pls = []
         for plugin in plst:
             plugin.enable(plugin.name in pls)
         for eid in self.pluginUi:

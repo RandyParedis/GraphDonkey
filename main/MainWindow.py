@@ -125,7 +125,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Set Transformation Functions
         trns = []
-        for p in pluginloader.get():
+        plg = pluginloader.get()
+        if len(plg) == 0:
+            self.noPluginsWarning()
+        for p in plg:
             for t in p.types:
                 target = p.types[t].get("transformer", {})
                 for c in target:
@@ -138,6 +141,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menu_Transform.addAction(action)
             self.transformationActions.append(action)
         self.tabChanged(self.files.currentIndex())
+
+    def noPluginsWarning(self):
+        self.warn("No Plugins Enabled", "It appears you have no plugins enabled. GraphDonkey cannot render "
+                                        "without a plugin. To enable plugins, go to File > Preferences > Plugins.")
 
     def show(self):
         super().show()
@@ -709,7 +716,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateTitle()
 
     def forceDisplay(self):
-        if self.canDisplay():
+        if self.canDisplay() and self.editor() is not None:
+            if len(self.editorWrapper().getCurrentType()) == 0:
+                if len(pluginloader.get()) == 0:
+                    self.noPluginsWarning()
+                else:
+                    self.warn("Cannot Render", "There is no file type selected, so it's impossible to render this graph.")
             self.displayGraph()
         else:
             self.error("Cannot Render", "A process is currently trying to render the graph, please wait.")
@@ -722,7 +734,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def _displayGraph(self):
         if self.canDisplay() and self.editor() is not None:
             ename = self.editorWrapper().engine.currentText()
-            if ename == "": return None
+            if ename == "":
+                self.view.clear()
+                self.updateStatus("No file type selected. Cannot render.")
+                return None
             try:
                 engine = pluginloader.getEngines().get(ename, None)
                 if engine is None:

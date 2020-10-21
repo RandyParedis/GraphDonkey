@@ -115,7 +115,8 @@ TYPES = {
         },
         "snippets": {
             "FSA Start Node": "start [label=\"\", shape=none, width=0];",
-            "FSA End Node": "end [shape=doublecircle];"
+            "FSA End Node": "end [shape=doublecircle];",
+            "Disable Ordering": 'graph [ordering="out"];'
         },
         "paired": [
             ("{", "}"), ("[", "]"), ("<", ">"), ('"', '"')
