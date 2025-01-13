@@ -26,6 +26,7 @@ TODO LIST [0.2.3] {Universalisation}
 TODO LIST [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
+    - fromTheme? https://www.pythonguis.com/faq/built-in-qicons-pyqt/ || https://github.com/ppinard/pyqttango
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
             - Defaults like darcula, monokai, high contrast...
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
