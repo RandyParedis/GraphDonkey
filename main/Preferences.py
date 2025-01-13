@@ -3,15 +3,13 @@
 Author: Randy Paredis
 Date:   17/12/2019
 """
-from PyQt5 import QtWidgets, QtGui, QtCore, uic
+from PyQt6 import QtWidgets, QtGui, QtCore, uic
 from main.extra.IOHandler import IOHandler
-from main.extra import Constants
 import configparser
 import markdown
 from markdown.extensions.legacy_em import LegacyEmExtension as legacy_em
 import glob
 import re
-import os
 
 def bool(name: str):
     if name in ["True", "true"]:
@@ -69,7 +67,7 @@ class Preferences(QtWidgets.QDialog):
             for i in reversed(range(lo.count())):
                 lo.itemAt(i).widget().setParent(None)
             lbl = QtWidgets.QLabel("No Plugin Selected.")
-            lbl.setAlignment(QtCore.Qt.AlignCenter)
+            lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
             lo.addWidget(lbl, 0, 0, -1, -1)
 
     def parseDisable(self, b):
@@ -85,7 +83,7 @@ class Preferences(QtWidgets.QDialog):
             self.combo_theme.addItem(theme.name, theme)
 
     def setFontCombo(self, on):
-        f = QtWidgets.QFontComboBox.MonospacedFonts if on else QtWidgets.QFontComboBox.AllFonts
+        f = QtWidgets.QFontComboBox.FontFilter.MonospacedFonts if on else QtWidgets.QFontComboBox.FontFilter.AllFonts
         self.font_editor.setFontFilters(f)
 
     def _setColorPickers(self):
@@ -174,7 +172,7 @@ class Preferences(QtWidgets.QDialog):
 
             # Bypass because Qt works weirdly:
             le = ks.findChild(QtWidgets.QLineEdit)
-            le.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+            le.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
             le.setClearButtonEnabled(True)
 
     def checkShortcuts(self):
@@ -199,7 +197,7 @@ class Preferences(QtWidgets.QDialog):
     def rectify(self):
         # GENERAL
         if True:
-            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.GeneralFont)
+            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.GeneralFont)
             self.check_rememberLayout.setChecked(bool(self.preferences.value("rememberLayout", True)))
             self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
             restore = int(self.preferences.value("restore", 0))
@@ -221,7 +219,7 @@ class Preferences(QtWidgets.QDialog):
 
         # EDITOR
         if True:
-            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
+            defFont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
             self.font_editor.setCurrentFont(QtGui.QFont(self.preferences.value("editor/font", defFont.family())))
             self.num_font_editor.setValue(int(self.preferences.value("editor/fontsize", 12)))
             self.num_tabwidth.setValue(int(self.preferences.value("editor/tabwidth", 4)))
@@ -454,7 +452,7 @@ class Preferences(QtWidgets.QDialog):
     def applyGeneral(self):
         font = self.font_interface.currentFont()
         font.setPointSize(self.num_font_interface.value())
-        QtWidgets.QApplication.instance().setFont(font)
+        QtWidgets.QApplication.setFont(font)
 
     def applyShortcuts(self):
         for action in self.shortcuts:
@@ -464,20 +462,20 @@ class Preferences(QtWidgets.QDialog):
         app = QtWidgets.QApplication.instance()
         app.setStyle(self.combo_style.currentText())
         palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.WindowText, self.col_foreground.color())
-        palette.setColor(QtGui.QPalette.Window, self.col_window.color())
-        palette.setColor(QtGui.QPalette.Base, self.col_base.color())
-        palette.setColor(QtGui.QPalette.AlternateBase, self.col_alternateBase.color())
-        palette.setColor(QtGui.QPalette.ToolTipBase, self.col_tooltipBase.color())
-        palette.setColor(QtGui.QPalette.ToolTipText, self.col_tooltipText.color())
-        palette.setColor(QtGui.QPalette.Text, self.col_text.color())
-        palette.setColor(QtGui.QPalette.Button, self.col_button.color())
-        palette.setColor(QtGui.QPalette.ButtonText, self.col_buttonText.color())
-        palette.setColor(QtGui.QPalette.BrightText, self.col_brightText.color())
-        palette.setColor(QtGui.QPalette.Highlight, self.col_highlight.color())
-        palette.setColor(QtGui.QPalette.HighlightedText, self.col_highlightedText.color())
-        palette.setColor(QtGui.QPalette.Link, self.col_link.color())
-        palette.setColor(QtGui.QPalette.LinkVisited, self.col_visitedLink.color())
+        palette.setColor(QtGui.QPalette.ColorRole.WindowText, self.col_foreground.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Window, self.col_window.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Base, self.col_base.color())
+        palette.setColor(QtGui.QPalette.ColorRole.AlternateBase, self.col_alternateBase.color())
+        palette.setColor(QtGui.QPalette.ColorRole.ToolTipBase, self.col_tooltipBase.color())
+        palette.setColor(QtGui.QPalette.ColorRole.ToolTipText, self.col_tooltipText.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Text, self.col_text.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Button, self.col_button.color())
+        palette.setColor(QtGui.QPalette.ColorRole.ButtonText, self.col_buttonText.color())
+        palette.setColor(QtGui.QPalette.ColorRole.BrightText, self.col_brightText.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Highlight, self.col_highlight.color())
+        palette.setColor(QtGui.QPalette.ColorRole.HighlightedText, self.col_highlightedText.color())
+        palette.setColor(QtGui.QPalette.ColorRole.Link, self.col_link.color())
+        palette.setColor(QtGui.QPalette.ColorRole.LinkVisited, self.col_visitedLink.color())
         app.setPalette(palette)
 
     def applyView(self):
@@ -498,9 +496,9 @@ class Preferences(QtWidgets.QDialog):
             # SHOW WHITESPACES
             option = editor.document().defaultTextOption()
             if self.check_showWhitespace.isChecked():
-                option.setFlags(option.flags() | QtGui.QTextOption.ShowTabsAndSpaces | QtGui.QTextOption.ShowLineAndParagraphSeparators)
+                option.setFlags(option.flags() | QtGui.QTextOption.Flag.ShowTabsAndSpaces | QtGui.QTextOption.Flag.ShowLineAndParagraphSeparators)
             else:
-                option.setFlags(option.flags() & ~QtGui.QTextOption.ShowTabsAndSpaces & ~QtGui.QTextOption.ShowLineAndParagraphSeparators)
+                option.setFlags(option.flags() & ~QtGui.QTextOption.Flag.ShowTabsAndSpaces & ~QtGui.QTextOption.Flag.ShowLineAndParagraphSeparators)
             editor.document().setDefaultTextOption(option)
 
             # FONT
@@ -512,7 +510,7 @@ class Preferences(QtWidgets.QDialog):
 
             # TAB WIDTH
             fontWidth = QtGui.QFontMetrics(font).averageCharWidth()
-            editor.setTabStopWidth(self.num_tabwidth.value() * fontWidth)
+            editor.setTabStopDistance(self.num_tabwidth.value() * fontWidth)
 
             # FIX DISPLAY
             editor.positionChangedSlot()
@@ -524,7 +522,7 @@ class Preferences(QtWidgets.QDialog):
             cstart = cursor.selectionStart()
             cend = cursor.selectionEnd()
             cursor.setPosition(0)
-            cursor.setPosition(cstart, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(cstart, QtGui.QTextCursor.MoveMode.KeepAnchor)
             before = cursor.selectedText()
             tw = self.num_tabwidth.value()
             txt = editor.toPlainText()
@@ -542,7 +540,7 @@ class Preferences(QtWidgets.QDialog):
                 txt = txt.replace(e, "\t")
             editor.setText(txt)
             cursor.setPosition(cstart)
-            cursor.setPosition(cend, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(cend, QtGui.QTextCursor.MoveMode.KeepAnchor)
             editor.setTextCursor(cursor)
 
     def applyPlugins(self):
@@ -582,7 +580,7 @@ class Preferences(QtWidgets.QDialog):
                                                      "Enter a Title Name",
                                                      "The theme '%s' already exists.\n"
                                                      "Do you want to replace it?" % title)
-                if btn == QtWidgets.QMessageBox.No:
+                if btn == QtWidgets.QMessageBox.StandardButton.No:
                     title = ""
 
         config = configparser.ConfigParser()
@@ -606,15 +604,15 @@ class ColorButton(QtWidgets.QPushButton):
 
     def color(self):
         pal = self.palette()
-        return pal.color(QtGui.QPalette.Button)
+        return pal.color(QtGui.QPalette.ColorRole.Button)
 
     def colorName(self):
         return self.color().name()
 
     def setColor(self, col):
         pal = self.palette()
-        pal.setColor(QtGui.QPalette.Button, col)
-        pal.setColor(QtGui.QPalette.ButtonText,
+        pal.setColor(QtGui.QPalette.ColorRole.Button, col)
+        pal.setColor(QtGui.QPalette.ColorRole.ButtonText,
                      QtGui.QColor.fromHsv(col.hue(), col.saturation(), (col.value() - 100) % 255))
         self.setAutoFillBackground(True)
         self.setPalette(pal)
@@ -623,7 +621,7 @@ class ColorButton(QtWidgets.QPushButton):
     def colorPicker(self):
         color = self.color()
         dialog = QtWidgets.QColorDialog(color, self.parent())
-        dialog.setOption(QtWidgets.QColorDialog.DontUseNativeDialog)
+        dialog.setOption(QtWidgets.QColorDialog.ColorDialogOption.DontUseNativeDialog)
         dialog.setCurrentColor(color)
         dialog.currentColorChanged.connect(self.setColor)
         dialog.open()
@@ -647,12 +645,12 @@ class Theme:
 class PluginButton(QtWidgets.QLabel):
     def __init__(self, plugin, viewer, preferences=None, parent=None):
         super(PluginButton, self).__init__(parent)
-        self.setCursor(QtCore.Qt.PointingHandCursor)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.plugin = plugin
         self.viewer = viewer
         self.prefs = preferences
-        self.setTextFormat(QtCore.Qt.RichText)
+        self.setTextFormat(QtCore.Qt.TextFormat.RichText)
         self.setText(self.getHeader(16, 12))
 
         self.installer = None
@@ -723,22 +721,22 @@ class PluginButton(QtWidgets.QLabel):
                     box.preferences = self.prefs.preferences
                     box.plugin = self.plugin
                     self.prefs.pluginUi[e] = box
-                lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
+            lo.addWidget(self.prefs.pluginUi[e], lo.rowCount(), 0, -1, -1)
 
     def mousePressEvent(self, QMouseEvent):
         # Reset all button roles
         btns = self.parent().findChildren(PluginButton)
         pal = self.palette()
-        pal.setColor(QtGui.QPalette.Button, self.prefs.preferences.value('col_button', self.prefs.col_button.color()))
+        pal.setColor(QtGui.QPalette.ColorRole.Button, self.prefs.preferences.value('col_button', self.prefs.col_button.color()))
         for btn in btns:
-            btn.setBackgroundRole(QtGui.QPalette.Button)
+            btn.setBackgroundRole(QtGui.QPalette.ColorRole.Button)
             btn.setPalette(pal)
             btn.setAutoFillBackground(True)
 
         # Set current button
         pal = self.palette()
-        pal.setColor(QtGui.QPalette.Button, self.prefs.preferences.value('col_base', self.prefs.col_base.color()))
-        self.setBackgroundRole(QtGui.QPalette.Highlight)
+        pal.setColor(QtGui.QPalette.ColorRole.Button, self.prefs.preferences.value('col_base', self.prefs.col_base.color()))
+        self.setBackgroundRole(QtGui.QPalette.ColorRole.Highlight)
         self.setPalette(pal)
 
         # Fill the viewer
@@ -746,8 +744,8 @@ class PluginButton(QtWidgets.QLabel):
         for i in reversed(range(lo.count())):
             lo.itemAt(i).widget().setParent(None)
         header = QtWidgets.QLabel(self.getHeader(20, 14))
-        header.setTextFormat(QtCore.Qt.RichText)
-        header.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        header.setTextFormat(QtCore.Qt.TextFormat.RichText)
+        header.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         header.setWordWrap(True)
         lo.addWidget(header, 0, 0, 1, 2)
 
@@ -765,13 +763,13 @@ class PluginButton(QtWidgets.QLabel):
             lo.addWidget(pb, 1, 0, 1, 2)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         lo.addWidget(line, 2, 0, 1, 2)
 
         desc = QtWidgets.QLabel(self.getDesc())
-        desc.setTextFormat(QtCore.Qt.RichText)
-        desc.setAlignment(QtCore.Qt.AlignJustify | QtCore.Qt.AlignTop)
+        desc.setTextFormat(QtCore.Qt.TextFormat.RichText)
+        desc.setAlignment(QtCore.Qt.AlignmentFlag.AlignJustify | QtCore.Qt.AlignmentFlag.AlignTop)
         desc.setOpenExternalLinks(True)
         desc.setWordWrap(True)
         lo.addWidget(desc, 3, 0, 3, 2)

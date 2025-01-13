@@ -11,7 +11,7 @@ Author: Randy Paredis
 Date:   01/01/2020
 """
 
-from PyQt5 import QtWidgets, QtCore, QtSvg, QtGui
+from PyQt6 import QtWidgets, QtCore, QtSvg, QtSvgWidgets, QtGui
 from main.extra import IOHandler, isSVG, Constants
 import os
 
@@ -35,7 +35,7 @@ class GraphicsView(QtWidgets.QWidget):
         self._scene = QtWidgets.QGraphicsScene()
         self._view = QtWidgets.QGraphicsView(self._scene, parent)
         self._view.wheelEvent = self.viewWheelEvent
-        self._view.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self._view.setTransformationAnchor(QtWidgets.QGraphicsView.ViewportAnchor.AnchorUnderMouse)
 
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -52,10 +52,10 @@ class GraphicsView(QtWidgets.QWidget):
         self.pb_zoom_out.setToolTip("Zoom Out")
         self.pb_zoom_out.clicked.connect(self.zoomOut)
 
-        self.slider_zoom = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider_zoom = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.slider_zoom.setSingleStep(0)
         self.slider_zoom.setPageStep(0)
-        self.slider_zoom.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self.slider_zoom.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBothSides)
         self.slider_zoom.setTickInterval(10)
         self.slider_zoom.sliderMoved.connect(lambda x: self.zoomTo(float(x) / 100))
         self.setMinZoomLevel(self.zoom_level_min)
@@ -94,11 +94,11 @@ class GraphicsView(QtWidgets.QWidget):
 
     def setMaxZoomLevel(self, level):
         self.zoom_level_max = level
-        self.slider_zoom.setMaximum(level * 100)
+        self.slider_zoom.setMaximum(int(level * 100))
 
     def setMinZoomLevel(self, level):
         self.zoom_level_min = level
-        self.slider_zoom.setMinimum(level * 100)
+        self.slider_zoom.setMinimum(int(level * 100))
 
     def setZoomFactorBase(self, factor):
         self.zoom_factor_base = factor
@@ -112,13 +112,13 @@ class GraphicsView(QtWidgets.QWidget):
         self.lb_zoom.setVisible(self.controls)
 
         if self.controls:
-            self._view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+            self._view.setDragMode(QtWidgets.QGraphicsView.DragMode.ScrollHandDrag)
         else:
-            self._view.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+            self._view.setDragMode(QtWidgets.QGraphicsView.DragMode.NoDrag)
 
     def _zoomed(self, zoomlevel):
         if self.controls:
-            self.slider_zoom.setValue(zoomlevel * 100)
+            self.slider_zoom.setValue(int(zoomlevel * 100))
             self.lb_zoom.setText("%6.2f%%" % (zoomlevel * 100))
         self.pb_zoom_in.setDisabled(self.isMaximalZoomed())
         self.pb_zoom_out.setDisabled(self.isMinimalZoomed())
@@ -138,7 +138,7 @@ class GraphicsView(QtWidgets.QWidget):
     def add(self, bdata):
         if isSVG(bdata):
             svgRenderer = QtSvg.QSvgRenderer(bdata)
-            dot = QtSvg.QGraphicsSvgItem()
+            dot = QtSvgWidgets.QGraphicsSvgItem()
             dot.setSharedRenderer(svgRenderer)
             self._scene.addItem(dot)
         else:
@@ -209,28 +209,28 @@ class GraphicsView(QtWidgets.QWidget):
             # Do the actual saving
             self._scene.clearSelection()    # If there were to be any selections, these would also render to the file
             self._scene.setSceneRect(self._scene.itemsBoundingRect())
-            image = QtGui.QImage(self._scene.sceneRect().size().toSize(), QtGui.QImage.Format_ARGB32)
-            image.fill(QtCore.Qt.transparent)
+            image = QtGui.QImage(self._scene.sceneRect().size().toSize(), QtGui.QImage.Format.Format_ARGB32)
+            image.fill(QtCore.Qt.GlobalColor.transparent)
             painter = QtGui.QPainter(image)
-            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            painter.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
             self._scene.render(painter)
             image.save(fileName)
             painter.end()
 
     def viewWheelEvent(self, event: QtGui.QWheelEvent):
         mods = Config.value("view/scrollKey").split(" + ")
-        modifiers = QtCore.Qt.NoModifier
+        modifiers = QtCore.Qt.KeyboardModifier.NoModifier
         alt = False
         for m in mods:
             if m == "CTRL":
-                modifiers |= QtCore.Qt.ControlModifier
+                modifiers |= QtCore.Qt.KeyboardModifier.ControlModifier
             elif m == "ALT":
-                modifiers |= QtCore.Qt.AltModifier
+                modifiers |= QtCore.Qt.KeyboardModifier.AltModifier
                 alt = True
             elif m == "SHIFT":
-                modifiers |= QtCore.Qt.ShiftModifier
+                modifiers |= QtCore.Qt.KeyboardModifier.ShiftModifier
             elif m == "META":
-                modifiers |= QtCore.Qt.MetaModifier
+                modifiers |= QtCore.Qt.KeyboardModifier.MetaModifier
 
         if event.modifiers() == modifiers:
             delta = event.angleDelta()

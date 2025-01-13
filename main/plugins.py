@@ -208,7 +208,7 @@ class PluginLoader:
         return res
 
     def getFileExtensions(self, active=True):
-        res = {}
+        res = {"Text": ["txt"]}
         ps = self.get(active)
         for p in ps:
             for t in p.types:
@@ -241,7 +241,7 @@ class PluginLoader:
         return types.get(filetype, {}).get("paired", Constants.BRACKETS)
 
 
-from PyQt5 import QtWidgets, QtCore, uic
+from PyQt6 import QtWidgets, QtCore, uic
 
 class Settings(QtWidgets.QGroupBox):
     def __init__(self, pathname, parent=None):
@@ -274,7 +274,7 @@ class PluginInstaller(QtWidgets.QDialog):
         self.plugin = plugin
         self.upd = update
         self.main.setText("Installing all requirements for the plugin <b>%s</b>.<br/>" % self.plugin.name)
-        self.cmd = ["python3", "-m", "pip"]
+        self.cmd = ["python", "-m", "pip"]
         self.depfol = IOHandler.dir_plugins(".dependencies")
         self.success = False
         self.thread = WorkerThread(self.run)
@@ -295,7 +295,7 @@ class PluginInstaller(QtWidgets.QDialog):
 
     def exec_(self):
         self.thread.start()
-        QtWidgets.QDialog.exec_(self)
+        QtWidgets.QDialog.exec(self)
 
     def run(self):
         self.progress.reset()

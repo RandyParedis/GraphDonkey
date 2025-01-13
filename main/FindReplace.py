@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   17/12/2019
 """
-from PyQt5 import QtWidgets, QtGui, QtCore, uic
+from PyQt6 import QtWidgets, QtGui, QtCore, uic
 from main.extra.IOHandler import IOHandler
 import re
 
@@ -66,9 +66,9 @@ class FindReplace(QtWidgets.QDialog):
             text = QtCore.QRegularExpression.escape(text)
         if self.wholeWords():
             text = r"\b" + text.replace(" ", r"\b") + r"\b"
-        options = QtCore.QRegularExpression.NoPatternOption
+        options = QtCore.QRegularExpression.PatternOption.NoPatternOption
         if not self.caseSensitive():
-            options |= QtCore.QRegularExpression.CaseInsensitiveOption
+            options |= QtCore.QRegularExpression.PatternOption.CaseInsensitiveOption
         reg = QtCore.QRegularExpression(text, options)
         if reg.isValid():
             self.setInfo("")
@@ -80,8 +80,8 @@ class FindReplace(QtWidgets.QDialog):
         cursor = self.editor.textCursor()
         if self.idx == -1:
             start = cursor.selectionStart()
-            cursor.movePosition(QtGui.QTextCursor.Start)
-            cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor)
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.Start)
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.End, QtGui.QTextCursor.MoveMode.KeepAnchor)
             text = cursor.selectedText()
 
             self.editor.matches = []
@@ -120,7 +120,7 @@ class FindReplace(QtWidgets.QDialog):
 
         if l > 0:
             cursor.setPosition(self.editor.matches[self.idx][0])
-            cursor.setPosition(self.editor.matches[self.idx][1], QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(self.editor.matches[self.idx][1], QtGui.QTextCursor.MoveMode.KeepAnchor)
             self.editor.setTextCursor(cursor)
         self.editor.highlightMatches()
 
@@ -143,13 +143,13 @@ class FindReplace(QtWidgets.QDialog):
                 st = rem.capturedStart(group)
                 if st != -1:
                     cursor.setPosition(st)
-                    cursor.setPosition(rem.capturedEnd(group), QtGui.QTextCursor.KeepAnchor)
+                    cursor.setPosition(rem.capturedEnd(group), QtGui.QTextCursor.MoveMode.KeepAnchor)
                     mtxt = cursor.selectedText()
                     text = text[:match.capturedStart()] + mtxt + text[match.capturedEnd():]
             text = text.replace(r"\$", "$")
 
         cursor.setPosition(start)
-        cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+        cursor.setPosition(end, QtGui.QTextCursor.MoveMode.KeepAnchor)
         cursor.insertText(text)
 
     def replace(self):

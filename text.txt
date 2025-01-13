@@ -6,30 +6,38 @@ https://ogdf.uos.de
 Creating an rcc from a *.qrc file (example for tango icon set):
     pyrcc5 -o tango.py -compress 9 tango.qrc
 
-TODO LIST
-    [0.2.3] {Universalisation}
+TODO LIST [0.2.3] {Universalisation}
+    - [DONE]: Bugfixes after 5 years of no progress
+        - GraphDonkey crashes randomly
+        - Plugin options not showing
+    - [DONE]: Shifted to Qt6 and Python 3.13
     - Features:
-        - Change case of selection (Uppercase to Lowercase and back again)
+        - Change case of selection (Uppercase, Lowercase, Sentence, CamelCase, PascalCase)
+        - Load from gallery (gallery in plugin folder maybe?)
         - Goto Line
         - Restart
-        - Listen on host:port address
+        - Listen on host:port address instead of a file
     - Better indentation logic
     - Fix comments: identify indents before/after comment signs
     - Update Graphviz plugin to work better
         - Add all syntactical errors
     - Other plugins by default (see Future.md)
-    [0.2.4] {Styling Update}
+
+TODO LIST [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
+            - Defaults like darcula, monokai, high contrast...
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html
     - Add images to documentation AND wizards
     - Add icon to all plugins
     - Add icon to completer types
+    - Change icons to phosphor icons?
     - Tree Indentation guides
     - Max column size indicator
     - Apply button in preferences (which keeps the preferences open)
-    [0.3.0]
+
+TODO LIST [0.3.0]
     - Change Preferences Loading to dict instead of lines
         I.e. - apply   :: self.preferences.setValue("autohide", self.check_autohide.isChecked())
              - rectify :: self.check_autohide.setChecked(bool(self.preferences.value("autohide", True)))
@@ -39,7 +47,9 @@ TODO LIST
         - OGDF
             (Add pre-transform to Engine, i.e. 'transform from one file type to another')
         - 3D (graphics engine from Computer Graphics?)
-    []
+        - L-systems?
+
+TODO LIST [1.0.0]
     - Add tests!
     - Fix in-code TODOs
     - Hints on startup?

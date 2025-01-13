@@ -13,7 +13,7 @@ with `GraphDonkey`.
 Simply type your text in the editor, enjoy its user-friendly features and see your
 code come to life in the visualizer.
 
-**Latest Release Version:** _Jack-in-a-Box_ (`v0.2.2`)<br/>
+**Latest Release Version:** _Jack-in-a-Box_ (`v0.2.3`)<br/>
 **Executable OS:** `Linux` and `Windows`<br>
 &emsp; _(Cannot confirm other OS at this point in time)_<br>
 **Author:** Randy Paredis
@@ -58,13 +58,19 @@ Wait... did you say no? There is so much more left to see and discover that you
 cannot possibly know that! So go ahead and get `GraphDonkey`, I'm convinced you'll
 be amazed!
 
-### Bundled with
-By default, `GraphDonkey` comes bundled with:
+### Default Plugins
+By default, `GraphDonkey` is bundled with:
 * The [Graphviz](wiki/Graphviz) rendering engine to bring your graphs to life,
 complete with a full grammar checker for the [`Graphviz dot` language][gv].
 * A [Flowchart / Pseudocode](wiki/Flowcharts) language that not only allows you
 to type clean and understandable pseudocode, but also see it visualized as a
 flowchart.
+
+On your first launch, the setup wizard will ask you if you want to install these
+plugins or not. It is recommended to install the _Graphviz_ plugin.
+
+All Python-based dependencies will be installed in the `vendor/plugins/.dependencies`
+folder. You can remove this folder to uninstall all dependencies.
 
 ### Want to Learn More?
 Take a look at the [wiki][wiki] and allow `GraphDonkey` to do the donkey work for

@@ -6,7 +6,7 @@ Author: Randy Paredis
 Date:   02/05/2020
 """
 
-from PyQt5 import QtWidgets, QtCore, uic, QtNetwork
+from PyQt6 import QtWidgets, QtCore, uic, QtNetwork
 from main.extra.IOHandler import IOHandler
 from main.extra import Constants
 from urllib.request import urlretrieve

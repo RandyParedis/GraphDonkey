@@ -6,7 +6,7 @@ Date:   01/09/2020
 import graphviz
 from main.extra.IOHandler import IOHandler
 from main.plugins import command
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 import subprocess
 
 Config = IOHandler.get_preferences()

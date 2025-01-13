@@ -9,7 +9,7 @@ Date:   01/21/2020
 from enum import Enum
 import re
 
-from PyQt5 import QtGui
+from PyQt6 import QtGui
 
 from main.editor.automata import FSA, ssc
 from main.extra import Constants
@@ -82,7 +82,8 @@ class CompletionStorage:
             A tuple (list, str), respectively the list of completions and the transformed
             prefix string (all unknown characters are removed)
         """
-        prefix = re.sub("[^%s]" % re.escape("".join(self.alphabet())), "", prefix)
+        if len(self.alphabet()) > 0:
+            prefix = re.sub("[^%s]" % re.escape("".join(self.alphabet())), "", prefix)
         dfa = ssc(self.completions)
         nodes = dfa.find(prefix)
         comps = set()

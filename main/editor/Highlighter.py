@@ -5,7 +5,7 @@ Date:   12/14/2019
 """
 import math
 
-from PyQt5 import QtGui, QtCore
+from PyQt6 import QtGui, QtCore
 from main.extra import Constants
 from main.editor.Parser import Parser, EOFToken
 from main.extra.IOHandler import IOHandler
@@ -56,19 +56,19 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 return QtCore.QRegularExpression(value)
             elif isinstance(value, dict):
                 reg = obtainRegex(value["pattern"])
-                ptns = QtCore.QRegularExpression.NoPatternOption
+                ptns = QtCore.QRegularExpression.PatternOption.NoPatternOption
                 if value.get("insensitive", False):
-                    ptns |= QtCore.QRegularExpression.CaseInsensitiveOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.CaseInsensitiveOption
                 if value.get("single", False):
-                    ptns |= QtCore.QRegularExpression.DotMatchesEverythingOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.DotMatchesEverythingOption
                 if value.get("multiline", False):
-                    ptns |= QtCore.QRegularExpression.MultilineOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.MultilineOption
                 if value.get("extended", False):
-                    ptns |= QtCore.QRegularExpression.ExtendedPatternSyntaxOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.ExtendedPatternSyntaxOption
                 if value.get("unicode", False):
-                    ptns |= QtCore.QRegularExpression.UseUnicodePropertiesOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.UseUnicodePropertiesOption
                 if value.get("ungreedy", False):
-                    ptns |= QtCore.QRegularExpression.InvertedGreedinessOption
+                    ptns |= QtCore.QRegularExpression.PatternOption.InvertedGreedinessOption
                 reg.setPatternOptions(ptns)
                 return reg
             elif isinstance(value, list):
@@ -95,8 +95,10 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
                 if isinstance(token, UnexpectedToken):
                     size = len(token.token)
                 elif isinstance(token, UnexpectedCharacters):
-                    regex = QtCore.QRegExp(r"\s")
-                    endIndex = regex.indexIn(text, startIndex)
+                    regex = QtCore.QRegularExpression(r"\s")
+                    space = regex.match(text, startIndex)
+                    endIndex = space.lastCapturedIndex()
+                    # endIndex = regex.indexIn(text, startIndex)
                     if endIndex == -1:
                         size = len(text) - startIndex
                     else:
@@ -160,14 +162,14 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
     def format_keyword():
         keywordFormat = QtGui.QTextCharFormat()
         keywordFormat.setForeground(QtGui.QColor(Config.value("col/keyword")))
-        keywordFormat.setFontWeight(QtGui.QFont.Bold)
+        keywordFormat.setFontWeight(QtGui.QFont.Weight.Bold)
         return keywordFormat
 
     @staticmethod
     def format_attribute():
         attributeFormat = QtGui.QTextCharFormat()
         attributeFormat.setForeground(QtGui.QColor(Config.value("col/attribute")))
-        attributeFormat.setFontWeight(QtGui.QFont.Bold)
+        attributeFormat.setFontWeight(QtGui.QFont.Weight.Bold)
         return attributeFormat
 
     @staticmethod
@@ -207,5 +209,5 @@ class BaseHighlighter(QtGui.QSyntaxHighlighter):
         errorFormat = QtGui.QTextCharFormat()
         errorFormat.setFontUnderline(True)
         errorFormat.setUnderlineColor(QtGui.QColor(Config.value("col/error")))
-        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
+        errorFormat.setUnderlineStyle(QtGui.QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
         return errorFormat

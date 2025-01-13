@@ -15,7 +15,7 @@ if not os.path.isdir(depfol):
     os.mkdir(depfol)
 sys.path.append(depfol)
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 from main.extra import Constants
 from main.MainWindow import MainWindow
 
@@ -29,13 +29,13 @@ if __name__ == '__main__':
     app.setWindowIcon(Constants.APP_ICON)
 
     # Set the default size in case of error messages and wizards before the preferences were loaded
-    font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.GeneralFont)
+    font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.GeneralFont)
     font.setPointSize(11)
-    QtWidgets.QApplication.instance().setFont(font)
+    QtWidgets.QApplication.setFont(font)
 
     print("LAUNCING APP...")
     print("GraphDonkey Version:", Constants.APP_VERSION_NAME, "(" + Constants.APP_VERSION + ")")
 
     mainwindow = MainWindow()
     mainwindow.show()
-    code = app.exec_()
+    code = app.exec()

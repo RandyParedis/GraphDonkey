@@ -1,4 +1,4 @@
-PyQt5==5.13.2
+pyqt6
 lark-parser
 markdown
 chardet

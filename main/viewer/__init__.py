@@ -3,7 +3,7 @@
 """
 from enum import Enum
 
-from PyQt5 import QtSvg, QtGui
+from PyQt6 import QtSvg, QtGui
 
 from main.extra import isSVG
 

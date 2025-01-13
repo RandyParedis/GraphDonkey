@@ -5,7 +5,7 @@ It is required this wizard shows BEFORE the Preferences are loaded.
 Author: Randy Paredis
 Date:   02/08/2020
 """
-from PyQt5 import QtWidgets, QtCore, uic
+from PyQt6 import QtWidgets, QtCore, uic
 from main.extra.IOHandler import IOHandler
 from main.plugins import PluginLoader, PluginInstaller
 from main.extra.qrc import images
@@ -17,7 +17,7 @@ rccv = images.rcc_version
 
 class WelcomeWizard(QtWidgets.QWizard):
     def __init__(self, parent = None):
-        super(WelcomeWizard, self).__init__(parent, QtCore.Qt.Dialog)
+        super(WelcomeWizard, self).__init__(parent, QtCore.Qt.WindowType.Dialog)
         uic.loadUi(IOHandler.dir_ui("WelcomeWizard.ui"), self)
 
     def accept(self):

@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   17/12/2019
 """
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 from main.extra.IOHandler import IOHandler
 from main.plugins import PluginLoader
 import json
@@ -34,7 +34,7 @@ class Snippets(QtWidgets.QDialog):
                 self.table.insertRow(r)
                 self.set(r, name, self.snippets[type][name], type=type)
         self.table.setSortingEnabled(True)
-        QtWidgets.QDialog.exec_(self)
+        QtWidgets.QDialog.exec(self)
 
     def accept(self):
         self.snippets = {}

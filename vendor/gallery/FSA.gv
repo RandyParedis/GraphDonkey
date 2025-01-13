@@ -1,0 +1,4 @@
+digraph G {
+	start [label="", shape=none, width=0];
+	end [shape=doublecircle];
+}

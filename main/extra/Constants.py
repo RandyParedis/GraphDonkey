@@ -3,11 +3,11 @@
 Author: Randy Paredis
 Date:   12/15/2019
 """
-from PyQt5.QtGui import QIcon, QImage
+from PyQt6.QtGui import QIcon, QImage
 from main.extra.IOHandler import IOHandler
 
 APP_NAME = "GraphDonkey"
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.3"
 APP_VERSION_NAME = "Jack-in-a-Box"
 APP_ICON = QIcon(IOHandler.dir_icons("graphdonkey.svg"))
 

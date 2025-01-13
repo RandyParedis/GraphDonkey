@@ -3,7 +3,7 @@
 Author: Randy Paredis
 Date:   14/12/2019
 """
-from PyQt5 import QtWidgets, QtCore, QtGui, uic
+from PyQt6 import QtWidgets, QtCore, QtGui, uic
 
 from main.FindReplace import FindReplace
 from main.Preferences import Preferences, bool
@@ -27,7 +27,7 @@ rccv = tango.rcc_version
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__(flags=QtCore.Qt.WindowFlags())
+        super().__init__()
         uic.loadUi(IOHandler.dir_ui("MainWindow.ui"), self)
         self.files.installEventFilter(TabPressEater())
         self.view = GraphicsView(self, self.viewDock)
@@ -47,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if len(Config.allKeys()) == 0:
             wiz = WelcomeWizard()
-            wiz.exec_()
+            wiz.exec()
 
         self.preferences = Preferences(self)
         self.preferences.apply()
@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Save_All.triggered.connect(self.saveAll)
         self.action_Save_As.triggered.connect(self.saveAs)
         self.action_Export.triggered.connect(self.export)
-        self.action_Preferences.triggered.connect(self.preferences.exec_)
+        self.action_Preferences.triggered.connect(self.preferences.exec)
         self.action_Close_File.triggered.connect(self.closeFile)
         self.action_Exit.triggered.connect(self.close)
         self.action_Undo.triggered.connect(lambda: self.editorEvent("undo"))
@@ -109,9 +109,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for t in p.types:
                 for c in p.types[t].get("transformer", {}):
                     trns.append((t, c, p.types[t]["transformer"][c]))
-        for fr, to, convfunc in trns:
-            action = QtWidgets.QAction("%s > %s" % (fr, to))
-            action.triggered.connect(lambda b, fnc=convfunc, to=to: self.transform(fnc, to))
+        for fr, to_, convfunc in trns:
+            action = QtGui.QAction("%s > %s" % (fr, to_))
+            action.triggered.connect(lambda b, fnc=convfunc, to=to_: self.transform(fnc, to))
             action.setData(fr)
             self.menu_Transform.addAction(action)
             self.transformationActions.append(action)
@@ -214,7 +214,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.files.setCurrentIndex(index)
             edit = self.editor()
             if edit is not None:
-                edit.setFocus(True)
+                edit.setFocus()
 
     def updateTabs(self):
         names = []
@@ -267,9 +267,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if settings.contains("windowState"):
                 self.restoreState(settings.value("windowState"))
             if self.isMaximized():
-                # WORKAROUND FOR INVALID RESTORE OF STATE/GEOMETRY
-                #   https://bugreports.qt.io/browse/QTBUG-46620
-                self.setGeometry(QtWidgets.QApplication.desktop().availableGeometry(self))
+                self.showMaximized()
             if settings.contains("recents"):
                 self.recents = settings.value("recents")
             if settings.contains("zoomlevel"):
@@ -290,7 +288,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if succ and file < len(cursors):
                     curs = self.editor().textCursor()
                     curs.setPosition(cursors[file][0])
-                    curs.setPosition(cursors[file][1], QtGui.QTextCursor.KeepAnchor)
+                    curs.setPosition(cursors[file][1], QtGui.QTextCursor.MoveMode.KeepAnchor)
                     self.editor().setTextCursor(curs)
             self.changeTab(active)
         self.updateRecents()
@@ -367,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def question(self, title, msg):
         btn = QtWidgets.QMessageBox.question(self, title, msg)
-        return btn == QtWidgets.QMessageBox.Yes
+        return btn == QtWidgets.QMessageBox.StandardButton.Yes
 
     def clearRecents(self):
         self.recents.clear()
@@ -430,7 +428,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cend = c.selectionEnd()
         edit.setText(data)
         c.setPosition(cstr)
-        c.setPosition(cend, QtGui.QTextCursor.KeepAnchor)
+        c.setPosition(cend, QtGui.QTextCursor.MoveMode.KeepAnchor)
         edit.setTextCursor(c)
         edit.filecontents = data.replace(linesep, "\n")
         self.setEditorType(Constants.lookup(ext, exts, ""), indx)
@@ -465,8 +463,8 @@ class MainWindow(QtWidgets.QMainWindow):
             folder = IOHandler.directory(edit.filename)
         if len(folder) == 0:
             folder = os.path.expanduser("~")
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        # options = QtWidgets.QFileDialog.Option.Options()
+        options = QtWidgets.QFileDialog.Option.DontUseNativeDialog
         return options, folder
 
     def open(self):
@@ -481,7 +479,7 @@ class MainWindow(QtWidgets.QMainWindow):
         editor = self.editor()
         if editor is not None and editor.filename == "":
             self.saveAs()
-        else:
+        elif editor is not None:
             contents = editor.toPlainText()
             contents = contents.replace("\n", editor.wrapper.linesep.currentData())
             try:
@@ -512,8 +510,11 @@ class MainWindow(QtWidgets.QMainWindow):
             ext = spt[-1]
             rext = Constants.obtain_exts(t)
             if len(rext) == 0:
+                if len(spt) == 1:
+                    ext = "txt"
+                    fileName += "." + ext
                 fext = pluginloader.getFileExtensions()
-                rext = fext[next(iter(fext.items()))] if len(fext) > 0 else []
+                rext = [e for v in fext.values() for e in v]
             if ext not in rext:
                 ext = rext[0] if len(rext) > 0 else "txt"
                 fileName += "." + ext
@@ -522,10 +523,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.save()
             else:
                 self.warn("Invalid File", "It looks like you want to save a file with an invalid file type of '%s'."
-                                          "Please try another extension." % rext)
+                                          "Please try another extension." % ext)
 
     def export(self):
-        # SHOULD ONLY BE POSSIBLE WHEN A FILE IS OPEN
+        # TODO: SHOULD ONLY BE POSSIBLE WHEN A FILE IS OPEN
         edit = self.editor()
         if edit is None:
             return
@@ -614,6 +615,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.canDisplay() and self.editor() is not None:
             ename = self.editorWrapper().engine.currentText()
             try:
+                if ename == "":
+                    raise RuntimeError("No rendering engine selected.")
                 engine = pluginloader.getEngines().get(ename, None)
                 if engine is None:
                     raise RuntimeError("Unknown rendering engine '%s'." % ename)
@@ -648,7 +651,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.editor().wrapper.setType(to)
         self.releaseDisplay()
 
-    def reportIssue(self):
+    @staticmethod
+    def reportIssue():
         QtGui.QDesktopServices().openUrl(QtCore.QUrl("https://github.com/RandyParedis/GraphDonkey/issues/new/choose"))
 
     def updatesWizard(self):
@@ -658,6 +662,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close()
         app.setQuitOnLastWindowClosed(True)
         wiz.show()
+        # TODO: re-open GraphDonkey after updates?
 
     def aboutGraphDonkey(self):
         with open(IOHandler.dir_root("README.md")) as file:
@@ -676,7 +681,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 class TabPressEater(QtCore.QObject):
     def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.KeyPress and \
-                event.key() == QtCore.Qt.Key_Tab and event.modifiers() & QtCore.Qt.ControlModifier:
+        if event.type() == QtCore.QEvent.Type.KeyPress and \
+                event.key() == QtCore.Qt.Key.Key_Tab and event.modifiers() & QtCore.Qt.KeyboardModifier.ControlModifier:
             return True
         return QtCore.QObject.eventFilter(self, obj, event)
