@@ -67,7 +67,7 @@
      <x>0</x>
      <y>0</y>
      <width>1008</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -79,13 +79,19 @@
       <string>Open &amp;Recent</string>
      </property>
      <property name="icon">
-      <iconset resource="../icons/tango.qrc">
+      <iconset>
        <normaloff>:/icons/tango/appointment-new.png</normaloff>:/icons/tango/appointment-new.png</iconset>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuOpen_From_Gallery">
+     <property name="title">
+      <string>Open From &amp;Gallery</string>
      </property>
     </widget>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>
     <addaction name="menuOpen_Recent"/>
+    <addaction name="menuOpen_From_Gallery"/>
     <addaction name="action_Save"/>
     <addaction name="action_Save_All"/>
     <addaction name="action_Save_As"/>
@@ -129,6 +135,25 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <widget class="QMenu" name="menuIndentation">
+     <property name="focusPolicy">
+      <enum>Qt::FocusPolicy::NoFocus</enum>
+     </property>
+     <property name="title">
+      <string>I&amp;ndentation</string>
+     </property>
+     <addaction name="action_Indent"/>
+     <addaction name="action_Unindent"/>
+     <addaction name="action_Auto_Indent"/>
+    </widget>
+    <widget class="QMenu" name="menuC_asing">
+     <property name="title">
+      <string>Casin&amp;g</string>
+     </property>
+     <addaction name="action_Lower_Case"/>
+     <addaction name="action_Upper_Case"/>
+     <addaction name="action_Title_Case"/>
+    </widget>
     <addaction name="action_Undo"/>
     <addaction name="action_Redo"/>
     <addaction name="separator"/>
@@ -142,9 +167,8 @@
     <addaction name="action_Duplicate"/>
     <addaction name="separator"/>
     <addaction name="action_Comment"/>
-    <addaction name="action_Indent"/>
-    <addaction name="action_Unindent"/>
-    <addaction name="action_Auto_Indent"/>
+    <addaction name="menuIndentation"/>
+    <addaction name="menuC_asing"/>
     <addaction name="action_Move_Up"/>
     <addaction name="action_Move_Down"/>
     <addaction name="separator"/>
@@ -221,38 +245,38 @@
   </widget>
   <action name="action_New">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/document-new.png</normaloff>:/icons/tango/document-new.png</iconset>
    </property>
    <property name="text">
     <string>&amp;New</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::ShortcutContext::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="action_Open">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/document-open.png</normaloff>:/icons/tango/document-open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open...</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::ShortcutContext::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="action_Save">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/media-floppy.png</normaloff>:/icons/tango/media-floppy.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::ShortcutContext::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="action_Show_Render_Area">
@@ -268,19 +292,19 @@
   </action>
   <action name="action_Render">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/applications-internet.png</normaloff>:/icons/tango/applications-internet.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Render</string>
    </property>
    <property name="shortcutContext">
-    <enum>Qt::ApplicationShortcut</enum>
+    <enum>Qt::ShortcutContext::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="action_Save_As">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/document-save-as.png</normaloff>:/icons/tango/document-save-as.png</iconset>
    </property>
    <property name="text">
@@ -299,7 +323,7 @@
   </action>
   <action name="action_Copy">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-copy.png</normaloff>:/icons/tango/edit-copy.png</iconset>
    </property>
    <property name="text">
@@ -308,7 +332,7 @@
   </action>
   <action name="action_Paste">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-paste.png</normaloff>:/icons/tango/edit-paste.png</iconset>
    </property>
    <property name="text">
@@ -317,7 +341,7 @@
   </action>
   <action name="action_Cut">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-cut.png</normaloff>:/icons/tango/edit-cut.png</iconset>
    </property>
    <property name="text">
@@ -331,7 +355,7 @@
   </action>
   <action name="action_Undo">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-undo.png</normaloff>:/icons/tango/edit-undo.png</iconset>
    </property>
    <property name="text">
@@ -340,7 +364,7 @@
   </action>
   <action name="action_Redo">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-redo.png</normaloff>:/icons/tango/edit-redo.png</iconset>
    </property>
    <property name="text">
@@ -354,7 +378,7 @@
   </action>
   <action name="action_Exit">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/system-log-out.png</normaloff>:/icons/tango/system-log-out.png</iconset>
    </property>
    <property name="text">
@@ -373,7 +397,7 @@
   </action>
   <action name="action_Preferences">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/preferences-system.png</normaloff>:/icons/tango/preferences-system.png</iconset>
    </property>
    <property name="text">
@@ -387,7 +411,7 @@
   </action>
   <action name="action_Duplicate">
    <property name="text">
-    <string>Du&amp;plicate</string>
+    <string>Dupl&amp;icate</string>
    </property>
   </action>
   <action name="action_Comment">
@@ -402,7 +426,7 @@
   </action>
   <action name="action_Indent">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/format-indent-more.png</normaloff>:/icons/tango/format-indent-more.png</iconset>
    </property>
    <property name="text">
@@ -411,7 +435,7 @@
   </action>
   <action name="action_Unindent">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/format-indent-less.png</normaloff>:/icons/tango/format-indent-less.png</iconset>
    </property>
    <property name="text">
@@ -420,7 +444,7 @@
   </action>
   <action name="action_Find">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-find-replace.png</normaloff>:/icons/tango/edit-find-replace.png</iconset>
    </property>
    <property name="text">
@@ -434,7 +458,7 @@
   </action>
   <action name="action_Snippets">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/applications-accessories.png</normaloff>:/icons/tango/applications-accessories.png</iconset>
    </property>
    <property name="text">
@@ -443,7 +467,7 @@
   </action>
   <action name="action_Close_File">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/process-stop.png</normaloff>:/icons/tango/process-stop.png</iconset>
    </property>
    <property name="text">
@@ -462,7 +486,7 @@
   </action>
   <action name="action_Clear">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/edit-clear.png</normaloff>:/icons/tango/edit-clear.png</iconset>
    </property>
    <property name="text">
@@ -471,7 +495,7 @@
   </action>
   <action name="action_Next_File">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/go-next.png</normaloff>:/icons/tango/go-next.png</iconset>
    </property>
    <property name="text">
@@ -480,7 +504,7 @@
   </action>
   <action name="action_Previous_File">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/go-previous.png</normaloff>:/icons/tango/go-previous.png</iconset>
    </property>
    <property name="text">
@@ -489,7 +513,7 @@
   </action>
   <action name="action_Zoom_In">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/list-add.png</normaloff>:/icons/tango/list-add.png</iconset>
    </property>
    <property name="text">
@@ -498,7 +522,7 @@
   </action>
   <action name="action_Zoom_Out">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/list-remove.png</normaloff>:/icons/tango/list-remove.png</iconset>
    </property>
    <property name="text">
@@ -512,7 +536,7 @@
   </action>
   <action name="action_Zoom_To_Fit">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/view-fullscreen.png</normaloff>:/icons/tango/view-fullscreen.png</iconset>
    </property>
    <property name="text">
@@ -521,7 +545,7 @@
   </action>
   <action name="action_Save_Rendered_View">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/image-x-generic.png</normaloff>:/icons/tango/image-x-generic.png</iconset>
    </property>
    <property name="text">
@@ -530,11 +554,11 @@
   </action>
   <action name="action_Move_Up">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/go-up.png</normaloff>:/icons/tango/go-up.png</iconset>
    </property>
    <property name="text">
-    <string>Move Up</string>
+    <string>M&amp;ove Up</string>
    </property>
    <property name="toolTip">
     <string>Move Up</string>
@@ -542,11 +566,11 @@
   </action>
   <action name="action_Move_Down">
    <property name="icon">
-    <iconset resource="../icons/tango.qrc">
+    <iconset>
      <normaloff>:/icons/tango/go-down.png</normaloff>:/icons/tango/go-down.png</iconset>
    </property>
    <property name="text">
-    <string>Move Down</string>
+    <string>Mo&amp;ve Down</string>
    </property>
    <property name="toolTip">
     <string>Move Down</string>
@@ -560,6 +584,21 @@
   <action name="action_Report_Issue">
    <property name="text">
     <string>Report &amp;Issue</string>
+   </property>
+  </action>
+  <action name="action_Lower_Case">
+   <property name="text">
+    <string>&amp;Lower Case</string>
+   </property>
+  </action>
+  <action name="action_Upper_Case">
+   <property name="text">
+    <string>&amp;Upper Case</string>
+   </property>
+  </action>
+  <action name="action_Title_Case">
+   <property name="text">
+    <string>&amp;Title Case</string>
    </property>
   </action>
  </widget>

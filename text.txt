@@ -11,9 +11,12 @@ TODO LIST [0.2.3] {Universalisation}
         - GraphDonkey crashes randomly
         - Plugin options not showing
     - [DONE]: Shifted to Qt6 and Python 3.13
-    - Features:
-        - Change case of selection (Uppercase, Lowercase, Sentence, CamelCase, PascalCase)
+    - [DONE] Features:
+        - Change case of selection (Uppercase, Lowercase, Title)
         - Load from gallery (gallery in plugin folder maybe?)
+    - Features:
+        - Lock files, so they cannot be overwritten + set all gallery files as locked
+        - Watchdog to show changes live
         - Goto Line
         - Restart
         - Listen on host:port address instead of a file
@@ -26,7 +29,7 @@ TODO LIST [0.2.3] {Universalisation}
 TODO LIST [0.2.4] {Styling Update}
     - Styles/themes via CSS vs INI      https://doc.qt.io/qt-5/stylesheet-examples.html
         - Style for whitespace characters? ==> Add automatically in SyntaxHighligter
-    - fromTheme? https://www.pythonguis.com/faq/built-in-qicons-pyqt/ || https://github.com/ppinard/pyqttango
+    - from Theme? https://www.pythonguis.com/faq/built-in-qicons-pyqt/ || https://github.com/ppinard/pyqttango
         - More styles: https://tmtheme-editor.herokuapp.com/#!/editor/theme/Monokai
             - Defaults like darcula, monokai, high contrast...
         - Preferences menu: https://www.jetbrains.com/help/idea/configuring-colors-and-fonts.html

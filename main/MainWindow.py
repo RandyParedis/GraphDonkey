@@ -83,6 +83,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_Indent.triggered.connect(lambda: self.editorEvent("indent"))
         self.action_Unindent.triggered.connect(lambda: self.editorEvent("unindent"))
         self.action_Auto_Indent.triggered.connect(lambda: self.editorEvent("autoIndent"))
+        self.action_Lower_Case.triggered.connect(lambda: self.editorEvent("caseLower"))
+        self.action_Upper_Case.triggered.connect(lambda: self.editorEvent("caseUpper"))
+        self.action_Title_Case.triggered.connect(lambda: self.editorEvent("caseTitle"))
         self.action_Move_Up.triggered.connect(lambda: self.editorEvent("moveUp"))
         self.action_Move_Down.triggered.connect(lambda: self.editorEvent("moveDown"))
         self.action_Find.triggered.connect(self.findReplace)
@@ -115,6 +118,8 @@ class MainWindow(QtWidgets.QMainWindow):
             action.setData(fr)
             self.menu_Transform.addAction(action)
             self.transformationActions.append(action)
+
+        self.fillGallery()
         self.tabChanged(self.files.currentIndex())
 
     def setStatusBar(self, status: StatusBar):
@@ -356,6 +361,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if clr != "":
             clear.setShortcuts(QtGui.QKeySequence(clr))
         clear.triggered.connect(lambda x: self.clearRecents())
+
+    def fillGallery(self):
+        self.menuOpen_From_Gallery.clear()
+        for p in pluginloader.get():
+            if len(p.gallery) > 0:
+                menu = self.menuOpen_From_Gallery.addMenu(p.name)
+                for file in p.gallery:
+                    menu.addAction(file, lambda f=file: self.openFile(p.path("gallery", f)))
 
     def warn(self, title, msg):
         QtWidgets.QMessageBox.warning(self, title, msg)

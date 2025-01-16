@@ -34,6 +34,7 @@ class Plugin:
         self.enabled = True
         self.deps = True
         self.reqs = True
+        self.gallery = []
         self.load()
 
     def path(self, *paths):
@@ -106,6 +107,15 @@ class Plugin:
         except ImportError as e:
             self.disable()
             self.deps = False
+
+        gp = os.path.join(self._dir, "gallery")
+        if os.path.isdir(gp):
+            exts = []
+            for v in self.types.values():
+                exts.extend(v["extensions"])
+            for filename in os.listdir(gp):
+                if filename.split(".")[-1] in exts:
+                    self.gallery.append(filename)
 
     def enable(self, on=True):
         self.enabled = on

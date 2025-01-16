@@ -717,6 +717,28 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             self.completer.setCompletionPrefix(prefix)
             self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
 
+    def _changeText(self, func=lambda x: x):
+        cursor = self.textCursor()
+        txt = cursor.selectedText()
+        if txt == "":
+            return
+        posS = cursor.selectionStart()
+        posE = cursor.selectionEnd()
+        cursor.insertText(func(txt))
+        cursor.setPosition(posS)
+        cursor.setPosition(posE, QtGui.QTextCursor.MoveMode.KeepAnchor)
+        self.setTextCursor(cursor)
+
+    def caseUpper(self):
+        print("UPPER CASE")
+        self._changeText(lambda txt: txt.upper())
+
+    def caseLower(self):
+        self._changeText(lambda txt: txt.lower())
+
+    def caseTitle(self):
+        self._changeText(lambda txt: txt.title())
+
     def matchBrackets(self):
         paired = pluginloader.getPairedBrackets(self.wrapper.filetype.currentText())
         bopen = [x[0] for x in paired]
